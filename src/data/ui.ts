@@ -35,7 +35,6 @@ export const ui = {
     github: { en: "View my GitHub", vi: "Xem GitHub của mình" },
     resume: { en: "Download CV", vi: "Tải CV" },
     contact: { en: "Get in touch", vi: "Liên hệ" },
-    education: { en: "Education", vi: "Học vấn" },
   },
   skills: {
     title: { en: "Skills & technologies", vi: "Kỹ năng & công nghệ" },
@@ -66,13 +65,15 @@ export const ui = {
     live: { en: "Live demo", vi: "Bản chạy thử" },
     builtWith: { en: "Built with", vi: "Công nghệ" },
   },
-  journey: {
-    title: { en: "My journey", vi: "Hành trình" },
+  education: {
+    title: { en: "Education", vi: "Học vấn" },
     subtitle: {
-      en: "From first C++ exercises to AI-powered platforms: how my skills grew, one repository at a time.",
-      vi: "Từ những bài tập C++ đầu tiên tới nền tảng có AI: chặng đường mình lớn lên qua từng repo.",
+      en: "I study at two places at once: a university degree for solid fundamentals, and an academy program for hands-on product skills.",
+      vi: "Mình đang học song song ở hai nơi: đại học để vững nền tảng, học viện để luyện kỹ năng làm sản phẩm thực tế.",
     },
-    now: { en: "Now", vi: "Hiện tại" },
+    subjects: { en: "What I study here", vi: "Mình học gì ở đây" },
+    year: { en: "Year", vi: "Năm" },
+    website: { en: "School website", vi: "Trang web của trường" },
   },
   github: {
     title: { en: "GitHub activity", vi: "Hoạt động GitHub" },

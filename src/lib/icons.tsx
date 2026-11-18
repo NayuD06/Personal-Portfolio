@@ -36,7 +36,7 @@ import {
   SiVercel,
   SiVite,
 } from "react-icons/si";
-import { FaDiscord, FaFacebookF, FaGithub, FaLinkedinIn } from "react-icons/fa6";
+import { FaDiscord, FaFacebookF, FaGithub } from "react-icons/fa6";
 import {
   LuBookOpen,
   LuBrainCircuit,
@@ -45,6 +45,7 @@ import {
   LuGraduationCap,
   LuLayoutDashboard,
   LuLock,
+  LuMail,
   LuMap,
   LuRocket,
   LuServerCog,
@@ -94,9 +95,9 @@ export const icons = {
 
   // Mạng xã hội
   github: { Icon: FaGithub, label: "GitHub", color: "currentColor" },
-  linkedin: { Icon: FaLinkedinIn, label: "LinkedIn", color: "currentColor" },
   facebook: { Icon: FaFacebookF, label: "Facebook", color: "currentColor" },
   discord: { Icon: FaDiscord, label: "Discord", color: "currentColor" },
+  email: { Icon: LuMail, label: "Email", color: "currentColor" },
 
   // Biểu tượng chung (dịch vụ, ảnh bìa dự án)
   code: { Icon: LuCodeXml, label: "Code", color: "currentColor" },

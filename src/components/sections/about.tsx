@@ -5,6 +5,7 @@ import { profile } from "@/data/profile";
 import { ui } from "@/data/ui";
 import { pick, T } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons";
+import { linkProps } from "@/lib/site";
 import { CountUp } from "../ui/count-up";
 import { Reveal } from "../ui/reveal";
 import { TechIcon } from "../ui/tech-icon";
@@ -33,37 +34,6 @@ export function About() {
               </p>
             </Reveal>
           ))}
-
-          {profile.education.length > 0 && (
-            <Reveal delay={0.25}>
-              <h3 className="mt-9 text-lg font-bold">
-                <T v={ui.about.education} />
-              </h3>
-              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-                {profile.education.map((item) => (
-                  <li
-                    key={item.short}
-                    className="card flex items-start gap-3.5 rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
-                  >
-                    <span className="bg-brand grid size-11 shrink-0 place-items-center rounded-xl font-heading text-xs font-black tracking-tight text-white">
-                      {item.short}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-sm leading-snug font-bold">
-                        <T v={item.school} />
-                      </span>
-                      <span className="mt-1 block text-xs text-muted">
-                        <T v={item.program} />
-                      </span>
-                      <span className="mt-1.5 block font-mono text-xs font-semibold text-brand-blue">
-                        <T v={item.period} />
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          )}
 
           <Reveal delay={0.3}>
             <dl className="mt-10 grid grid-cols-3 divide-x divide-border border-y border-border">
@@ -94,8 +64,7 @@ export function About() {
               github && (
                 <a
                   href={github.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...linkProps(github.href)}
                   className="bg-brand shine inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
                 >
                   <FaGithub className="size-4" aria-hidden="true" />

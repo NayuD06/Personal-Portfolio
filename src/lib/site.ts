@@ -6,3 +6,8 @@ export const siteUrl =
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : "http://localhost:3000");
+
+/** Link ra ngoài mở tab mới; link mailto: thì mở ứng dụng email ngay tại chỗ. */
+export function linkProps(href: string) {
+  return href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noopener noreferrer" };
+}

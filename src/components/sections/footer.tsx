@@ -1,4 +1,5 @@
 import { profile } from "@/data/profile";
+import { linkProps } from "@/lib/site";
 import { navLinks, ui } from "@/data/ui";
 import { T } from "@/lib/i18n";
 import { CurrentYear } from "../ui/current-year";
@@ -39,8 +40,7 @@ export function Footer() {
               <li key={social.href}>
                 <a
                   href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...linkProps(social.href)}
                   className="inline-flex items-center gap-2.5 text-muted transition-colors hover:text-brand-blue"
                 >
                   <TechIcon name={social.icon} className="size-4" />

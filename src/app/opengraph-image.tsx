@@ -4,7 +4,7 @@ import { pick } from "@/lib/i18n";
 
 const role = pick(profile.roles[0], "en");
 
-// Ảnh xem trước khi chia sẻ link (Facebook, Zalo, LinkedIn...), tạo lúc build.
+// Ảnh xem trước khi chia sẻ link (Facebook, Zalo, Discord...), tạo lúc build.
 export const alt = `${profile.name}, ${role}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";

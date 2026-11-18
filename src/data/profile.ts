@@ -46,21 +46,27 @@ export type Project = {
 
 export type Education = {
   school: Text;
-  /** Tên viết tắt hiện trên huy hiệu, vd. "UTH" */
+  /** Tên viết tắt, hiện trên huy hiệu khi chưa có logo, vd. "UTH" */
   short: string;
+  /** Ngành học */
   program: Text;
   period: Text;
-};
-
-export type TimelineItem = {
-  /** Thời gian, vd. { en: "Oct 2026", vi: "10/2026" } */
-  period: Text;
-  title: Text;
+  /** Nhãn trạng thái ở góc ảnh, vd. "Năm 3" */
+  status: Text;
+  location?: Text;
+  /** Đoạn giới thiệu bạn học gì, học như thế nào ở trường này */
   description: Text;
-  tags: string[];
-  icon: IconName;
-  /** Mốc đang làm: chấm sáng nhấp nháy và nhãn "Hiện tại" */
-  current?: boolean;
+  /** Các môn hoặc mảng đang học, hiện thành thẻ nhỏ */
+  subjects: Text[];
+  /** Năm đang học / tổng số năm, hiện thành thanh tiến độ. Bỏ đi để ẩn. */
+  progress?: { current: number; total: number };
+  /** Ảnh trường, đặt trong public/education/ rồi ghi vd. "/education/uth.jpg". Để trống thì dùng hình minh họa. */
+  image?: string;
+  /** Logo trường, vd. "/education/uth-logo.png". Để trống thì hiện chữ viết tắt. */
+  logo?: string;
+  /** Kiểu hình minh họa khi chưa có ảnh: "campus" (tòa nhà và đường phố) hoặc "code" (màn hình code) */
+  art: "campus" | "code";
+  website?: string;
 };
 
 export const profile = {
@@ -98,8 +104,8 @@ export const profile = {
   resumeUrl: "",
 
   location: { en: "Vietnam", vi: "Việt Nam" } as Text,
-  /** Thay bằng email thật của bạn */
-  email: "hello@example.com",
+  /** Email liên hệ. Nếu đổi thì sửa luôn link "mailto:" trong socials bên dưới */
+  email: "nayud.2006@gmail.com",
   /** Để trống để ẩn */
   phone: "",
 
@@ -114,40 +120,92 @@ export const profile = {
     },
   ] satisfies Text[],
 
-  /** Học vấn: hiện trong phần Giới thiệu */
+  /** Học vấn: mục "Học vấn" riêng, mỗi trường một hàng (trường đầu tiên ảnh nằm bên trái) */
   education: [
     {
       school: {
-        en: "Ho Chi Minh City University of Transport (UTH)",
-        vi: "Trường Đại học Giao thông vận tải TP.HCM (UTH)",
+        en: "Ho Chi Minh City University of Transport",
+        vi: "Trường Đại học Giao thông vận tải TP.HCM",
       },
       short: "UTH",
-      program: { en: "Information Technology, third-year student", vi: "Công nghệ thông tin, sinh viên năm 3" },
+      program: { en: "Information Technology", vi: "Ngành Công nghệ thông tin" },
       period: { en: "2024 – now", vi: "2024 – nay" },
+      status: { en: "Year 3", vi: "Năm 3" },
+      location: { en: "Ho Chi Minh City", vi: "TP. Hồ Chí Minh" },
+      description: {
+        en: "I'm a third-year Information Technology student at UTH. University is where I learn the fundamentals behind everything I build: how to think in algorithms, design a database properly and structure software so it stays maintainable as it grows.",
+        vi: "Mình là sinh viên năm 3 ngành Công nghệ thông tin tại UTH. Ở trường mình học phần nền tảng đứng sau mọi thứ mình làm: tư duy thuật toán, thiết kế cơ sở dữ liệu cho đúng và tổ chức phần mềm sao cho dễ bảo trì khi dự án lớn dần.",
+      },
+      subjects: [
+        { en: "Programming in C++", vi: "Lập trình C++" },
+        { en: "Data structures & algorithms", vi: "Cấu trúc dữ liệu & giải thuật" },
+        { en: "Object-oriented programming", vi: "Lập trình hướng đối tượng" },
+        { en: "Databases", vi: "Cơ sở dữ liệu" },
+        { en: "Computer networks", vi: "Mạng máy tính" },
+        { en: "Software engineering", vi: "Công nghệ phần mềm" },
+      ],
+      progress: { current: 3, total: 4 },
+      image: "",
+      logo: "",
+      art: "campus",
+      website: "https://ut.edu.vn",
     },
     {
-      school: { en: "VTC Academy", vi: "VTC Academy" },
+      school: { en: "VTC Academy", vi: "Học viện VTC Academy" },
       short: "VTC",
-      program: { en: "Information Technology", vi: "Công nghệ thông tin" },
-      period: { en: "Currently studying", vi: "Đang theo học" },
+      program: { en: "Information Technology", vi: "Ngành Công nghệ thông tin" },
+      period: { en: "Alongside university", vi: "Học song song với đại học" },
+      status: { en: "Studying", vi: "Đang học" },
+      description: {
+        en: "Alongside my degree, I'm studying IT at VTC Academy. The program is hands-on and project-based, so most of my time goes into building real things: web backends and APIs, frontends that work on every screen, and mobile apps.",
+        vi: "Song song với đại học, mình học thêm Công nghệ thông tin tại VTC Academy. Chương trình ở đây thiên về thực hành và làm dự án, nên phần lớn thời gian mình dành để làm sản phẩm thật: backend và API, giao diện web chạy tốt trên mọi màn hình, và ứng dụng di động.",
+      },
+      subjects: [
+        { en: "Web development", vi: "Lập trình web" },
+        { en: "Node.js & NestJS", vi: "Node.js & NestJS" },
+        { en: "React & Next.js", vi: "React & Next.js" },
+        { en: "Mobile apps", vi: "Ứng dụng di động" },
+        { en: "REST APIs & databases", vi: "REST API & cơ sở dữ liệu" },
+        { en: "Git & teamwork", vi: "Git & làm việc nhóm" },
+      ],
+      image: "",
+      logo: "",
+      art: "code",
+      website: "https://vtc.edu.vn",
     },
   ] satisfies Education[],
 
   stats: [
-    { value: "35+", label: { en: "GitHub repositories", vi: "Repo trên GitHub" } },
-    { value: "20+", label: { en: "Technologies used", vi: "Công nghệ đã dùng" } },
+    {
+      value: "35+",
+      label: { en: "GitHub repositories", vi: "Repo trên GitHub" },
+    },
+    {
+      value: "20+",
+      label: { en: "Technologies used", vi: "Công nghệ đã dùng" },
+    },
     { value: "6", label: { en: "Featured projects", vi: "Dự án tiêu biểu" } },
   ] satisfies { value: string; label: Text }[],
 
-  // THAY 2 LINK MẪU BÊN DƯỚI:
-  // - Discord: bật Developer Mode (Cài đặt người dùng > Nâng cao), bấm chuột phải vào tên mình > Sao chép ID người dùng,
-  //   rồi ghi "https://discord.com/users/<ID vừa chép>". Hoặc dùng link mời vào server dạng "https://discord.gg/...".
-  // - Facebook: mở trang cá nhân, chép địa chỉ trên thanh trình duyệt (vd. "https://www.facebook.com/ten.cua.ban").
-  socials: [
-    { label: "GitHub", href: "https://github.com/NayuD06", icon: "github" },
-    { label: "Discord", href: "https://discord.com/users/YOUR_DISCORD_USER_ID", icon: "discord" },
-    { label: "Facebook", href: "https://www.facebook.com/your-handle", icon: "facebook" },
-  ] satisfies Social[],
+  // Discord: link mẫu, cần thay. Cách lấy: bật Developer Mode (Cài đặt người dùng > Nâng cao),
+  // bấm chuột phải vào tên mình > Sao chép ID người dùng, rồi ghi "https://discord.com/users/<ID vừa chép>".
+  // Khi còn để link mẫu (có chữ YOUR_), nút Discord sẽ tự ẩn.
+  socials: (
+    [
+      { label: "GitHub", href: "https://github.com/NayuD06", icon: "github" },
+      {
+        label: "Facebook",
+        href: "https://www.facebook.com/duy.an.877138",
+        icon: "facebook",
+      },
+      {
+        label: "Discord",
+        href: "https://discord.com/users/YOUR_DISCORD_USER_ID",
+        icon: "discord",
+      },
+      { label: "Email", href: "mailto:nayud.2006@gmail.com", icon: "email" },
+    ] satisfies Social[]
+  ).filter((social) => !social.href.includes("YOUR_")),
 
   skills: [
     {
@@ -235,11 +293,40 @@ export const profile = {
 
   /** Logo chạy ngang bên dưới phần kỹ năng */
   techMarquee: [
-    "typescript", "javascript", "react", "nextjs", "tailwind", "vite", "nodejs", "express",
-    "nestjs", "python", "fastapi", "php", "laravel", "postgresql", "mysql", "mongodb",
-    "redis", "prisma", "docker", "githubactions", "prometheus", "socketio", "expo",
-    "flutter", "go", "dotnet", "java", "cplusplus", "git", "postman", "vercel", "ollama",
-    "turborepo", "jest",
+    "typescript",
+    "javascript",
+    "react",
+    "nextjs",
+    "tailwind",
+    "vite",
+    "nodejs",
+    "express",
+    "nestjs",
+    "python",
+    "fastapi",
+    "php",
+    "laravel",
+    "postgresql",
+    "mysql",
+    "mongodb",
+    "redis",
+    "prisma",
+    "docker",
+    "githubactions",
+    "prometheus",
+    "socketio",
+    "expo",
+    "flutter",
+    "go",
+    "dotnet",
+    "java",
+    "cplusplus",
+    "git",
+    "postman",
+    "vercel",
+    "ollama",
+    "turborepo",
+    "jest",
   ] satisfies IconName[],
 
   services: [
@@ -332,7 +419,14 @@ export const profile = {
         en: "Personal finance tracker with JWT auth, category reports and Excel support, Jest and Supertest coverage, Prometheus metrics with alert rules and a GitHub Actions release pipeline.",
         vi: "Ứng dụng quản lý thu chi cá nhân có xác thực JWT, báo cáo theo danh mục, hỗ trợ Excel, test bằng Jest và Supertest, đo lường bằng Prometheus kèm cảnh báo và pipeline phát hành GitHub Actions.",
       },
-      tags: ["React", "Express", "MongoDB", "Docker", "Prometheus", "GitHub Actions"],
+      tags: [
+        "React",
+        "Express",
+        "MongoDB",
+        "Docker",
+        "Prometheus",
+        "GitHub Actions",
+      ],
       categories: ["Full-stack", "DevOps"],
       featured: true,
       coverIcon: "wallet",
@@ -399,89 +493,4 @@ export const profile = {
 
   /** Tên tài khoản GitHub: mục "Hoạt động GitHub" tự lấy số liệu từ tài khoản này */
   githubUsername: "NayuD06",
-
-  // Hành trình: mới nhất ở trên cùng. Các mốc lấy theo lịch sử repo trên GitHub và quá trình học.
-  timeline: [
-    {
-      period: { en: "Nov 2026 – now", vi: "11/2026 – nay" },
-      title: { en: "Building EduForge AI", vi: "Xây dựng EduForge AI" },
-      description: {
-        en: "A course and online exam platform in a NestJS + Next.js monorepo, with auto-graded timed exams and AI question generation from PDFs.",
-        vi: "Nền tảng khóa học và thi trực tuyến trong monorepo NestJS + Next.js, chấm bài tự động và dùng AI tạo câu hỏi từ PDF.",
-      },
-      tags: ["NestJS", "Next.js", "PostgreSQL", "Claude API"],
-      icon: "graduation",
-      current: true,
-    },
-    {
-      period: { en: "Oct 2026", vi: "10/2026" },
-      title: { en: "AI-powered learning platforms", vi: "Nền tảng học tập có AI" },
-      description: {
-        en: "Shipped StudyMind AI with semantic search and Q&A over PDFs and 55 API tests in CI, an E-Learning platform in Laravel and a Dijkstra vs A* pathfinding map.",
-        vi: "Hoàn thành StudyMind AI với tìm kiếm ngữ nghĩa, hỏi đáp trên PDF và 55 test API chạy trên CI, nền tảng E-Learning bằng Laravel và bản đồ so sánh Dijkstra với A*.",
-      },
-      tags: ["FastAPI", "Qdrant", "Laravel", "Python"],
-      icon: "brain",
-    },
-    {
-      period: { en: "Jul – Aug 2026", vi: "7 – 8/2026" },
-      title: { en: "DevOps and monitoring", vi: "DevOps và giám sát" },
-      description: {
-        en: "Dockerized a shop web app and SpendWise, set up GitHub Actions pipelines, added Prometheus metrics with alert rules and deployed to Vercel.",
-        vi: "Đóng gói Docker cho web bán hàng và SpendWise, dựng pipeline GitHub Actions, thêm đo lường Prometheus kèm cảnh báo và deploy lên Vercel.",
-      },
-      tags: ["Docker", "GitHub Actions", "Prometheus", "Vercel"],
-      icon: "rocket",
-    },
-    {
-      period: { en: "Apr – Jun 2026", vi: "4 – 6/2026" },
-      title: { en: "Mobile and frontend", vi: "Mobile và frontend" },
-      description: {
-        en: "Built a music player web app, a book manager app with Expo, a Flutter mini shop and reusable UI components for a tourism site.",
-        vi: "Làm web nghe nhạc, ứng dụng quản lý sách bằng Expo, cửa hàng mini bằng Flutter và bộ component giao diện cho trang du lịch.",
-      },
-      tags: ["React", "Expo", "Flutter"],
-      icon: "smartphone",
-    },
-    {
-      period: { en: "Feb – Apr 2026", vi: "2 – 4/2026" },
-      title: { en: "Node.js and microservices", vi: "Node.js và microservice" },
-      description: {
-        en: "Learned Express and WebSocket modules, then split apps into NestJS microservices for CRUD and JWT authentication, plus a monorepo template.",
-        vi: "Học Express và WebSocket, rồi tách ứng dụng thành các microservice NestJS cho CRUD và xác thực JWT, kèm một template monorepo.",
-      },
-      tags: ["Express", "NestJS", "MongoDB", "JWT"],
-      icon: "server",
-    },
-    {
-      period: { en: "Sep – Nov 2025", vi: "9 – 11/2025" },
-      title: { en: "First full-stack apps", vi: "Những ứng dụng full-stack đầu tiên" },
-      description: {
-        en: "Moved to TypeScript with a URL shortener, a chat app and a reservation system, and built library management systems in Python, Laravel and C++.",
-        vi: "Chuyển sang TypeScript với app rút gọn link, app chat và hệ thống đặt chỗ, cùng các hệ thống quản lý thư viện bằng Python, Laravel và C++.",
-      },
-      tags: ["TypeScript", "Laravel", "Python", "C++"],
-      icon: "code",
-    },
-    {
-      period: { en: "Mar – Aug 2025", vi: "3 – 8/2025" },
-      title: { en: "Getting started", vi: "Những bước đầu tiên" },
-      description: {
-        en: "Pushed my first repositories to GitHub: HTML and CSS pages, C++ exercises and a first Laravel app.",
-        vi: "Đẩy những repo đầu tiên lên GitHub: trang HTML, CSS, bài tập C++ và ứng dụng Laravel đầu tay.",
-      },
-      tags: ["HTML", "CSS", "C++", "PHP"],
-      icon: "book",
-    },
-    {
-      period: { en: "2024", vi: "2024" },
-      title: { en: "Started IT at UTH", vi: "Bắt đầu học IT tại UTH" },
-      description: {
-        en: "Began my Information Technology degree at Ho Chi Minh City University of Transport, now in my third year. I'm also studying IT at VTC Academy.",
-        vi: "Bắt đầu học ngành Công nghệ thông tin tại Trường Đại học Giao thông vận tải TP.HCM, hiện là sinh viên năm 3. Song song đó mình học IT tại VTC Academy.",
-      },
-      tags: ["UTH", "VTC Academy"],
-      icon: "graduation",
-    },
-  ] satisfies TimelineItem[],
 };

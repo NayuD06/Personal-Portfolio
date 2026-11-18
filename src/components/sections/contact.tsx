@@ -2,8 +2,17 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState, type FormEvent } from "react";
-import { LuCircleAlert, LuCircleCheck, LuLoaderCircle, LuMail, LuMapPin, LuPhone, LuSend } from "react-icons/lu";
+import {
+  LuCircleAlert,
+  LuCircleCheck,
+  LuLoaderCircle,
+  LuMail,
+  LuMapPin,
+  LuPhone,
+  LuSend,
+} from "react-icons/lu";
 import { profile } from "@/data/profile";
+import { linkProps } from "@/lib/site";
 import { ui } from "@/data/ui";
 import { pick, T, type Text } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
@@ -28,7 +37,10 @@ export function Contact() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
-    const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    const data = Object.fromEntries(new FormData(form)) as Record<
+      string,
+      string
+    >;
 
     if (!formspreeId) {
       const subject = `${pick(ui.contact.mailSubject, lang)} ${data.name}`;
@@ -50,7 +62,10 @@ export function Contact() {
     try {
       const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify(data),
       });
       if (!response.ok) throw new Error(String(response.status));
@@ -62,22 +77,40 @@ export function Contact() {
   }
 
   const details = [
-    { icon: LuMail, label: ui.contact.emailLabel, value: profile.email, href: `mailto:${profile.email}` },
+    {
+      icon: LuMail,
+      label: ui.contact.emailLabel,
+      value: profile.email,
+      href: `mailto:${profile.email}`,
+    },
     profile.phone && {
       icon: LuPhone,
       label: ui.contact.phoneLabel,
       value: profile.phone,
       href: `tel:${profile.phone.replace(/\s/g, "")}`,
     },
-    { icon: LuMapPin, label: ui.contact.locationLabel, value: profile.location },
-  ].filter(Boolean) as { icon: typeof LuMail; label: Text; value: Text; href?: string }[];
+    {
+      icon: LuMapPin,
+      label: ui.contact.locationLabel,
+      value: profile.location,
+    },
+  ].filter(Boolean) as {
+    icon: typeof LuMail;
+    label: Text;
+    value: Text;
+    href?: string;
+  }[];
 
   const optional = pick(ui.contact.optional, lang);
 
   return (
     <section id="contact" className="section-wash relative py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <SectionHeading tag="contact" title={ui.contact.title} subtitle={ui.contact.subtitle} />
+        <SectionHeading
+          tag="contact"
+          title={ui.contact.title}
+          subtitle={ui.contact.subtitle}
+        />
 
         <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-14">
           <Reveal from="left" className="space-y-3">
@@ -115,25 +148,29 @@ export function Contact() {
                 <T v={ui.contact.findMe} />
               </p>
               <ul className="flex flex-wrap gap-2">
-                {profile.socials.map((social) => (
-                  <li key={social.href}>
-                    <a
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-4 py-2.5 text-sm font-semibold transition-all hover:-translate-y-1 hover:border-brand-blue hover:text-brand-blue"
-                    >
-                      <TechIcon name={social.icon} className="size-4" />
-                      {social.label}
-                    </a>
-                  </li>
-                ))}
+                {profile.socials
+                  .filter((social) => social.icon !== "email")
+                  .map((social) => (
+                    <li key={social.href}>
+                      <a
+                        href={social.href}
+                        {...linkProps(social.href)}
+                        className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-4 py-2.5 text-sm font-semibold transition-all hover:-translate-y-1 hover:border-brand-blue hover:text-brand-blue"
+                      >
+                        <TechIcon name={social.icon} className="size-4" />
+                        {social.label}
+                      </a>
+                    </li>
+                  ))}
               </ul>
             </div>
           </Reveal>
 
           <Reveal from="right">
-            <form onSubmit={handleSubmit} className="card rounded-3xl p-6 shadow-[0_30px_80px_-40px_var(--glow-blue)] sm:p-8">
+            <form
+              onSubmit={handleSubmit}
+              className="card rounded-3xl p-6 shadow-[0_30px_80px_-40px_var(--glow-blue)] sm:p-8"
+            >
               <h3 className="mb-6 text-xl font-bold">
                 <T v={ui.contact.formTitle} />
               </h3>
@@ -160,7 +197,14 @@ export function Contact() {
                   />
                 </Field>
                 <Field label={ui.contact.phone} htmlFor="phone">
-                  <input id="phone" name="phone" type="tel" autoComplete="tel" placeholder={optional} className={fieldClass} />
+                  <input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    placeholder={optional}
+                    className={fieldClass}
+                  />
                 </Field>
                 <Field label={ui.contact.company} htmlFor="company">
                   <input
@@ -194,11 +238,16 @@ export function Contact() {
               >
                 {status === "sending" ? (
                   <>
-                    <LuLoaderCircle className="size-5 animate-spin" aria-hidden="true" /> <T v={ui.contact.sending} />
+                    <LuLoaderCircle
+                      className="size-5 animate-spin"
+                      aria-hidden="true"
+                    />{" "}
+                    <T v={ui.contact.sending} />
                   </>
                 ) : (
                   <>
-                    <T v={ui.contact.send} /> <LuSend className="size-4" aria-hidden="true" />
+                    <T v={ui.contact.send} />{" "}
+                    <LuSend className="size-4" aria-hidden="true" />
                   </>
                 )}
               </motion.button>
@@ -216,11 +265,13 @@ export function Contact() {
                   >
                     {status === "sent" ? (
                       <>
-                        <LuCircleCheck className="size-5" aria-hidden="true" /> <T v={ui.contact.sent} />
+                        <LuCircleCheck className="size-5" aria-hidden="true" />{" "}
+                        <T v={ui.contact.sent} />
                       </>
                     ) : (
                       <>
-                        <LuCircleAlert className="size-5" aria-hidden="true" /> <T v={ui.contact.error} />
+                        <LuCircleAlert className="size-5" aria-hidden="true" />{" "}
+                        <T v={ui.contact.error} />
                       </>
                     )}
                   </motion.p>
@@ -234,7 +285,15 @@ export function Contact() {
   );
 }
 
-function Field({ label, htmlFor, children }: { label: Text; htmlFor: string; children: React.ReactNode }) {
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: Text;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <label htmlFor={htmlFor} className="mb-2 block text-sm font-semibold">

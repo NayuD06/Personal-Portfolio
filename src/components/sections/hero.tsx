@@ -4,6 +4,7 @@ import { motion, type Variants } from "motion/react";
 import { useMemo, type CSSProperties } from "react";
 import { LuArrowDownRight, LuHammer, LuMail, LuMapPin, LuMouse } from "react-icons/lu";
 import { profile } from "@/data/profile";
+import { linkProps } from "@/lib/site";
 import { ui } from "@/data/ui";
 import { pick, T } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons";
@@ -113,8 +114,7 @@ export function Hero() {
               <li key={social.href}>
                 <a
                   href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  {...linkProps(social.href)}
                   aria-label={social.label}
                   className="grid size-10 place-items-center rounded-lg text-muted transition-all hover:-translate-y-1 hover:bg-chip hover:text-brand-blue"
                 >

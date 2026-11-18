@@ -2,7 +2,7 @@
 
 Trang portfolio cá nhân làm bằng **Next.js 16 (App Router) + TypeScript + Tailwind CSS 4**, animation bằng **Motion**, có nút chuyển **sáng / tối** và **tiếng Anh / tiếng Việt (EN / VI)**. Sẵn sàng deploy lên **Vercel**.
 
-Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Journey (hành trình, đường kẻ tự vẽ khi cuộn), GitHub Activity (số liệu GitHub tự cập nhật), Contact (form) và Footer. Trên điện thoại có thanh menu dưới đáy màn hình kiểu app.
+Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Education (học vấn: mỗi trường một hàng, hình minh họa tự vẽ khi cuộn, thanh tiến độ năm học), GitHub Activity (số liệu GitHub tự cập nhật), Contact (form) và Footer. Trên điện thoại có thanh menu dưới đáy màn hình kiểu app.
 
 ## Chạy trên máy
 
@@ -35,11 +35,10 @@ Ngôn ngữ mặc định lấy theo trình duyệt của người xem (trình d
 
 Những chỗ nên thay ngay:
 
-- **`email`**: đang là `hello@example.com`.
 - **`avatar`**: đặt ảnh vào `public/avatar.jpg` rồi ghi `avatar: "/avatar.jpg"`. Để trống thì hiện chữ viết tắt.
 - **`resumeUrl`**: đặt CV vào `public/cv.pdf` rồi ghi `resumeUrl: "/cv.pdf"` để hiện nút "Download CV" thay cho nút GitHub.
-- **`socials`**: link Discord, Facebook đang là link mẫu (cách lấy link ghi ngay trên mục `socials`).
-- **`timeline`**: các mốc trong mục Hành trình (mới nhất ở trên). Đang lấy theo lịch sử repo GitHub, có sẵn ví dụ để thêm mốc học tập (tên trường).
+- **`socials`**: GitHub, Facebook và Email đã có link thật. Link Discord đang là link mẫu nên nút Discord đang ẩn; thay link thật vào là nút tự hiện (cách lấy link ghi ngay trên mục `socials`). Link `mailto:` mở ứng dụng email, các link khác mở tab mới.
+- **`education`**: các trường trong mục Học vấn (UTH, VTC Academy). Sửa mô tả và danh sách môn học (`subjects`) cho đúng với chương trình bạn học. Muốn thay hình minh họa bằng ảnh thật: tạo thư mục `public/education/`, bỏ ảnh trường vào (vd. `uth.jpg`, nên là ảnh ngang tỉ lệ 4:3) và logo (vd. `uth-logo.png`), rồi ghi `image: "/education/uth.jpg"` và `logo: "/education/uth-logo.png"`. Để trống thì dùng hình minh họa và chữ viết tắt. `progress` là năm đang học trên tổng số năm, bỏ đi nếu không muốn hiện thanh tiến độ.
 - **`projects`**: mỗi dự án có thể thêm `image: "/projects/ten-anh.png"` (ảnh chụp màn hình đặt trong `public/projects/`) để thay cho ảnh bìa tự vẽ, và `liveUrl` nếu có bản chạy thật. Dự án có `featured: true` hiện to ở đầu mục Projects, các dự án còn lại nằm trong lưới "More projects".
 
 Tên icon dùng trong file dữ liệu lấy từ `src/lib/icons.tsx` (thêm icon mới ở đó nếu cần).
@@ -84,7 +83,7 @@ src/
 │  ├─ sitemap.ts, robots.ts
 ├─ components/
 │  ├─ navbar.tsx            menu, đánh dấu mục đang xem, menu mobile
-│  ├─ sections/             hero, about, skills, services, projects, journey, github-activity, contact, footer
+│  ├─ sections/             hero, about, skills, services, projects, education, github-activity, contact, footer
 │  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI...)
 ├─ data/
 │  ├─ profile.ts            ★ nội dung về bạn
