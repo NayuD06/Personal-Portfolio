@@ -61,8 +61,10 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           />
           <div aria-hidden="true" className="blob absolute -top-32 right-0 -z-10 size-[26rem] rounded-full bg-brand-blue/20 blur-[120px]" />
 
-          <div className="mx-auto max-w-6xl px-5 sm:px-8">
-            <div className="enter">
+          {/* Chiều cao phần chữ cố định trên máy tính (tên một dòng, chỗ cho mô tả 4 dòng) để khung ảnh
+              luôn nằm cùng một chỗ khi chuyển giữa các dự án. Trên điện thoại ảnh lên trước chữ vì cùng lý do. */}
+          <div className="mx-auto flex max-w-6xl flex-col px-5 sm:px-8">
+            <div className="enter -order-2 lg:order-none">
               <Link
                 href="/#projects"
                 className="group inline-flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-brand-blue"
@@ -72,21 +74,25 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               </Link>
             </div>
 
-            <div className="mt-8 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-14">
-              <div style={{ "--i": 1 } as CSSProperties} className="enter">
-                <p className="font-mono text-sm text-brand-blue">
-                  projects<span className="text-muted">/</span>
-                  {project.slug}
-                </p>
-                <h1 className="mt-3 text-4xl leading-[1.05] font-black tracking-tight text-balance sm:text-6xl">
-                  {project.title}
-                </h1>
-                <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-muted sm:text-lg">
-                  <T v={project.description} />
-                </p>
-              </div>
+            <div style={{ "--i": 1 } as CSSProperties} className="enter mt-8">
+              <p className="font-mono text-sm text-brand-blue">
+                projects<span className="text-muted">/</span>
+                {project.slug}
+              </p>
+              <h1 className="mt-3 text-4xl leading-[1.05] font-black tracking-tight text-balance sm:text-5xl lg:text-6xl lg:whitespace-nowrap">
+                {project.title}
+              </h1>
+            </div>
 
-              <div style={{ "--i": 2 } as CSSProperties} className="enter flex flex-col gap-6 lg:items-end">
+            <div className="mt-5 grid gap-6 lg:min-h-[7.5rem] lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-14">
+              <p
+                style={{ "--i": 2 } as CSSProperties}
+                className="enter max-w-[60ch] text-base leading-relaxed text-muted sm:text-lg"
+              >
+                <T v={project.description} />
+              </p>
+
+              <div style={{ "--i": 3 } as CSSProperties} className="enter flex flex-col gap-5 lg:items-end lg:self-end">
                 <ul className="flex flex-wrap gap-2 text-xs font-semibold lg:justify-end">
                   <li className="rounded-md border border-border px-2.5 py-1 text-muted">{project.year}</li>
                   {project.categories.map((category) => (
@@ -104,7 +110,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
               </div>
             </div>
 
-            <div style={{ "--i": 3 } as CSSProperties} className="enter enter-scale mt-12 sm:mt-16">
+            <div style={{ "--i": 1 } as CSSProperties} className="enter enter-scale -order-1 mt-8 lg:order-none lg:mt-12">
               <div className="card relative overflow-hidden rounded-2xl shadow-[0_40px_100px_-40px_var(--glow-blue)]">
                 <div className="flex items-center gap-2 border-b border-border px-4 py-3">
                   <span className="size-2.5 rounded-full bg-[#ff5f57]" />

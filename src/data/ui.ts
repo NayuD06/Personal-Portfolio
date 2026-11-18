@@ -158,7 +158,16 @@ export const ui = {
     messagePlaceholder: { en: "Tell me a little about your project...", vi: "Kể mình nghe một chút về dự án của bạn..." },
     send: { en: "Send message", vi: "Gửi tin nhắn" },
     sending: { en: "Sending...", vi: "Đang gửi..." },
-    sent: { en: "Message sent. I'll reply soon.", vi: "Đã gửi. Mình sẽ trả lời sớm." },
+    // Thẻ cảm ơn sau khi gửi thành công. {name}, {time} được thay bằng tên người gửi và giờ gửi.
+    sentTitle: { en: "Thanks, {name}!", vi: "Cảm ơn {name} nha!" },
+    sentBody: {
+      en: "Your message just landed in my inbox. I read every message myself and usually reply within 24 hours.",
+      vi: "Tin nhắn của bạn đã bay tới hộp thư của mình. Mình tự đọc từng tin và thường trả lời trong vòng 24 giờ.",
+    },
+    sentDelivered: { en: "Delivered at {time}", vi: "Đã gửi lúc {time}" },
+    sentReplyTo: { en: "I'll reply to", vi: "Mình sẽ trả lời qua" },
+    sentAgain: { en: "Send another message", vi: "Gửi tin khác" },
+    sentProjects: { en: "Browse my projects", vi: "Xem các dự án" },
     error: { en: "Couldn't send the message. Please email me directly.", vi: "Chưa gửi được. Bạn gửi email trực tiếp cho mình nhé." },
     mailSubject: { en: "Portfolio contact from", vi: "Liên hệ từ portfolio:" },
   },

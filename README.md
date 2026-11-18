@@ -63,7 +63,33 @@ Cách bật (làm một lần):
 
 Chưa đặt `RESEND_API_KEY` thì form vẫn dùng được: nút **Send message** mở ứng dụng email của người xem với nội dung đã điền sẵn.
 
-Khi chưa xác minh tên miền, Resend chỉ cho gửi từ `onboarding@resend.dev` tới email bạn dùng để đăng ký, như vậy là đủ cho portfolio. Muốn email gửi từ địa chỉ của tên miền riêng (vd. `contact@feb20th.click`) thì vào **Domains** trên Resend, thêm `feb20th.click`, khai báo các bản ghi DNS họ đưa ở iNET, rồi đặt `CONTACT_FROM_EMAIL=Portfolio <contact@feb20th.click>` trên Vercel.
+Giao diện email nhận được nằm ở `src/lib/contact-email.ts` (đầu thư, thẻ người gửi, lời nhắn, nút Trả lời / Gọi, bảng thông tin). Thẻ cảm ơn người gửi thấy trên trang sau khi gửi nằm ở `src/components/contact/sent-card.tsx`, chữ trong thẻ sửa ở `ui.ts` (các mục `sent...`, vd. thời gian trả lời "24 giờ").
+
+### Để email không vào Spam
+
+Khi chưa xác minh tên miền, thư được gửi từ `onboarding@resend.dev`, địa chỉ dùng chung cho mọi người dùng Resend nên Gmail hay cho vào Spam. Cách sửa tạm: mở thư trong Spam, bấm **Báo cáo không phải spam**, rồi tạo bộ lọc (ô tìm kiếm Gmail > Hiện tùy chọn tìm kiếm > Từ: `onboarding@resend.dev` > Tạo bộ lọc > tick **Không bao giờ gửi đến Spam**).
+
+Cách sửa lâu dài: gửi từ chính tên miền `feb20th.click`, có chữ ký DKIM/SPF để Gmail tin thư là thật.
+
+1. Trên Resend: **Domains > Add Domain**, nhập `feb20th.click`, chọn Region (để mặc định cũng được). Resend hiện ra danh sách bản ghi DNS, thường gồm:
+
+   | Loại | Tên (Host) | Giá trị | Ưu tiên |
+   | --- | --- | --- | --- |
+   | MX | `send` | `feedback-smtp.<region>.amazonses.com` | 10 |
+   | TXT | `send` | `v=spf1 include:amazonses.com ~all` | |
+   | TXT | `resend._domainkey` | chuỗi dài bắt đầu bằng `p=MIGf...` (khóa riêng của bạn) | |
+
+   Giá trị thật lấy đúng từ trang Resend, bấm nút copy cạnh từng dòng, đừng gõ tay.
+2. Thêm bản ghi DMARC (khuyên dùng, giúp Gmail tin hơn):
+
+   | Loại | Tên (Host) | Giá trị |
+   | --- | --- | --- |
+   | TXT | `_dmarc` | `v=DMARC1; p=none;` |
+
+3. Vào trang quản lý tên miền ở **iNET** > chọn `feb20th.click` > **Quản lý DNS** (Cấu hình DNS) > **Thêm bản ghi**, thêm từng dòng ở trên. Ô "Tên/Host" chỉ nhập phần đứng trước tên miền (`send`, `resend._domainkey`, `_dmarc`), không nhập cả `.feb20th.click`. TTL để mặc định. Hai bản ghi đang dùng cho Vercel (`@` loại A và `www` loại CNAME) giữ nguyên, các bản ghi mới không ảnh hưởng tới trang web.
+4. Quay lại Resend bấm **Verify DNS Records**. Thường vài phút là xong, chậm nhất khoảng vài giờ, đến khi trạng thái là **Verified**.
+5. Trên Vercel thêm biến `CONTACT_FROM_EMAIL` = `Duy An Portfolio <contact@feb20th.click>` rồi **Redeploy**. Địa chỉ `contact@` không cần có hộp thư thật, vì khi bạn bấm Trả lời thư sẽ gửi tới email của người gửi.
+6. Gửi thử từ form. Một hai thư đầu nếu vẫn vào Spam thì bấm **Báo cáo không phải spam**, Gmail sẽ học dần. Muốn chắc chắn luôn vào Hộp thư đến thì tạo bộ lọc như cách tạm ở trên nhưng với Từ: `contact@feb20th.click`.
 
 ## Thống kê người xem (Vercel Analytics)
 
@@ -115,12 +141,14 @@ src/
 │  ├─ navbar.tsx            menu, đánh dấu mục đang xem, menu mobile
 │  ├─ subpage-header.tsx    thanh trên cùng của trang chi tiết dự án và trang CV
 │  ├─ project/gallery.tsx   lưới ảnh chụp + xem ảnh lớn
+│  ├─ contact/sent-card.tsx thẻ cảm ơn hiện ra sau khi gửi form liên hệ
 │  ├─ cv/print-button.tsx   nút In trên trang CV
 │  ├─ sections/             hero, about, skills, services, projects, education, github-activity, contact, footer
 │  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI...)
 ├─ data/
 │  ├─ profile.ts            ★ nội dung về bạn
 │  └─ ui.ts                 ★ chữ trên giao diện
-└─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang, font cho ảnh chia sẻ (og.ts)
+└─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang, font cho ảnh chia sẻ (og.ts),
+                            giao diện email nhận tin nhắn (contact-email.ts)
 assets/fonts/               font Montserrat dùng để vẽ ảnh xem trước khi chia sẻ link
 ```

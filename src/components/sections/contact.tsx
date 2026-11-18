@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState, type FormEvent } from "react";
 import {
   LuCircleAlert,
-  LuCircleCheck,
   LuLoaderCircle,
   LuMail,
   LuMapPin,
@@ -16,6 +15,7 @@ import { linkProps } from "@/lib/site";
 import { ui } from "@/data/ui";
 import { pick, T, type Text } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
+import { SentCard, type SentInfo } from "../contact/sent-card";
 import { Reveal } from "../ui/reveal";
 import { SectionHeading } from "../ui/section-heading";
 import { TechIcon } from "../ui/tech-icon";
@@ -30,7 +30,15 @@ const fieldClass =
 
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
+  const [sentInfo, setSentInfo] = useState<SentInfo | null>(null);
   const lang = useLang();
+  const isSent = status === "sent" && sentInfo !== null;
+
+  function sendAnother() {
+    setStatus("idle");
+    setSentInfo(null);
+    requestAnimationFrame(() => document.getElementById("name")?.focus());
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,7 +53,8 @@ export function Contact() {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        // gửi kèm ngôn ngữ đang xem để email báo cho bạn biết nên trả lời bằng tiếng gì
+        body: JSON.stringify({ ...data, lang }),
       });
       if (response.status === 503) {
         // server chưa cấu hình gửi email: mở ứng dụng email thay thế
@@ -54,6 +63,11 @@ export function Contact() {
         return;
       }
       if (!response.ok) throw new Error(String(response.status));
+      setSentInfo({
+        name: data.name.trim().replace(/\s+/g, " "),
+        email: data.email.trim(),
+        time: new Date().toLocaleTimeString(lang === "vi" ? "vi-VN" : "en-US", { hour: "2-digit", minute: "2-digit" }),
+      });
       setStatus("sent");
       form.reset();
     } catch {
@@ -171,6 +185,12 @@ export function Contact() {
               onSubmit={handleSubmit}
               className="card relative rounded-3xl p-6 shadow-[0_30px_80px_-40px_var(--glow-blue)] sm:p-8"
             >
+              {/* Khi đã gửi: form mờ đi nhưng vẫn giữ chỗ (thẻ không đổi chiều cao), thẻ cảm ơn hiện đè lên.
+                  inert để không bấm hay tab vào được phần form đang ẩn. */}
+              <div
+                inert={isSent}
+                className={isSent ? "opacity-0 transition-opacity duration-300" : undefined}
+              >
               <h3 className="mb-6 text-xl font-bold">
                 <T v={ui.contact.formTitle} />
               </h3>
@@ -264,30 +284,21 @@ export function Contact() {
               </motion.button>
 
               <AnimatePresence>
-                {(status === "sent" || status === "error") && (
+                {status === "error" && (
                   <motion.p
                     role="status"
                     initial={{ opacity: 0, y: -8, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className={`mt-4 flex items-center justify-center gap-2 text-sm font-medium ${
-                      status === "sent" ? "text-emerald-500" : "text-amber-500"
-                    }`}
+                    className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-amber-500"
                   >
-                    {status === "sent" ? (
-                      <>
-                        <LuCircleCheck className="size-5" aria-hidden="true" />{" "}
-                        <T v={ui.contact.sent} />
-                      </>
-                    ) : (
-                      <>
-                        <LuCircleAlert className="size-5" aria-hidden="true" />{" "}
-                        <T v={ui.contact.error} />
-                      </>
-                    )}
+                    <LuCircleAlert className="size-5" aria-hidden="true" /> <T v={ui.contact.error} />
                   </motion.p>
                 )}
               </AnimatePresence>
+              </div>
+
+              {isSent && <SentCard info={sentInfo} onReset={sendAnother} />}
             </form>
           </Reveal>
         </div>

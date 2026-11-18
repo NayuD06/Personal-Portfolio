@@ -1,10 +1,11 @@
 import { profile } from "@/data/profile";
+import { renderContactEmail, type ContactFields } from "@/lib/contact-email";
 
 // Nhận tin nhắn từ form liên hệ và gửi về email của bạn qua Resend (https://resend.com).
 // Cần biến môi trường RESEND_API_KEY (xem .env.example). Chưa có thì trả 503,
 // form sẽ tự chuyển sang mở ứng dụng email của người xem như trước.
 
-type Fields = { name: string; email: string; phone: string; company: string; message: string };
+type Fields = ContactFields;
 
 const maxLength: Record<keyof Fields, number> = {
   name: 100,
@@ -28,15 +29,6 @@ function tooMany(ip: string) {
   recent.set(ip, hits);
   if (recent.size > 1000) recent.clear();
   return hits.length > MAX_PER_WINDOW;
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 export async function POST(request: Request) {
@@ -69,20 +61,8 @@ export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (tooMany(ip)) return Response.json({ error: "rate_limited" }, { status: 429 });
 
-  const rows: [string, string][] = [
-    ["Họ tên", fields.name],
-    ["Email", fields.email],
-    ...(fields.phone ? ([["Điện thoại", fields.phone]] as [string, string][]) : []),
-    ...(fields.company ? ([["Công ty", fields.company]] as [string, string][]) : []),
-  ];
-  const text = `${fields.message}\n\n---\n${rows.map(([label, value]) => `${label}: ${value}`).join("\n")}`;
-  const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#0b1730">
-<p style="white-space:pre-wrap;margin:0 0 20px">${escapeHtml(fields.message)}</p>
-<table style="border-top:1px solid #d6e0f5;padding-top:12px;font-size:14px">
-${rows.map(([label, value]) => `<tr><td style="color:#4a5873;padding:2px 16px 2px 0">${label}</td><td>${escapeHtml(value)}</td></tr>`).join("\n")}
-</table>
-<p style="color:#4a5873;font-size:13px;margin-top:20px">Bấm Trả lời để trả lời thẳng cho người gửi.</p>
-</div>`;
+  const lang = read("lang");
+  const { subject, html, text } = renderContactEmail(fields, { lang });
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -90,10 +70,10 @@ ${rows.map(([label, value]) => `<tr><td style="color:#4a5873;padding:2px 16px 2p
     body: JSON.stringify({
       // Chưa xác minh tên miền trên Resend thì chỉ gửi được bằng địa chỉ onboarding@resend.dev
       // và chỉ tới email của tài khoản Resend, nên đăng ký Resend bằng chính email nhận tin.
-      from: process.env.CONTACT_FROM_EMAIL || "Portfolio <onboarding@resend.dev>",
+      from: process.env.CONTACT_FROM_EMAIL || `${profile.name} Portfolio <onboarding@resend.dev>`,
       to: [process.env.CONTACT_TO_EMAIL || profile.email],
       reply_to: fields.email,
-      subject: `Portfolio: tin nhắn mới từ ${fields.name.replace(/\s+/g, " ")}`,
+      subject,
       text,
       html,
     }),
