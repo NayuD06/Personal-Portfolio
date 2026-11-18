@@ -62,7 +62,10 @@ export type Education = {
   progress?: { current: number; total: number };
   /** Ảnh trường, đặt trong public/education/ rồi ghi vd. "/education/uth.jpg". Để trống thì dùng hình minh họa. */
   image?: string;
-  /** Logo trường, vd. "/education/uth-logo.png". Để trống thì hiện chữ viết tắt. */
+  /** Nguồn ảnh, hiện nhỏ ở góc ảnh (ảnh CC BY-SA bắt buộc ghi nguồn) */
+  imageCredit?: Text;
+  imageCreditUrl?: string;
+  /** Logo trường (nên là logo ngang, nền trong suốt), vd. "/education/uth-logo.png". Để trống thì hiện chữ viết tắt. */
   logo?: string;
   /** Kiểu hình minh họa khi chưa có ảnh: "campus" (tòa nhà và đường phố) hoặc "code" (màn hình code) */
   art: "campus" | "code";
@@ -145,8 +148,11 @@ export const profile = {
         { en: "Software engineering", vi: "Công nghệ phần mềm" },
       ],
       progress: { current: 3, total: 4 },
-      image: "",
-      logo: "",
+      // Ảnh: Wikimedia Commons, giấy phép CC BY-SA 4.0 (phải giữ dòng ghi nguồn)
+      image: "/education/uth.jpg",
+      imageCredit: { en: "Photo: UTH, CC BY-SA 4.0", vi: "Ảnh: UTH, CC BY-SA 4.0" },
+      imageCreditUrl: "https://commons.wikimedia.org/wiki/File:Hinh_UTH.jpg",
+      logo: "/education/uth-logo.png",
       art: "campus",
       website: "https://ut.edu.vn",
     },
@@ -168,8 +174,11 @@ export const profile = {
         { en: "REST APIs & databases", vi: "REST API & cơ sở dữ liệu" },
         { en: "Git & teamwork", vi: "Git & làm việc nhóm" },
       ],
-      image: "",
-      logo: "",
+      // Ảnh và logo lấy từ trang chính thức vtc.edu.vn
+      image: "/education/vtc.jpg",
+      imageCredit: { en: "Photo: VTC Academy", vi: "Ảnh: VTC Academy" },
+      imageCreditUrl: "https://vtc.edu.vn/ve-vtc-academy/",
+      logo: "/education/vtc-logo.png",
       art: "code",
       website: "https://vtc.edu.vn",
     },

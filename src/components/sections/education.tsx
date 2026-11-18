@@ -92,15 +92,18 @@ function SchoolVisual({
         <div className="relative size-full overflow-hidden rounded-[1.4rem] bg-bg">
           <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.04]">
             {school.image ? (
-              <motion.div style={{ y: photoY }} className="absolute inset-x-0 -inset-y-[7%]">
-                <Image
-                  src={school.image}
-                  alt={pick(school.school, "en")}
-                  fill
-                  sizes="(min-width: 1024px) 34rem, 92vw"
-                  className="object-cover"
-                />
-              </motion.div>
+              <>
+                <motion.div style={{ y: photoY }} className="absolute inset-x-0 -inset-y-[7%]">
+                  <Image
+                    src={school.image}
+                    alt={pick(school.school, "en")}
+                    fill
+                    sizes="(min-width: 1024px) 34rem, 92vw"
+                    className="object-cover"
+                  />
+                </motion.div>
+                <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#04070d]/55 to-transparent" />
+              </>
             ) : school.art === "campus" ? (
               <CampusArt y={artY} />
             ) : (
@@ -108,6 +111,19 @@ function SchoolVisual({
             )}
           </div>
           <div aria-hidden="true" className="absolute inset-0 rounded-[1.4rem] ring-1 ring-white/10 ring-inset" />
+
+          {/* nguồn ảnh (bắt buộc với ảnh có giấy phép CC BY-SA), ở góc trên đối diện nhãn trạng thái */}
+          {school.image && school.imageCredit && (
+            <a
+              href={school.imageCreditUrl}
+              {...(school.imageCreditUrl ? linkProps(school.imageCreditUrl) : {})}
+              className={`absolute top-3 max-w-[70%] truncate rounded-md bg-black/45 px-2 py-0.5 text-[10px] leading-4 text-white/85 backdrop-blur-sm transition-colors hover:text-white ${
+                flip ? "right-3" : "left-3"
+              }`}
+            >
+              <T v={school.imageCredit} />
+            </a>
+          )}
         </div>
       </motion.div>
 
@@ -133,8 +149,16 @@ function SchoolVisual({
         }`}
       >
         {school.logo ? (
-          <span className="relative block size-16 overflow-hidden rounded-xl bg-white sm:size-20">
-            <Image src={school.logo} alt={`${school.short} logo`} fill sizes="80px" className="object-contain p-1.5" />
+          // logo ngang: khung trắng, chiều cao cố định, chiều rộng theo tỉ lệ logo
+          <span className="flex h-11 items-center rounded-xl bg-white px-3 sm:h-14 sm:px-4">
+            <Image
+              src={school.logo}
+              alt={`${school.short} logo`}
+              width={0}
+              height={0}
+              sizes="300px"
+              className="h-6 w-auto sm:h-8"
+            />
           </span>
         ) : (
           <span className="bg-brand grid size-16 place-items-center rounded-xl font-heading text-lg font-black tracking-tight text-white sm:size-20 sm:text-xl">
