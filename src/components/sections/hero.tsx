@@ -26,7 +26,7 @@ const item: Variants = {
 };
 
 /** Các icon xoay quanh ảnh đại diện */
-const orbitIcons: IconName[] = ["react", "nextjs", "nestjs", "typescript", "python", "docker", "postgresql", "nodejs"];
+const orbitIcons: IconName[] = ["react", "nextjs", "nestjs", "typescript", "claude", "docker", "postgresql", "nodejs"];
 
 export function Hero() {
   const lang = useLang();

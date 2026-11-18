@@ -81,7 +81,6 @@ export const profile = {
   roles: [
     { en: "Full-stack Developer", vi: "Lập trình viên Full-stack" },
     { en: "Backend Engineer", vi: "Kỹ sư Backend" },
-    { en: "AI App Builder", vi: "Người làm ứng dụng AI" },
     { en: "Mobile Developer", vi: "Lập trình viên Mobile" },
   ] satisfies Text[],
 
@@ -92,8 +91,8 @@ export const profile = {
   } as Text,
 
   intro: {
-    en: "I build full-stack web apps with React, Next.js, NestJS and Python, and I love vibe coding with AI tools to go from an idea to a working product fast.",
-    vi: "Mình làm ứng dụng web full-stack với React, Next.js, NestJS và Python, và rất thích vibe coding cùng các công cụ AI để đi nhanh từ ý tưởng tới sản phẩm chạy được.",
+    en: "I build full-stack web apps with React, Next.js, NestJS and Laravel, and I love vibe coding with Claude to go from an idea to a working product fast.",
+    vi: "Mình làm ứng dụng web full-stack với React, Next.js, NestJS và Laravel, và rất thích vibe coding cùng Claude để đi nhanh từ ý tưởng tới sản phẩm chạy được.",
   } as Text,
 
   /** Đang làm gì: hiện trên thẻ nhỏ cạnh ảnh đại diện */
@@ -118,8 +117,8 @@ export const profile = {
       vi: "Mình là sinh viên năm 3 ngành Công nghệ thông tin tại UTH, một lập trình viên đến từ Việt Nam, thích làm một sản phẩm trọn vẹn: thiết kế cơ sở dữ liệu, viết API rồi dựng giao diện gọn gàng, chạy tốt trên mọi màn hình. Phần lớn dự án gần đây của mình là monorepo TypeScript, backend dùng NestJS hoặc Express, frontend dùng React hoặc Next.js.",
     },
     {
-      en: "I'm a big fan of vibe coding: I work alongside AI coding assistants to turn ideas into working prototypes quickly, then read through, test and refine the code myself so I understand every part of it. I've also built AI features into my own projects, like generating quizzes from PDFs with the Claude API and semantic search with pgvector.",
-      vi: "Mình rất mê vibe coding: làm việc cùng các trợ lý lập trình AI để biến ý tưởng thành bản chạy thử thật nhanh, rồi tự đọc lại, test và chỉnh sửa để hiểu rõ từng phần code. Mình cũng đưa AI vào chính các dự án của mình, như tạo câu hỏi từ PDF bằng Claude API và tìm kiếm ngữ nghĩa với pgvector.",
+      en: "I'm a big fan of vibe coding: I work with Claude and Claude Code to turn ideas into working prototypes quickly, then read through, test and refine the code myself so I understand every part of it. I've also built AI features into my own projects, like generating quizzes from PDFs with the Claude API and semantic search with pgvector.",
+      vi: "Mình rất mê vibe coding: làm việc cùng Claude và Claude Code để biến ý tưởng thành bản chạy thử thật nhanh, rồi tự đọc lại, test và chỉnh sửa để hiểu rõ từng phần code. Mình cũng đưa AI vào chính các dự án của mình, như tạo câu hỏi từ PDF bằng Claude API và tìm kiếm ngữ nghĩa với pgvector.",
     },
   ] satisfies Text[],
 
@@ -254,15 +253,6 @@ export const profile = {
       tools: ["postgresql", "mysql", "mongodb", "redis", "prisma"],
     },
     {
-      name: "Python & FastAPI",
-      icon: "python",
-      description: {
-        en: "AI services for PDF parsing, embeddings and RAG, plus graph algorithms with NetworkX.",
-        vi: "Dịch vụ AI đọc PDF, tạo embedding và RAG, cùng thuật toán đồ thị với NetworkX.",
-      },
-      tools: ["python", "fastapi"],
-    },
-    {
       name: "PHP & Laravel",
       icon: "laravel",
       description: {
@@ -289,6 +279,15 @@ export const profile = {
       },
       tools: ["docker", "githubactions", "prometheus", "vercel"],
     },
+    {
+      name: { en: "Vibe coding with Claude", vi: "Vibe coding cùng Claude" },
+      icon: "claude",
+      description: {
+        en: "I pair with Claude and Claude Code to plan features, scaffold code and track down bugs faster, then read, test and refine every change myself.",
+        vi: "Mình dùng Claude và Claude Code để lên ý tưởng tính năng, dựng khung code và tìm lỗi nhanh hơn, rồi tự đọc lại, test và chỉnh sửa từng thay đổi.",
+      },
+      tools: ["claude", "claudecode", "anthropic"],
+    },
   ] satisfies Skill[],
 
   /** Logo chạy ngang bên dưới phần kỹ năng */
@@ -302,8 +301,6 @@ export const profile = {
     "nodejs",
     "express",
     "nestjs",
-    "python",
-    "fastapi",
     "php",
     "laravel",
     "postgresql",
@@ -350,8 +347,8 @@ export const profile = {
       title: { en: "Backend & APIs", vi: "Backend & API" },
       icon: "server",
       description: {
-        en: "Secure REST APIs with NestJS, Express or FastAPI, documented with Swagger and covered by automated tests.",
-        vi: "REST API an toàn với NestJS, Express hoặc FastAPI, có tài liệu Swagger và test tự động.",
+        en: "Secure REST APIs with NestJS, Express or Laravel, documented with Swagger and covered by automated tests.",
+        vi: "REST API an toàn với NestJS, Express hoặc Laravel, có tài liệu Swagger và test tự động.",
       },
     },
     {

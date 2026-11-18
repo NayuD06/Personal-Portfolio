@@ -11,7 +11,7 @@ import { Reveal } from "../ui/reveal";
 import { TechIcon } from "../ui/tech-icon";
 
 const github = profile.socials.find((s) => s.icon === "github");
-const badgeIcons: IconName[] = ["typescript", "react", "nestjs", "python"];
+const badgeIcons: IconName[] = ["typescript", "react", "nestjs", "claude"];
 
 export function About() {
   return (
@@ -120,7 +120,7 @@ function CodeCard() {
   const key = "text-sky-400";
   const str = "text-sky-200";
   const punct = "text-slate-400";
-  const stack = ["TypeScript", "NestJS", "Next.js", "Python"];
+  const stack = ["TypeScript", "NestJS", "Next.js", "Laravel"];
 
   return (
     <div className="card relative overflow-hidden rounded-[1.75rem] shadow-[0_30px_80px_-30px_var(--glow-blue)]">

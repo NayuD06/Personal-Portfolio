@@ -1,6 +1,7 @@
 import type { IconType } from "react-icons";
 import {
   SiAnthropic,
+  SiClaude,
   SiCplusplus,
   SiDocker,
   SiDotnet,
@@ -51,6 +52,7 @@ import {
   LuServerCog,
   LuShieldCheck,
   LuSmartphone,
+  LuSquareTerminal,
   LuWallet,
 } from "react-icons/lu";
 
@@ -90,6 +92,8 @@ export const icons = {
   vercel: { Icon: SiVercel, label: "Vercel", color: "currentColor" },
   ollama: { Icon: SiOllama, label: "Ollama", color: "currentColor" },
   anthropic: { Icon: SiAnthropic, label: "Claude API", color: "currentColor" },
+  claude: { Icon: SiClaude, label: "Claude", color: "#D97757" },
+  claudecode: { Icon: LuSquareTerminal, label: "Claude Code", color: "currentColor" },
   turborepo: { Icon: SiTurborepo, label: "Turborepo", color: "#FF1E56" },
   jest: { Icon: SiJest, label: "Jest", color: "#C21325" },
 
