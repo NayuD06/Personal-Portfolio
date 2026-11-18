@@ -21,7 +21,7 @@ export function BackToTop() {
           exit={{ opacity: 0, scale: 0.5, y: 20 }}
           whileHover={{ y: -4 }}
           whileTap={{ scale: 0.9 }}
-          className="bg-brand fixed right-5 bottom-5 z-50 grid size-12 place-items-center rounded-full text-white shadow-[0_10px_30px_-8px_var(--glow-red)]"
+          className="bg-brand fixed right-5 bottom-5 z-50 grid size-12 place-items-center rounded-full text-white shadow-[0_10px_30px_-8px_var(--glow-sky)]"
         >
           <LuArrowUp className="size-5" />
         </motion.a>

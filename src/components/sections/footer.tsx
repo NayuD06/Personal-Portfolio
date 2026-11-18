@@ -31,7 +31,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="grid size-10 place-items-center rounded-lg bg-brand-blue text-white transition-all hover:-translate-y-1 hover:bg-brand-red"
+                  className="grid size-10 place-items-center rounded-lg bg-brand-blue text-white transition-all hover:-translate-y-1 hover:bg-brand-sky"
                 >
                   <TechIcon name={social.icon} className="size-4" />
                 </a>
@@ -40,7 +40,7 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="mt-10 h-px bg-gradient-to-r from-transparent via-brand-red/50 to-transparent" />
+        <div className="mt-10 h-px bg-gradient-to-r from-transparent via-brand-sky/50 to-transparent" />
         <p className="mt-6 text-center text-sm text-muted">
           Copyright © <CurrentYear /> {profile.name}. All rights reserved.
         </p>

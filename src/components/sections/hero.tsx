@@ -35,7 +35,7 @@ export function Hero() {
       <div aria-hidden="true" className="blob absolute -top-32 -left-32 -z-10 size-[28rem] rounded-full bg-brand-blue/25 blur-[110px]" />
       <div
         aria-hidden="true"
-        className="blob absolute -right-32 bottom-0 -z-10 size-[26rem] rounded-full bg-brand-red/20 blur-[110px] [animation-delay:-7s]"
+        className="blob absolute -right-32 bottom-0 -z-10 size-[26rem] rounded-full bg-brand-sky/20 blur-[110px] [animation-delay:-7s]"
       />
 
       <div className="mx-auto grid w-full max-w-6xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1.05fr_1fr]">
@@ -55,7 +55,7 @@ export function Hero() {
 
           <motion.h1 variants={item} className="text-5xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
             {profile.greeting}
-            <span className="text-gradient animate-gradient mt-2 block pb-2 drop-shadow-[0_0_30px_var(--glow-red)]">
+            <span className="text-gradient animate-gradient mt-2 block pb-2 drop-shadow-[0_0_30px_var(--glow-sky)]">
               {profile.name}
             </span>
           </motion.h1>
@@ -73,7 +73,7 @@ export function Hero() {
               href="#projects"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="bg-brand shine rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-red)]"
+              className="bg-brand shine rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)]"
             >
               View Projects
             </motion.a>

@@ -63,7 +63,9 @@ export const profile = {
     "I build full-stack web apps with React, Next.js, NestJS and Python, from REST APIs and databases to AI features like document search and PDF-to-quiz generation.",
 
   /** Ảnh đại diện: đặt file vào public (vd. public/avatar.jpg) rồi ghi "/avatar.jpg". Để trống sẽ hiện chữ viết tắt. */
-  avatar: "",
+  avatar: "/avatar.jpg",
+  /** Ảnh dọc ở phần About (tỉ lệ 4:5). Để trống sẽ dùng khung code thay ảnh. */
+  aboutPhoto: "/about.jpg",
   /** Link CV: đặt file vào public (vd. public/cv.pdf) rồi ghi "/cv.pdf". Để trống sẽ ẩn nút tải CV. */
   resumeUrl: "",
 
@@ -216,7 +218,7 @@ export const profile = {
       tags: ["NestJS", "Next.js", "PostgreSQL", "pgvector", "Redis", "Claude API"],
       categories: ["AI", "Full-stack"],
       coverIcon: "graduation",
-      coverColors: ["#2563eb", "#7c3aed"],
+      coverColors: ["#1d4ed8", "#0ea5e9"],
       githubUrl: "https://github.com/NayuD06/EduForge-AI",
     },
     {
@@ -227,7 +229,8 @@ export const profile = {
       tags: ["React", "Express", "Prisma", "MySQL", "FastAPI", "Qdrant"],
       categories: ["AI", "Full-stack", "DevOps"],
       coverIcon: "brain",
-      coverColors: ["#0ea5e9", "#e11d48"],
+      coverColors: ["#0369a1", "#2563eb"],
+      image: "/projects/studymind.jpg",
       githubUrl: "https://github.com/NayuD06/StudyMind-AI",
     },
     {
@@ -238,7 +241,7 @@ export const profile = {
       tags: ["Python", "FastAPI", "OSMnx", "NetworkX", "React", "Leaflet"],
       categories: ["Full-stack"],
       coverIcon: "map",
-      coverColors: ["#059669", "#2563eb"],
+      coverColors: ["#0c4a6e", "#0284c7"],
       githubUrl: "https://github.com/NayuD06/digital-map-pathfinding",
     },
     {
@@ -249,7 +252,8 @@ export const profile = {
       tags: ["React", "Express", "MongoDB", "Docker", "Prometheus", "GitHub Actions"],
       categories: ["Full-stack", "DevOps"],
       coverIcon: "wallet",
-      coverColors: ["#f59e0b", "#e11d48"],
+      coverColors: ["#1e3a8a", "#3b82f6"],
+      image: "/projects/spendwise.jpg",
       githubUrl: "https://github.com/NayuD06/DEVOPS-Money-Manager",
       liveUrl: "https://devops-money-manager.vercel.app",
     },
@@ -261,7 +265,8 @@ export const profile = {
       tags: ["PHP", "Laravel", "MVC", "SQL"],
       categories: ["Full-stack"],
       coverIcon: "book",
-      coverColors: ["#dc2626", "#9333ea"],
+      coverColors: ["#1e40af", "#38bdf8"],
+      image: "/projects/elearning.jpg",
       githubUrl: "https://github.com/NayuD06/online_elearning",
     },
     {
@@ -272,7 +277,7 @@ export const profile = {
       tags: ["NestJS", "MongoDB", "JWT", "Jest"],
       categories: ["Backend"],
       coverIcon: "lock",
-      coverColors: ["#4f46e5", "#0891b2"],
+      coverColors: ["#172554", "#2563eb"],
       githubUrl: "https://github.com/NayuD06/K24WD02-micro-service-auth-api",
     },
   ] satisfies Project[],

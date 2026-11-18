@@ -23,7 +23,7 @@ export function Avatar({ sizes, priority = false }: { sizes: string; priority?: 
   }
 
   return (
-    <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_30%_25%,#1e3a8a,#0b1426_60%,#3b0d1f)]">
+    <div className="absolute inset-0 grid place-items-center bg-[radial-gradient(circle_at_30%_25%,#1e3a8a,#060b16_60%,#0c2a4a)]">
       <div className="bg-grid absolute inset-0 opacity-60 [--grid-line:rgb(148_163_184/0.12)]" />
       <span className="text-gradient animate-gradient relative font-heading text-[clamp(4rem,14vw,8rem)] leading-none font-black tracking-tighter">
         {initials}

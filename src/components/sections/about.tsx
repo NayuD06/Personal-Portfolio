@@ -1,7 +1,7 @@
 import { LuDownload } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa6";
 import { profile } from "@/data/profile";
-import { Avatar } from "../ui/avatar";
+import Image from "next/image";
 import { CountUp } from "../ui/count-up";
 import { Reveal } from "../ui/reveal";
 
@@ -13,10 +13,17 @@ export function About() {
       <div className="mx-auto grid max-w-6xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20">
         <Reveal from="left" className="relative mx-auto w-full max-w-md">
           <div aria-hidden="true" className="bg-brand absolute -inset-3 rounded-[2rem] opacity-30 blur-2xl" />
-          {profile.avatar ? (
-            <div className="card relative aspect-[4/5] overflow-hidden rounded-[1.75rem] p-1.5">
-              <div className="relative size-full overflow-hidden rounded-3xl">
-                <Avatar sizes="(min-width: 1024px) 28rem, 90vw" />
+          {profile.aboutPhoto ? (
+            <div className="card relative aspect-[4/5] overflow-hidden rounded-[1.75rem] p-1.5 shadow-[0_30px_80px_-30px_var(--glow-blue)]">
+              <div className="group relative size-full overflow-hidden rounded-3xl">
+                <Image
+                  src={profile.aboutPhoto}
+                  alt={profile.name}
+                  fill
+                  sizes="(min-width: 1024px) 28rem, 90vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#04070d]/70 to-transparent" />
               </div>
             </div>
           ) : (
@@ -56,7 +63,7 @@ export function About() {
               <a
                 href={profile.resumeUrl}
                 download
-                className="bg-brand shine inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-red)] transition-transform hover:scale-[1.03]"
+                className="bg-brand shine inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
               >
                 Download Resume
                 <LuDownload className="size-4" aria-hidden="true" />
@@ -67,7 +74,7 @@ export function About() {
                   href={github.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-brand shine inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-red)] transition-transform hover:scale-[1.03]"
+                  className="bg-brand shine inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
                 >
                   <FaGithub className="size-4" aria-hidden="true" />
                   View my GitHub
@@ -84,21 +91,21 @@ export function About() {
 /** Khung "trình soạn code" thay cho ảnh khi chưa có ảnh đại diện. */
 function CodeCard() {
   const key = "text-sky-400";
-  const str = "text-amber-300";
+  const str = "text-sky-200";
   const punct = "text-slate-400";
   const stack = ["TypeScript", "NestJS", "Next.js", "Python"];
 
   return (
     <div className="card relative overflow-hidden rounded-[1.75rem] shadow-[0_30px_80px_-30px_var(--glow-blue)]">
-      <div className="flex items-center gap-2 border-b border-white/10 bg-[#0d1830] px-5 py-3.5">
+      <div className="flex items-center gap-2 border-b border-white/10 bg-[#0a1324] px-5 py-3.5">
         <span className="size-3 rounded-full bg-[#ff5f57]" />
         <span className="size-3 rounded-full bg-[#febc2e]" />
         <span className="size-3 rounded-full bg-[#28c840]" />
         <span className="ml-3 font-mono text-xs text-slate-400">developer.ts</span>
       </div>
-      <pre className="overflow-x-auto bg-[#0b1426] p-6 font-mono text-[13px] leading-7 text-slate-200 sm:text-sm">
+      <pre className="overflow-x-auto bg-[#060b16] p-6 font-mono text-[13px] leading-7 text-slate-200 sm:text-sm">
         <code>
-          <span className="text-fuchsia-400">const</span> <span className="text-blue-300">developer</span>{" "}
+          <span className="text-blue-400">const</span> <span className="text-blue-300">developer</span>{" "}
           <span className={punct}>=</span> <span className={punct}>{"{"}</span>
           {"\n  "}
           <span className={key}>name</span>
@@ -135,7 +142,7 @@ function CodeCard() {
           {"\n  "}
           <span className={key}>openToWork</span>
           <span className={punct}>: </span>
-          <span className="text-orange-400">true</span>
+          <span className="text-cyan-300">true</span>
           <span className={punct}>,</span>
           {"\n"}
           <span className={punct}>{"};"}</span>

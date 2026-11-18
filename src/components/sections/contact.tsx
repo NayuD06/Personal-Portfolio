@@ -16,7 +16,7 @@ const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID;
 type Status = "idle" | "sending" | "sent" | "error";
 
 const fieldClass =
-  "w-full border border-brand-blue/40 bg-input px-5 py-3 text-sm text-fg placeholder:text-muted/70 outline-none transition-all focus:border-brand-red/70 focus:shadow-[0_0_0_4px_var(--glow-blue)]";
+  "w-full border border-brand-blue/40 bg-input px-5 py-3 text-sm text-fg placeholder:text-muted/70 outline-none transition-all focus:border-brand-sky/70 focus:shadow-[0_0_0_4px_var(--glow-blue)]";
 const inputClass = `${fieldClass} rounded-full`;
 
 export function Contact() {
@@ -162,7 +162,7 @@ export function Contact() {
                 disabled={status === "sending"}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-brand shine mt-7 flex w-full items-center justify-center gap-2 rounded-full py-3.5 font-semibold text-white shadow-[0_14px_34px_-12px_var(--glow-red)] disabled:opacity-70"
+                className="bg-brand shine mt-7 flex w-full items-center justify-center gap-2 rounded-full py-3.5 font-semibold text-white shadow-[0_14px_34px_-12px_var(--glow-sky)] disabled:opacity-70"
               >
                 {status === "sending" ? (
                   <>
@@ -183,7 +183,7 @@ export function Contact() {
                     animate={{ opacity: 1, y: 0, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
                     className={`mt-4 flex items-center justify-center gap-2 text-sm font-medium ${
-                      status === "sent" ? "text-emerald-500" : "text-brand-red"
+                      status === "sent" ? "text-emerald-500" : "text-red-500"
                     }`}
                   >
                     {status === "sent" ? (

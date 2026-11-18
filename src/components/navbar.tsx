@@ -81,7 +81,7 @@ export function Navbar() {
           <ThemeToggle />
           <a
             href="#contact"
-            className="shine hidden items-center gap-2 rounded-full border border-brand-red/60 bg-gradient-to-r from-brand-blue/15 to-brand-red/15 px-5 py-2 text-sm font-semibold shadow-[0_0_24px_-6px_var(--glow-red)] transition-shadow hover:shadow-[0_0_30px_-4px_var(--glow-red)] sm:inline-flex"
+            className="shine hidden items-center gap-2 rounded-full border border-brand-sky/60 bg-gradient-to-r from-brand-blue/15 to-brand-sky/15 px-5 py-2 text-sm font-semibold shadow-[0_0_24px_-6px_var(--glow-sky)] transition-shadow hover:shadow-[0_0_30px_-4px_var(--glow-sky)] sm:inline-flex"
           >
             <LuSparkles className="size-4" aria-hidden="true" />
             Hire Me

@@ -70,7 +70,7 @@ export function Testimonials() {
                   aria-live="polite"
                 >
                   <LuQuote aria-hidden="true" className="absolute top-5 left-5 size-8 text-brand-blue/30" />
-                  <div className="flex justify-center gap-1 text-amber-400" aria-label="5 out of 5 stars">
+                  <div className="flex justify-center gap-1 text-brand-sky" aria-label="5 out of 5 stars">
                     {Array.from({ length: 5 }, (_, i) => (
                       <motion.span
                         key={i}
@@ -84,7 +84,7 @@ export function Testimonials() {
                   </div>
                   <blockquote className="mt-6 leading-relaxed text-fg/90">{item.quote}</blockquote>
                   <figcaption className="mt-6">
-                    <span className="block font-heading text-lg font-bold text-brand-red">{item.name}</span>
+                    <span className="block font-heading text-lg font-bold text-brand-sky">{item.name}</span>
                     <span className="mt-1 block text-sm text-muted">
                       {item.role}, {item.date}
                     </span>
@@ -129,7 +129,7 @@ function ArrowButton({ label, onClick, children }: { label: string; onClick: () 
       aria-label={label}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      className="bg-brand grid size-10 shrink-0 place-items-center rounded-full text-white shadow-[0_8px_24px_-8px_var(--glow-red)] sm:size-12"
+      className="bg-brand grid size-10 shrink-0 place-items-center rounded-full text-white shadow-[0_8px_24px_-8px_var(--glow-sky)] sm:size-12"
     >
       {children}
     </motion.button>

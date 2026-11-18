@@ -33,7 +33,7 @@ export function Typewriter({ words }: { words: string[] }) {
       <span className="sr-only">{words.join(", ")}</span>
       <span aria-hidden="true">
         {text}
-        <span className="caret ml-0.5 inline-block w-[3px] translate-y-[3px] bg-brand-red" style={{ height: "1em" }} />
+        <span className="caret ml-0.5 inline-block w-[3px] translate-y-[3px] bg-brand-sky" style={{ height: "1em" }} />
       </span>
     </span>
   );
