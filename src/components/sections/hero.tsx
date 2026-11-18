@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type Variants } from "motion/react";
+import { motion } from "motion/react";
 import { useMemo, type CSSProperties } from "react";
 import { LuArrowDownRight, LuDownload, LuHammer, LuMail, LuMapPin, LuMouse } from "react-icons/lu";
 import { profile } from "@/data/profile";
@@ -14,17 +14,8 @@ import { ResumeLink } from "../ui/resume-link";
 import { TechIcon } from "../ui/tech-icon";
 import { Typewriter } from "../ui/typewriter";
 
-const ease = [0.22, 1, 0.36, 1] as const;
-
-const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.3 } },
-};
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
-};
+/** Thứ tự xuất hiện của từng dòng chữ (class "enter" trong globals.css, chạy bằng CSS nên không chờ JavaScript) */
+const at = (i: number) => ({ "--i": i }) as CSSProperties;
 
 /** Các icon xoay quanh ảnh đại diện */
 const orbitIcons: IconName[] = ["react", "nextjs", "nestjs", "typescript", "claude", "docker", "postgresql", "nodejs"];
@@ -47,35 +38,34 @@ export function Hero() {
       />
 
       <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:gap-16 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
-        <motion.div variants={container} initial="hidden" animate="show">
+        <div>
           {profile.availability && (
-            <motion.p
-              variants={item}
-              className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-border bg-input py-1.5 pr-4 pl-2 text-xs font-medium text-muted sm:text-sm"
+            <p
+              style={at(0)}
+              className="enter mb-7 inline-flex items-center gap-2.5 rounded-full border border-border bg-input py-1.5 pr-4 pl-2 text-xs font-medium text-muted sm:text-sm"
             >
               <span className="relative flex size-5 items-center justify-center rounded-full bg-emerald-500/15">
                 <span className="absolute inline-flex size-2.5 animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
               </span>
               <T v={profile.availability} />
-            </motion.p>
+            </p>
           )}
 
-          <motion.p variants={item} className="font-mono text-sm text-muted sm:text-base">
+          <p style={at(1)} className="enter font-mono text-sm text-muted sm:text-base">
             <span className="text-brand-blue">{"// "}</span>
             <T v={ui.hero.greeting} />
-          </motion.p>
+          </p>
 
-          <motion.h1
-            variants={item}
-            className="text-gradient animate-gradient mt-2 pb-2 text-6xl leading-[0.95] font-black tracking-tight sm:text-7xl lg:text-8xl"
-          >
-            {profile.name}
-          </motion.h1>
+          <div style={at(2)} className="enter">
+            <h1 className="text-gradient animate-gradient mt-2 pb-2 text-6xl leading-[0.95] font-black tracking-tight sm:text-7xl lg:text-8xl">
+              {profile.name}
+            </h1>
+          </div>
 
-          <motion.p
-            variants={item}
-            className="mt-5 inline-flex max-w-full items-center gap-3 rounded-xl border border-border bg-input px-4 py-2.5 font-mono text-base font-semibold sm:text-lg"
+          <p
+            style={at(3)}
+            className="enter mt-5 inline-flex max-w-full items-center gap-3 rounded-xl border border-border bg-input px-4 py-2.5 font-mono text-base font-semibold sm:text-lg"
           >
             <span className="text-brand-blue" aria-hidden="true">
               $
@@ -83,13 +73,13 @@ export function Hero() {
             <span className="min-h-[1.5em] truncate">
               <Typewriter words={roles} />
             </span>
-          </motion.p>
+          </p>
 
-          <motion.p variants={item} className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+          <p style={at(4)} className="enter mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
             <T v={profile.intro} />
-          </motion.p>
+          </p>
 
-          <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-3">
+          <div style={at(5)} className="enter mt-9 flex flex-wrap items-center gap-3">
             <motion.a
               href="#projects"
               whileHover={{ scale: 1.04 }}
@@ -113,9 +103,9 @@ export function Hero() {
                 <T v={ui.hero.contact} />
               </span>
             </a>
-          </motion.div>
+          </div>
 
-          <motion.ul variants={item} className="mt-10 flex items-center gap-2">
+          <ul style={at(6)} className="enter mt-10 flex items-center gap-2">
             {profile.socials.map((social) => (
               <li key={social.href}>
                 <a
@@ -129,8 +119,8 @@ export function Hero() {
               </li>
             ))}
             <li aria-hidden="true" className="ml-2 h-px w-16 bg-gradient-to-r from-border to-transparent" />
-          </motion.ul>
-        </motion.div>
+          </ul>
+        </div>
 
         {/* Ảnh đại diện trong khung bo góc + vòng icon công nghệ */}
         <div className="relative order-first mx-auto grid aspect-square w-full max-w-[19rem] place-items-center [--r:8.25rem] sm:max-w-[28rem] sm:[--r:12.75rem] lg:order-none">
@@ -140,19 +130,14 @@ export function Hero() {
             className="pointer-events-none absolute top-1/2 left-1/2 size-[calc(var(--r)*2)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-brand-blue/30"
           />
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.6, rotate: -8 }}
-            animate={{ opacity: 1, scale: 1, rotate: -3 }}
-            transition={{ duration: 1, ease, delay: 0.2 }}
-            className="relative size-[64%]"
-          >
+          <div className="enter-avatar relative size-[64%] -rotate-3">
             <div aria-hidden="true" className="bg-brand absolute -inset-6 rounded-[3rem] opacity-35 blur-3xl" />
             <div className="bg-brand relative size-full rounded-[2.5rem] p-[3px] shadow-[0_0_80px_-10px_var(--glow-blue)]">
               <div className="relative size-full overflow-hidden rounded-[calc(2.5rem-3px)] bg-bg">
                 <Avatar sizes="(min-width: 640px) 290px, 230px" priority />
               </div>
             </div>
-          </motion.div>
+          </div>
 
           <div aria-hidden="true" className="orbit pointer-events-none absolute inset-0">
             {orbitIcons.map((name, i) => (

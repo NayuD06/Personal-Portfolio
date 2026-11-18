@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Nunito } from "next/font/google";
 import { Providers } from "@/components/providers";
@@ -23,20 +25,41 @@ const description = pick(profile.intro, "en");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title,
+  // Trang con chỉ cần đặt title ngắn, vd. "CV" sẽ thành "CV | Duy An"
+  title: { default: title, template: `%s | ${profile.name}` },
   description,
+  applicationName: profile.name,
+  authors: [{ name: profile.name, url: siteUrl }],
+  creator: profile.name,
+  keywords: [
+    profile.name,
+    "portfolio",
+    "full-stack developer",
+    "web developer",
+    "React",
+    "Next.js",
+    "NestJS",
+    "Laravel",
+    "TypeScript",
+    "lập trình viên",
+    "Việt Nam",
+  ],
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     url: "/",
     title,
     description,
     siteName: profile.name,
+    locale: "en_US",
+    alternateLocale: ["vi_VN"],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
   },
+  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
@@ -59,6 +82,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="min-h-dvh font-sans antialiased">
         <Providers>{children}</Providers>
+        {/* Thống kê lượt xem và tốc độ trang: bật trong Vercel > Project > Analytics / Speed Insights */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -13,9 +13,16 @@ import { pick, T, type Text } from "@/lib/i18n";
 import { icons } from "@/lib/icons";
 
 export const metadata: Metadata = {
-  title: `CV | ${profile.name}`,
+  title: "CV",
   description: pick(profile.intro, "en"),
   alternates: { canonical: "/cv" },
+  openGraph: {
+    type: "profile",
+    url: "/cv",
+    title: `CV | ${profile.name}`,
+    description: pick(profile.intro, "en"),
+    siteName: profile.name,
+  },
 };
 
 // Màu cố định (không theo giao diện sáng/tối) để bản in và PDF luôn giống nhau

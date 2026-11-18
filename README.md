@@ -52,13 +52,31 @@ Tên icon dùng trong file dữ liệu lấy từ `src/lib/icons.tsx` (thêm ico
 
 ## Form liên hệ
 
-Mặc định nút **Send message** mở ứng dụng email của người xem với nội dung đã điền sẵn.
+Tin nhắn từ form được gửi thẳng về email của bạn qua [Resend](https://resend.com) (gói miễn phí 3.000 email/tháng). Code nằm ở `src/app/api/contact/route.ts`, có sẵn chống spam: ô ẩn bẫy bot và giới hạn 5 tin mỗi 10 phút cho một địa chỉ IP. Trong email nhận được, bấm **Trả lời** là trả lời thẳng cho người gửi.
 
-Muốn tin nhắn gửi thẳng về email của bạn:
+Cách bật (làm một lần):
 
-1. Tạo form miễn phí tại https://formspree.io, lấy ID dạng `xyzabcd`.
-2. Tạo file `.env.local` (xem `.env.example`) với dòng `NEXT_PUBLIC_FORMSPREE_ID=xyzabcd`.
-3. Trên Vercel, thêm biến môi trường cùng tên rồi deploy lại.
+1. Đăng ký tài khoản tại https://resend.com **bằng chính email muốn nhận tin** (`nayud.2006@gmail.com`).
+2. Vào **API Keys > Create API Key**, quyền "Sending access", chép key (dạng `re_...`).
+3. Trên Vercel: **Project Settings > Environment Variables**, thêm `RESEND_API_KEY` = key vừa chép, rồi **Redeploy**.
+4. Chạy thử trên máy: tạo file `.env.local` (xem `.env.example`) với dòng `RESEND_API_KEY=re_...`.
+
+Chưa đặt `RESEND_API_KEY` thì form vẫn dùng được: nút **Send message** mở ứng dụng email của người xem với nội dung đã điền sẵn.
+
+Khi chưa xác minh tên miền, Resend chỉ cho gửi từ `onboarding@resend.dev` tới email bạn dùng để đăng ký, như vậy là đủ cho portfolio. Muốn email gửi từ địa chỉ của tên miền riêng (vd. `contact@feb20th.click`) thì vào **Domains** trên Resend, thêm `feb20th.click`, khai báo các bản ghi DNS họ đưa ở iNET, rồi đặt `CONTACT_FROM_EMAIL=Portfolio <contact@feb20th.click>` trên Vercel.
+
+## Thống kê người xem (Vercel Analytics)
+
+Trang đã gắn sẵn **Vercel Analytics** (số người vào, trang nào được xem, đến từ đâu: Google, Facebook, GitHub..., quốc gia, thiết bị) và **Speed Insights** (tốc độ tải trang thực tế của người xem). Chỉ chạy khi trang ở trên Vercel, chạy trên máy thì không ghi gì.
+
+Cách bật: vào dự án trên Vercel, mở tab **Analytics** bấm **Enable**, rồi tab **Speed Insights** bấm **Enable**, sau đó deploy lại. Số liệu hiện trong hai tab đó sau vài phút có người vào. Gói Hobby miễn phí đủ dùng cho portfolio. Không dùng cookie nên không cần hiện bảng xin phép cookie.
+
+## SEO và ảnh xem trước khi chia sẻ link
+
+- Mỗi trang có tiêu đề, mô tả, link chuẩn (canonical) riêng; trang chủ có thêm dữ liệu có cấu trúc (schema.org `Person`) để Google hiểu đây là trang cá nhân của bạn. `sitemap.xml` và `robots.txt` tự sinh.
+- Ảnh xem trước khi dán link lên Facebook, Discord, Zalo, X... được vẽ tự động từ nội dung trong `profile.ts`: trang chủ (`src/app/opengraph-image.tsx`) có tên, vai trò và ảnh đại diện; mỗi dự án (`src/app/projects/[slug]/opengraph-image.tsx`) có tên dự án, mô tả, công nghệ và ảnh chụp màn hình. Font Montserrat dùng cho ảnh nằm ở `assets/fonts/` (giấy phép OFL).
+- Sửa nội dung xong, deploy lại là ảnh đổi theo. Facebook lưu ảnh cũ một thời gian: dán link vào https://developers.facebook.com/tools/debug/ và bấm **Scrape Again** để cập nhật ngay.
+- Điểm Lighthouse (đo trên điện thoại giả lập): trang chủ Performance 86, trang dự án và trang CV 99; Accessibility, Best Practices, SEO đều 96 đến 100.
 
 ## Mục GitHub Activity
 
@@ -75,7 +93,9 @@ Số liệu (số repo, số sao, ngôn ngữ, repo cập nhật gần đây, bi
 3. Vercel tự nhận ra Next.js, không cần đổi cấu hình gì. Bấm **Deploy**.
 4. Từ giờ mỗi lần push lên nhánh `main`, Vercel tự build và cập nhật trang. Push lên nhánh khác sẽ có link xem trước riêng.
 
-Gắn tên miền riêng: **Project Settings > Domains**, sau đó đặt `NEXT_PUBLIC_SITE_URL` là tên miền đó để ảnh chia sẻ link và sitemap dùng đúng địa chỉ.
+Gắn tên miền riêng: **Project Settings > Domains**, sau đó đặt `NEXT_PUBLIC_SITE_URL` là tên miền đó (vd. `https://feb20th.click`) để ảnh chia sẻ link và sitemap dùng đúng địa chỉ.
+
+Sau khi deploy nhớ làm thêm hai việc ở trên: đặt `RESEND_API_KEY` (mục Form liên hệ) và bật Analytics (mục Thống kê người xem).
 
 ## Cấu trúc
 
@@ -85,7 +105,8 @@ src/
 │  ├─ layout.tsx            font, metadata (SEO), theme, chọn ngôn ngữ trước khi trang hiện
 │  ├─ page.tsx              ghép các mục của trang
 │  ├─ globals.css           màu sáng/tối, hiệu ứng, animation
-│  ├─ opengraph-image.tsx   ảnh xem trước khi chia sẻ link
+│  ├─ opengraph-image.tsx   ảnh xem trước khi chia sẻ link (mỗi dự án cũng có một file riêng)
+│  ├─ api/contact/route.ts  nhận tin nhắn từ form liên hệ và gửi về email qua Resend
 │  ├─ icon.svg              favicon
 │  ├─ sitemap.ts, robots.ts
 │  ├─ projects/[slug]/      trang chi tiết dự án
@@ -100,5 +121,6 @@ src/
 ├─ data/
 │  ├─ profile.ts            ★ nội dung về bạn
 │  └─ ui.ts                 ★ chữ trên giao diện
-└─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang
+└─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang, font cho ảnh chia sẻ (og.ts)
+assets/fonts/               font Montserrat dùng để vẽ ảnh xem trước khi chia sẻ link
 ```

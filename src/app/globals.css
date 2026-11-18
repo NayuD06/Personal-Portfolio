@@ -176,6 +176,40 @@ h4 {
   }
 }
 
+/* Chữ đầu trang hiện lần lượt. Chạy bằng CSS ngay khi trang vẽ ra, không chờ JavaScript,
+   để nội dung chính hiện sớm (điểm Lighthouse). --i là thứ tự xuất hiện.
+   Bắt đầu từ opacity 0.01 thay vì 0: mắt không thấy khác, nhưng trình duyệt vẫn tính là
+   nội dung đã hiện (phần tử opacity 0 bị bỏ qua khi đo LCP). */
+.enter {
+  animation: enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(0.05s + var(--i, 0) * 0.08s);
+}
+.enter-scale {
+  animation-name: enter-scale;
+}
+@keyframes enter {
+  from {
+    opacity: 0.01;
+    transform: translateY(28px);
+  }
+}
+/* ảnh đại diện: phóng to từ nhỏ và xoay nhẹ về góc -3 độ */
+.enter-avatar {
+  animation: enter-avatar 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+}
+@keyframes enter-avatar {
+  from {
+    opacity: 0.01;
+    transform: scale(0.6) rotate(-5deg);
+  }
+}
+@keyframes enter-scale {
+  from {
+    opacity: 0.01;
+    transform: scale(0.94);
+  }
+}
+
 /* Vòng icon xoay quanh ảnh đại diện */
 .orbit {
   animation: spin 40s linear infinite;
@@ -253,6 +287,8 @@ h4 {
     scroll-behavior: auto;
   }
   .animate-gradient,
+  .enter,
+  .enter-avatar,
   .orbit,
   .orbit-item,
   .blob,
@@ -313,4 +349,17 @@ html:not([data-lang="vi"]) .l-vi {
     margin: 0 !important;
     box-shadow: none !important;
   }
+}
+
+/* ---------- Đổi sáng/tối: vòng tròn lan ra từ nút (xem theme-toggle.tsx) ---------- */
+html.theme-transition::view-transition-old(root),
+html.theme-transition::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html.theme-transition::view-transition-old(root) {
+  z-index: 1;
+}
+html.theme-transition::view-transition-new(root) {
+  z-index: 2;
 }

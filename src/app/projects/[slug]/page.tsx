@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { FaGithub } from "react-icons/fa6";
 import { LuArrowLeft, LuArrowRight, LuArrowUpRight, LuCheck } from "react-icons/lu";
 import { Gallery } from "@/components/project/gallery";
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps<"/projects/[slug]">
   const title = `${project.title} | ${profile.name}`;
   const description = pick(project.description, "en");
   return {
-    title,
+    title: project.title,
     description,
     alternates: { canonical: `/projects/${project.slug}` },
     openGraph: { type: "article", url: `/projects/${project.slug}`, title, description, siteName: profile.name },
@@ -62,7 +62,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           <div aria-hidden="true" className="blob absolute -top-32 right-0 -z-10 size-[26rem] rounded-full bg-brand-blue/20 blur-[120px]" />
 
           <div className="mx-auto max-w-6xl px-5 sm:px-8">
-            <Reveal>
+            <div className="enter">
               <Link
                 href="/#projects"
                 className="group inline-flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-brand-blue"
@@ -70,10 +70,10 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                 <LuArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
                 <T v={ui.project.back} />
               </Link>
-            </Reveal>
+            </div>
 
             <div className="mt-8 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-14">
-              <Reveal delay={0.05}>
+              <div style={{ "--i": 1 } as CSSProperties} className="enter">
                 <p className="font-mono text-sm text-brand-blue">
                   projects<span className="text-muted">/</span>
                   {project.slug}
@@ -84,9 +84,9 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                 <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-muted sm:text-lg">
                   <T v={project.description} />
                 </p>
-              </Reveal>
+              </div>
 
-              <Reveal delay={0.15} className="flex flex-col gap-6 lg:items-end">
+              <div style={{ "--i": 2 } as CSSProperties} className="enter flex flex-col gap-6 lg:items-end">
                 <ul className="flex flex-wrap gap-2 text-xs font-semibold lg:justify-end">
                   <li className="rounded-md border border-border px-2.5 py-1 text-muted">{project.year}</li>
                   {project.categories.map((category) => (
@@ -101,10 +101,10 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                   )}
                 </ul>
                 <ProjectLinks project={project} />
-              </Reveal>
+              </div>
             </div>
 
-            <Reveal from="scale" delay={0.2} className="mt-12 sm:mt-16">
+            <div style={{ "--i": 3 } as CSSProperties} className="enter enter-scale mt-12 sm:mt-16">
               <div className="card relative overflow-hidden rounded-2xl shadow-[0_40px_100px_-40px_var(--glow-blue)]">
                 <div className="flex items-center gap-2 border-b border-border px-4 py-3">
                   <span className="size-2.5 rounded-full bg-[#ff5f57]" />
@@ -127,7 +127,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
                   )}
                 </div>
               </div>
-            </Reveal>
+            </div>
           </div>
         </section>
 

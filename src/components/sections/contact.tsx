@@ -20,10 +20,8 @@ import { Reveal } from "../ui/reveal";
 import { SectionHeading } from "../ui/section-heading";
 import { TechIcon } from "../ui/tech-icon";
 
-// Muốn form gửi thẳng về email: tạo form miễn phí ở https://formspree.io,
-// rồi đặt NEXT_PUBLIC_FORMSPREE_ID (vd. "xyzabcd") trong file .env.local và trên Vercel.
-// Chưa đặt thì nút gửi sẽ mở ứng dụng email với nội dung đã điền sẵn.
-const formspreeId = process.env.NEXT_PUBLIC_FORMSPREE_ID;
+// Form gửi tới /api/contact (src/app/api/contact/route.ts), server gửi email về cho bạn qua Resend.
+// Khi chưa đặt RESEND_API_KEY, nút gửi sẽ mở ứng dụng email của người xem với nội dung đã điền sẵn.
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -42,38 +40,40 @@ export function Contact() {
       string
     >;
 
-    if (!formspreeId) {
-      const subject = `${pick(ui.contact.mailSubject, lang)} ${data.name}`;
-      const body = [
-        data.message,
-        "",
-        `${pick(ui.contact.name, lang)}: ${data.name}`,
-        `Email: ${data.email}`,
-        data.phone && `${pick(ui.contact.phone, lang)}: ${data.phone}`,
-        data.company && `${pick(ui.contact.company, lang)}: ${data.company}`,
-      ]
-        .filter(Boolean)
-        .join("\n");
-      window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      return;
-    }
-
     setStatus("sending");
     try {
-      const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+      if (response.status === 503) {
+        // server chưa cấu hình gửi email: mở ứng dụng email thay thế
+        setStatus("idle");
+        openMailApp(data);
+        return;
+      }
       if (!response.ok) throw new Error(String(response.status));
       setStatus("sent");
       form.reset();
     } catch {
       setStatus("error");
     }
+  }
+
+  function openMailApp(data: Record<string, string>) {
+    const subject = `${pick(ui.contact.mailSubject, lang)} ${data.name}`;
+    const body = [
+      data.message,
+      "",
+      `${pick(ui.contact.name, lang)}: ${data.name}`,
+      `Email: ${data.email}`,
+      data.phone && `${pick(ui.contact.phone, lang)}: ${data.phone}`,
+      data.company && `${pick(ui.contact.company, lang)}: ${data.company}`,
+    ]
+      .filter(Boolean)
+      .join("\n");
+    window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   const details = [
@@ -169,7 +169,7 @@ export function Contact() {
           <Reveal from="right">
             <form
               onSubmit={handleSubmit}
-              className="card rounded-3xl p-6 shadow-[0_30px_80px_-40px_var(--glow-blue)] sm:p-8"
+              className="card relative rounded-3xl p-6 shadow-[0_30px_80px_-40px_var(--glow-blue)] sm:p-8"
             >
               <h3 className="mb-6 text-xl font-bold">
                 <T v={ui.contact.formTitle} />
@@ -179,6 +179,7 @@ export function Contact() {
                   <input
                     id="name"
                     name="name"
+                    maxLength={100}
                     required
                     autoComplete="name"
                     placeholder={pick(ui.contact.namePlaceholder, lang)}
@@ -189,6 +190,7 @@ export function Contact() {
                   <input
                     id="email"
                     name="email"
+                    maxLength={200}
                     type="email"
                     required
                     autoComplete="email"
@@ -200,6 +202,7 @@ export function Contact() {
                   <input
                     id="phone"
                     name="phone"
+                    maxLength={40}
                     type="tel"
                     autoComplete="tel"
                     placeholder={optional}
@@ -210,6 +213,7 @@ export function Contact() {
                   <input
                     id="company"
                     name="company"
+                    maxLength={120}
                     autoComplete="organization"
                     placeholder={optional}
                     className={fieldClass}
@@ -221,12 +225,19 @@ export function Contact() {
                   <textarea
                     id="message"
                     name="message"
+                    maxLength={5000}
                     required
                     rows={5}
                     placeholder={pick(ui.contact.messagePlaceholder, lang)}
                     className={`${fieldClass} resize-none`}
                   />
                 </Field>
+              </div>
+
+              {/* Ô bẫy chống spam: ẩn với người xem, bot tự điền vào sẽ bị bỏ qua */}
+              <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                <label htmlFor="website">Website</label>
+                <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
               </div>
 
               <motion.button

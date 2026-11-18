@@ -7,7 +7,8 @@ import type { ReactNode } from "react";
 export function Providers({ children }: { children: ReactNode }) {
   return (
     // Mặc định là giao diện tối như mẫu; lựa chọn của người xem được lưu lại.
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+    // disableTransitionOnChange: tắt các hiệu ứng chuyển màu lẻ tẻ lúc đổi giao diện để không bị giật
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
       {/* Tôn trọng cài đặt "giảm chuyển động" của hệ điều hành */}
       <MotionConfig reducedMotion="user">{children}</MotionConfig>
     </ThemeProvider>

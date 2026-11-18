@@ -63,8 +63,8 @@ export function Navbar() {
             scrolled ? "py-2.5 sm:py-3" : "py-4 sm:py-5"
           }`}
         >
-          <a href="#home" className="group flex min-w-0 items-center gap-2.5 sm:gap-3" aria-label={profile.name}>
-            <span className="bg-brand grid size-10 shrink-0 place-items-center rounded-xl font-heading text-sm font-black tracking-tight text-white shadow-[0_8px_24px_-10px_var(--glow-sky)] transition-transform duration-300 group-hover:-rotate-6">
+          <a href="#home" className="group flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <span aria-hidden="true" className="bg-brand grid size-10 shrink-0 place-items-center rounded-xl font-heading text-sm font-black tracking-tight text-white shadow-[0_8px_24px_-10px_var(--glow-sky)] transition-transform duration-300 group-hover:-rotate-6">
               {profile.initials}
             </span>
             <span className="truncate font-heading text-lg font-extrabold tracking-tight">{profile.name}</span>
