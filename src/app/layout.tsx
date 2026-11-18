@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Montserrat, Nunito } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { profile } from "@/data/profile";
+import { pick, langScript } from "@/lib/i18n";
 import { siteUrl } from "@/lib/site";
 import "./globals.css";
 
@@ -17,23 +18,24 @@ const montserrat = Montserrat({
   display: "swap",
 });
 
-const title = `${profile.name} | ${profile.roles[0]}`;
+const title = `${profile.name} | ${pick(profile.roles[0], "en")}`;
+const description = pick(profile.intro, "en");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title,
-  description: profile.intro,
+  description,
   openGraph: {
     type: "website",
     url: "/",
     title,
-    description: profile.intro,
+    description,
     siteName: profile.name,
   },
   twitter: {
     card: "summary_large_image",
     title,
-    description: profile.intro,
+    description,
   },
 };
 
@@ -51,6 +53,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${nunito.variable} ${montserrat.variable}`}
     >
+      <head>
+        {/* Chọn ngôn ngữ trước khi trang hiện ra để không bị nháy chữ */}
+        <script dangerouslySetInnerHTML={{ __html: langScript }} />
+      </head>
       <body className="min-h-dvh font-sans antialiased">
         <Providers>{children}</Providers>
       </body>

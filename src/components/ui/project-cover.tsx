@@ -3,12 +3,14 @@ import type { Project } from "@/data/profile";
 import { TechIcon } from "./tech-icon";
 
 /** Ảnh bìa dự án. Có ảnh chụp màn hình thì dùng ảnh, chưa có thì tự vẽ minh họa. */
-export function ProjectCover({ project }: { project: Project }) {
+export function ProjectCover({ project, bare = false }: { project: Project; bare?: boolean }) {
   const [from, to] = project.coverColors;
+  // bare: lấp đầy khung cha (dùng trong khung trình duyệt của dự án nổi bật)
+  const frame = bare ? "absolute inset-0 overflow-hidden" : "relative aspect-[16/10] overflow-hidden rounded-xl";
 
   if (project.image) {
     return (
-      <div className="relative aspect-[16/10] overflow-hidden rounded-xl">
+      <div className={frame}>
         <Image
           src={project.image}
           alt={`Screenshot of ${project.title}`}
@@ -23,7 +25,7 @@ export function ProjectCover({ project }: { project: Project }) {
   return (
     <div
       aria-hidden="true"
-      className="relative aspect-[16/10] overflow-hidden rounded-xl"
+      className={frame}
       style={{ background: `linear-gradient(135deg, ${from}, ${to})` }}
     >
       <div className="bg-grid absolute inset-0 [--grid-line:rgb(255_255_255/0.12)] [background-size:28px_28px]" />

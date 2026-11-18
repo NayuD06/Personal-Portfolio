@@ -1,10 +1,13 @@
 "use client";
 
 import { motion, type Variants } from "motion/react";
-import type { CSSProperties } from "react";
-import { LuArrowUpRight, LuMouse } from "react-icons/lu";
+import { useMemo, type CSSProperties } from "react";
+import { LuArrowDownRight, LuHammer, LuMail, LuMapPin, LuMouse } from "react-icons/lu";
 import { profile } from "@/data/profile";
+import { ui } from "@/data/ui";
+import { pick, T } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons";
+import { useLang } from "@/lib/use-lang";
 import { Avatar } from "../ui/avatar";
 import { TechIcon } from "../ui/tech-icon";
 import { Typewriter } from "../ui/typewriter";
@@ -25,70 +28,87 @@ const item: Variants = {
 const orbitIcons: IconName[] = ["react", "nextjs", "nestjs", "typescript", "python", "docker", "postgresql", "nodejs"];
 
 export function Hero() {
+  const lang = useLang();
+  const roles = useMemo(() => profile.roles.map((role) => pick(role, lang)), [lang]);
+
   return (
     <section id="home" className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-28 pb-20">
       {/* Nền: lưới mờ và hai đốm sáng trôi */}
       <div
         aria-hidden="true"
-        className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_75%)]"
+        className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_70%_40%,#000_25%,transparent_70%)]"
       />
-      <div aria-hidden="true" className="blob absolute -top-32 -left-32 -z-10 size-[28rem] rounded-full bg-brand-blue/25 blur-[110px]" />
+      <div aria-hidden="true" className="blob absolute -top-40 right-0 -z-10 size-[30rem] rounded-full bg-brand-blue/25 blur-[120px]" />
       <div
         aria-hidden="true"
-        className="blob absolute -right-32 bottom-0 -z-10 size-[26rem] rounded-full bg-brand-sky/20 blur-[110px] [animation-delay:-7s]"
+        className="blob absolute bottom-0 -left-40 -z-10 size-[24rem] rounded-full bg-brand-sky/15 blur-[110px] [animation-delay:-7s]"
       />
 
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1.05fr_1fr]">
-        <motion.div variants={container} initial="hidden" animate="show" className="text-center lg:text-left">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
+        <motion.div variants={container} initial="hidden" animate="show">
           {profile.availability && (
-          <motion.p
-            variants={item}
-            className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-input px-4 py-1.5 text-xs font-medium text-muted sm:text-sm"
-          >
-            <span className="relative flex size-2.5">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-emerald-500" />
-            </span>
-            {profile.availability}
-          </motion.p>
+            <motion.p
+              variants={item}
+              className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-border bg-input py-1.5 pr-4 pl-2 text-xs font-medium text-muted sm:text-sm"
+            >
+              <span className="relative flex size-5 items-center justify-center rounded-full bg-emerald-500/15">
+                <span className="absolute inline-flex size-2.5 animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+              </span>
+              <T v={profile.availability} />
+            </motion.p>
           )}
 
-          <motion.h1 variants={item} className="text-5xl leading-[1.05] font-extrabold tracking-tight sm:text-6xl lg:text-7xl">
-            {profile.greeting}
-            <span className="text-gradient animate-gradient mt-2 block pb-2 drop-shadow-[0_0_30px_var(--glow-sky)]">
-              {profile.name}
-            </span>
+          <motion.p variants={item} className="font-mono text-sm text-muted sm:text-base">
+            <span className="text-brand-blue">{"// "}</span>
+            <T v={ui.hero.greeting} />
+          </motion.p>
+
+          <motion.h1
+            variants={item}
+            className="text-gradient animate-gradient mt-2 pb-2 text-6xl leading-[0.95] font-black tracking-tight sm:text-7xl lg:text-8xl"
+          >
+            {profile.name}
           </motion.h1>
 
-          <motion.p variants={item} className="mt-4 min-h-[2.25rem] font-heading text-2xl font-bold text-fg/90 sm:text-3xl">
-            <Typewriter words={profile.roles} />
+          <motion.p
+            variants={item}
+            className="mt-5 inline-flex max-w-full items-center gap-3 rounded-xl border border-border bg-input px-4 py-2.5 font-mono text-base font-semibold sm:text-lg"
+          >
+            <span className="text-brand-blue" aria-hidden="true">
+              $
+            </span>
+            <span className="min-h-[1.5em] truncate">
+              <Typewriter words={roles} />
+            </span>
           </motion.p>
 
-          <motion.p variants={item} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg lg:mx-0">
-            {profile.intro}
+          <motion.p variants={item} className="mt-6 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+            <T v={profile.intro} />
           </motion.p>
 
-          <motion.div variants={item} className="mt-9 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
+          <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-3 sm:gap-4">
             <motion.a
               href="#projects"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="bg-brand shine rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)]"
+              className="bg-brand shine group inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)]"
             >
-              View Projects
+              <T v={ui.hero.viewProjects} />
+              <LuArrowDownRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" aria-hidden="true" />
             </motion.a>
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="group inline-flex items-center gap-2 rounded-full border border-brand-blue/70 px-7 py-3.5 font-semibold text-brand-blue transition-colors hover:bg-brand-blue/10"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-7 py-3.5 font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue"
             >
-              Let&apos;s Collaborate
-              <LuArrowUpRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              <LuMail className="size-4" aria-hidden="true" />
+              <T v={ui.hero.contact} />
             </motion.a>
           </motion.div>
 
-          <motion.ul variants={item} className="mt-9 flex items-center justify-center gap-3 lg:justify-start">
+          <motion.ul variants={item} className="mt-10 flex items-center gap-2">
             {profile.socials.map((social) => (
               <li key={social.href}>
                 <a
@@ -96,36 +116,37 @@ export function Hero() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={social.label}
-                  className="grid size-11 place-items-center rounded-full border border-border bg-input text-muted transition-all hover:-translate-y-1 hover:border-brand-blue hover:text-brand-blue"
+                  className="grid size-10 place-items-center rounded-lg text-muted transition-all hover:-translate-y-1 hover:bg-chip hover:text-brand-blue"
                 >
-                  <TechIcon name={social.icon} className="size-[18px]" />
+                  <TechIcon name={social.icon} className="size-5" />
                 </a>
               </li>
             ))}
+            <li aria-hidden="true" className="ml-2 h-px w-16 bg-gradient-to-r from-border to-transparent" />
           </motion.ul>
         </motion.div>
 
-        {/* Ảnh đại diện + vòng icon công nghệ */}
-        <div className="relative mx-auto grid aspect-square w-full max-w-[22rem] place-items-center sm:max-w-[28rem] [--r:9rem] sm:[--r:12.5rem]">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.6 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease, delay: 0.2 }}
-            className="relative size-[68%]"
-          >
-            <div aria-hidden="true" className="absolute -inset-6 rounded-full bg-brand opacity-40 blur-3xl" />
-            <div className="bg-brand relative size-full rounded-full p-[3px] shadow-[0_0_80px_-10px_var(--glow-blue)]">
-              <div className="relative size-full overflow-hidden rounded-full bg-bg">
-                <Avatar sizes="(min-width: 640px) 300px, 240px" priority />
-              </div>
-            </div>
-          </motion.div>
-
+        {/* Ảnh đại diện trong khung bo góc + vòng icon công nghệ */}
+        <div className="relative mx-auto grid aspect-square w-full max-w-[22rem] place-items-center sm:max-w-[28rem] [--r:9.5rem] sm:[--r:12.75rem]">
           {/* đường quỹ đạo */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute top-1/2 left-1/2 size-[calc(var(--r)*2)] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-brand-blue/30"
           />
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.6, rotate: -8 }}
+            animate={{ opacity: 1, scale: 1, rotate: -3 }}
+            transition={{ duration: 1, ease, delay: 0.2 }}
+            className="relative size-[64%]"
+          >
+            <div aria-hidden="true" className="bg-brand absolute -inset-6 rounded-[3rem] opacity-35 blur-3xl" />
+            <div className="bg-brand relative size-full rounded-[2.5rem] p-[3px] shadow-[0_0_80px_-10px_var(--glow-blue)]">
+              <div className="relative size-full overflow-hidden rounded-[calc(2.5rem-3px)] bg-bg">
+                <Avatar sizes="(min-width: 640px) 290px, 230px" priority />
+              </div>
+            </div>
+          </motion.div>
 
           <div aria-hidden="true" className="orbit pointer-events-none absolute inset-0">
             {orbitIcons.map((name, i) => (
@@ -145,7 +166,7 @@ export function Hero() {
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 + i * 0.08, type: "spring", stiffness: 260, damping: 18 }}
-                    className="grid size-11 place-items-center rounded-full border border-brand-blue/40 bg-[var(--card-from)] text-fg shadow-[0_0_24px_-4px_var(--glow-blue)] sm:size-12"
+                    className="grid size-11 place-items-center rounded-xl border border-brand-blue/40 bg-[var(--card-from)] text-fg shadow-[0_0_24px_-4px_var(--glow-blue)] sm:size-12"
                   >
                     <TechIcon name={name} brandColor className="size-5 sm:size-6" />
                   </motion.div>
@@ -153,12 +174,38 @@ export function Hero() {
               </div>
             ))}
           </div>
+
+          {/* thẻ thông tin nổi */}
+          <FloatingCard className="-bottom-2 left-0 sm:bottom-4 sm:-left-6" delay={1.3} drift={-8}>
+            <span className="bg-brand grid size-9 place-items-center rounded-lg text-white">
+              <LuHammer className="size-4" aria-hidden="true" />
+            </span>
+            <span className="leading-tight">
+              <span className="block text-[11px] text-muted">
+                <T v={ui.hero.building} />
+              </span>
+              <span className="block text-sm font-bold">{profile.currentlyBuilding}</span>
+            </span>
+          </FloatingCard>
+          <FloatingCard className="top-0 right-0 sm:top-6 sm:-right-4" delay={1.5} drift={8}>
+            <span className="grid size-9 place-items-center rounded-lg bg-chip text-brand-blue">
+              <LuMapPin className="size-4" aria-hidden="true" />
+            </span>
+            <span className="leading-tight">
+              <span className="block text-[11px] text-muted">
+                <T v={ui.hero.basedIn} />
+              </span>
+              <span className="block text-sm font-bold">
+                <T v={profile.location} />
+              </span>
+            </span>
+          </FloatingCard>
         </div>
       </div>
 
       <motion.a
         href="#about"
-        aria-label="Scroll to About"
+        aria-label={pick(ui.hero.scroll, lang)}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 8, 0] }}
         transition={{ opacity: { delay: 1.6 }, y: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
@@ -167,5 +214,32 @@ export function Hero() {
         <LuMouse className="size-7" />
       </motion.a>
     </section>
+  );
+}
+
+function FloatingCard({
+  children,
+  className,
+  delay,
+  drift,
+}: {
+  children: React.ReactNode;
+  className: string;
+  delay: number;
+  drift: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1, y: [0, drift, 0] }}
+      transition={{
+        opacity: { delay, duration: 0.5 },
+        scale: { delay, type: "spring", stiffness: 260, damping: 20 },
+        y: { delay, duration: 5, repeat: Infinity, ease: "easeInOut" },
+      }}
+      className={`card absolute z-10 flex items-center gap-3 rounded-2xl py-2.5 pr-4 pl-2.5 shadow-[0_20px_50px_-20px_var(--glow-blue)] backdrop-blur-md ${className}`}
+    >
+      {children}
+    </motion.div>
   );
 }

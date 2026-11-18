@@ -1,9 +1,18 @@
 import { profile } from "@/data/profile";
+import { ui } from "@/data/ui";
+import { pick, T } from "@/lib/i18n";
 import { icons } from "@/lib/icons";
 import { SectionHeading } from "../ui/section-heading";
 import { SpotlightCard } from "../ui/spotlight-card";
 import { Stagger, StaggerItem } from "../ui/reveal";
 import { TechIcon } from "../ui/tech-icon";
+
+/** Ô nào rộng gấp đôi trên lưới bento (theo thứ tự trong profile.skills) */
+const spans: Record<number, string> = {
+  0: "sm:col-span-2",
+  5: "lg:col-span-2",
+  8: "lg:col-span-2",
+};
 
 export function Skills() {
   // Nhân đôi danh sách để dải logo chạy liền mạch
@@ -12,35 +21,62 @@ export function Skills() {
   return (
     <section id="skills" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
-        <SectionHeading
-          title="Skills & Technologies"
-          subtitle="The languages, frameworks and tools I use to build fast, reliable and well-tested applications."
-        />
+        <SectionHeading tag="skills" title={ui.skills.title} subtitle={ui.skills.subtitle} />
 
-        <Stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {profile.skills.map((skill) => (
-            <StaggerItem key={skill.name} className="h-full">
-              <SpotlightCard className="flex h-full items-start gap-5 p-5 sm:flex-col sm:items-center sm:gap-0 sm:px-7 sm:py-9 sm:text-center">
-                <div className="relative grid size-14 shrink-0 place-items-center rounded-2xl bg-chip text-brand-blue transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[8deg] sm:mb-6 sm:size-16">
-                  <TechIcon name={skill.icon} className="size-8 sm:size-9" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold sm:text-xl">{skill.name}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted sm:mt-3">{skill.description}</p>
-                </div>
-              </SpotlightCard>
-            </StaggerItem>
-          ))}
+        <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {profile.skills.map((skill, i) => {
+            const wide = i in spans;
+            return (
+              <StaggerItem key={pick(skill.name, "en")} className={`h-full ${spans[i] ?? ""}`}>
+                <SpotlightCard className="relative flex h-full flex-col overflow-hidden p-6 sm:p-7">
+                  {wide && (
+                    <TechIcon
+                      name={skill.icon}
+                      className="pointer-events-none absolute -right-6 -bottom-8 size-44 text-brand-blue/[0.07] transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-6"
+                    />
+                  )}
+                  <div className="flex items-center gap-4">
+                    <div className="grid size-12 shrink-0 place-items-center rounded-xl bg-chip text-brand-blue transition-transform duration-500 group-hover:scale-110 group-hover:rotate-[8deg]">
+                      <TechIcon name={skill.icon} className="size-6" />
+                    </div>
+                    <h3 className="text-lg leading-snug font-bold">
+                      <T v={skill.name} />
+                    </h3>
+                  </div>
+                  <p className={`mt-4 text-sm leading-relaxed text-muted ${wide ? "max-w-md" : ""}`}>
+                    <T v={skill.description} />
+                  </p>
+                  <ul className="mt-auto flex flex-wrap gap-2 pt-6">
+                    {skill.tools.map((tool) => (
+                      <li
+                        key={tool}
+                        title={icons[tool].label}
+                        className="flex items-center gap-1.5 rounded-lg border border-border bg-input px-2.5 py-1.5 text-xs font-medium"
+                      >
+                        <TechIcon name={tool} brandColor className="size-3.5" />
+                        {icons[tool].label}
+                      </li>
+                    ))}
+                  </ul>
+                </SpotlightCard>
+              </StaggerItem>
+            );
+          })}
         </Stagger>
       </div>
 
-      <div className="marquee mt-20 overflow-hidden" aria-label="Other tools I use">
+      <div className="mx-auto mt-20 max-w-6xl px-5 sm:px-8">
+        <p className="mb-5 text-sm font-semibold text-muted">
+          <T v={ui.skills.marquee} />
+        </p>
+      </div>
+      <div className="marquee overflow-hidden">
         <ul className="marquee-track flex w-max gap-4">
           {marquee.map((name, i) => (
             <li
               key={`${name}-${i}`}
               aria-hidden={i >= profile.techMarquee.length}
-              className="flex shrink-0 items-center gap-2.5 rounded-full border border-border bg-input px-5 py-2.5 text-sm font-medium"
+              className="flex shrink-0 items-center gap-2.5 rounded-xl border border-border bg-input px-5 py-2.5 text-sm font-medium"
             >
               <TechIcon name={name} brandColor className="size-5" />
               {icons[name].label}

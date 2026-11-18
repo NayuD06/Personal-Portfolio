@@ -1,8 +1,8 @@
 # Personal Portfolio
 
-Trang portfolio cá nhân làm bằng **Next.js 16 (App Router) + TypeScript + Tailwind CSS 4**, animation bằng **Motion**, có nút chuyển **sáng / tối**. Sẵn sàng deploy lên **Vercel**.
+Trang portfolio cá nhân làm bằng **Next.js 16 (App Router) + TypeScript + Tailwind CSS 4**, animation bằng **Motion**, có nút chuyển **sáng / tối** và **tiếng Anh / tiếng Việt (EN / VI)**. Sẵn sàng deploy lên **Vercel**.
 
-Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills & Technologies, Services, Recent Projects (có lọc theo nhóm), Testimonials (carousel), Contact (form) và Footer.
+Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Testimonials (carousel), Contact (form) và Footer.
 
 ## Chạy trên máy
 
@@ -24,16 +24,23 @@ Mở http://localhost:3000.
 
 ## Sửa nội dung
 
-Toàn bộ chữ, link, kỹ năng, dự án... nằm trong **`src/data/profile.ts`**. Sửa ở đó là đủ, không cần đụng vào component.
+Nội dung nằm ở hai file, không cần đụng vào component:
+
+- **`src/data/profile.ts`**: thông tin về bạn (giới thiệu, kỹ năng, dịch vụ, dự án, nhận xét, link...).
+- **`src/data/ui.ts`**: chữ trên giao diện (menu, tiêu đề mục, nút bấm, form...).
+
+Chữ cần hiện theo 2 ngôn ngữ viết dạng `{ en: "English text", vi: "Chữ tiếng Việt" }`. Chữ giống nhau ở cả 2 ngôn ngữ (tên riêng, tên công nghệ) chỉ cần viết một chuỗi bình thường.
+
+Ngôn ngữ mặc định lấy theo trình duyệt của người xem (trình duyệt tiếng Việt thì hiện tiếng Việt), sau khi bấm nút EN / VI thì trang nhớ lựa chọn đó.
 
 Những chỗ nên thay ngay:
 
 - **`email`**: đang là `hello@example.com`.
 - **`avatar`**: đặt ảnh vào `public/avatar.jpg` rồi ghi `avatar: "/avatar.jpg"`. Để trống thì hiện chữ viết tắt.
-- **`resumeUrl`**: đặt CV vào `public/cv.pdf` rồi ghi `resumeUrl: "/cv.pdf"` để hiện nút "Download Resume".
+- **`resumeUrl`**: đặt CV vào `public/cv.pdf` rồi ghi `resumeUrl: "/cv.pdf"` để hiện nút "Download CV" thay cho nút GitHub.
 - **`socials`**: link LinkedIn, Facebook đang là link mẫu.
 - **`testimonials`**: đang là **nội dung mẫu**, hãy thay bằng nhận xét thật hoặc xóa hết phần tử để ẩn mục này.
-- **`projects`**: mỗi dự án có thể thêm `image: "/projects/ten-anh.png"` (ảnh chụp màn hình đặt trong `public/projects/`) để thay cho ảnh bìa tự vẽ, và `liveUrl` nếu có bản chạy thật.
+- **`projects`**: mỗi dự án có thể thêm `image: "/projects/ten-anh.png"` (ảnh chụp màn hình đặt trong `public/projects/`) để thay cho ảnh bìa tự vẽ, và `liveUrl` nếu có bản chạy thật. Dự án có `featured: true` hiện to ở đầu mục Projects, các dự án còn lại nằm trong lưới "More projects".
 
 Tên icon dùng trong file dữ liệu lấy từ `src/lib/icons.tsx` (thêm icon mới ở đó nếu cần).
 
@@ -61,7 +68,7 @@ Gắn tên miền riêng: **Project Settings > Domains**, sau đó đặt `NEXT_
 ```
 src/
 ├─ app/
-│  ├─ layout.tsx            font, metadata (SEO), theme
+│  ├─ layout.tsx            font, metadata (SEO), theme, chọn ngôn ngữ trước khi trang hiện
 │  ├─ page.tsx              ghép các mục của trang
 │  ├─ globals.css           màu sáng/tối, hiệu ứng, animation
 │  ├─ opengraph-image.tsx   ảnh xem trước khi chia sẻ link
@@ -70,7 +77,9 @@ src/
 ├─ components/
 │  ├─ navbar.tsx            menu, đánh dấu mục đang xem, menu mobile
 │  ├─ sections/             hero, about, skills, services, projects, testimonials, contact, footer
-│  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối...)
-├─ data/profile.ts          ★ toàn bộ nội dung
-└─ lib/                     icon, địa chỉ trang
+│  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI...)
+├─ data/
+│  ├─ profile.ts            ★ nội dung về bạn
+│  └─ ui.ts                 ★ chữ trên giao diện
+└─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang
 ```

@@ -105,7 +105,7 @@ h4 {
   background-image: linear-gradient(90deg, #1d4ed8, var(--brand-blue) 45%, var(--brand-sky));
 }
 
-/* Thẻ có viền gradient xanh → đỏ */
+/* Thẻ có viền gradient xanh */
 @utility card {
   border: 1px solid transparent;
   background:
@@ -113,7 +113,7 @@ h4 {
     linear-gradient(135deg, var(--card-border-from), var(--border) 45%, var(--card-border-to)) border-box;
 }
 
-/* Nền mờ xanh bên trái, đỏ bên phải như mẫu */
+/* Nền mờ xanh ở hai góc */
 @utility section-wash {
   background:
     radial-gradient(ellipse at 0% 0%, var(--glow-blue), transparent 55%), radial-gradient(ellipse at 100% 100%, var(--glow-sky), transparent 55%),
@@ -235,6 +235,19 @@ h4 {
   translate: 120% 0;
 }
 
+/* Thanh thời gian tự chuyển của phần nhận xét */
+.progress-bar {
+  animation: progress linear forwards;
+}
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -244,7 +257,14 @@ h4 {
   .orbit-item,
   .blob,
   .marquee-track,
-  .caret {
+  .caret,
+  .progress-bar {
     animation: none;
   }
+}
+
+/* ---------- Đa ngôn ngữ: ẩn bản dịch không dùng ---------- */
+html[data-lang="vi"] .l-en,
+html:not([data-lang="vi"]) .l-vi {
+  display: none;
 }

@@ -1,26 +1,97 @@
-import { LuDownload } from "react-icons/lu";
-import { FaGithub } from "react-icons/fa6";
-import { profile } from "@/data/profile";
 import Image from "next/image";
+import { FaGithub } from "react-icons/fa6";
+import { LuDownload, LuMail } from "react-icons/lu";
+import { profile } from "@/data/profile";
+import { ui } from "@/data/ui";
+import { pick, T } from "@/lib/i18n";
+import type { IconName } from "@/lib/icons";
 import { CountUp } from "../ui/count-up";
 import { Reveal } from "../ui/reveal";
+import { TechIcon } from "../ui/tech-icon";
 
 const github = profile.socials.find((s) => s.icon === "github");
+const badgeIcons: IconName[] = ["typescript", "react", "nestjs", "python"];
 
 export function About() {
   return (
     <section id="about" className="section-wash relative py-24 sm:py-32">
-      <div className="mx-auto grid max-w-6xl items-center gap-14 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20">
-        <Reveal from="left" className="relative mx-auto w-full max-w-md">
-          <div aria-hidden="true" className="bg-brand absolute -inset-3 rounded-[2rem] opacity-30 blur-2xl" />
+      <div className="mx-auto grid max-w-6xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
+        <div>
+          <Reveal>
+            <p className="font-mono text-sm text-brand-blue" aria-hidden="true">
+              {"<about />"}
+            </p>
+            <h2 className="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
+              <T v={ui.about.title} />
+            </h2>
+          </Reveal>
+
+          {profile.about.map((paragraph, i) => (
+            <Reveal key={pick(paragraph, "en")} delay={0.1 + i * 0.1}>
+              <p className="mt-6 max-w-[62ch] leading-relaxed text-muted">
+                <T v={paragraph} />
+              </p>
+            </Reveal>
+          ))}
+
+          <Reveal delay={0.3}>
+            <dl className="mt-10 grid grid-cols-3 divide-x divide-border border-y border-border">
+              {profile.stats.map((stat) => (
+                <div key={stat.value + pick(stat.label, "en")} className="flex flex-col-reverse px-3 py-5 first:pl-0 sm:px-6">
+                  <dt className="mt-1 text-xs text-muted sm:text-sm">
+                    <T v={stat.label} />
+                  </dt>
+                  <dd className="text-gradient font-heading text-3xl font-black sm:text-5xl">
+                    <CountUp value={stat.value} />
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
+
+          <Reveal delay={0.4} className="mt-10 flex flex-wrap gap-3">
+            {profile.resumeUrl ? (
+              <a
+                href={profile.resumeUrl}
+                download
+                className="bg-brand shine inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
+              >
+                <LuDownload className="size-4" aria-hidden="true" />
+                <T v={ui.about.resume} />
+              </a>
+            ) : (
+              github && (
+                <a
+                  href={github.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-brand shine inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
+                >
+                  <FaGithub className="size-4" aria-hidden="true" />
+                  <T v={ui.about.github} />
+                </a>
+              )
+            )}
+            <a
+              href="#contact"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-7 py-3.5 font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue"
+            >
+              <LuMail className="size-4" aria-hidden="true" />
+              <T v={ui.about.contact} />
+            </a>
+          </Reveal>
+        </div>
+
+        <Reveal from="right" className="relative mx-auto w-full max-w-sm lg:max-w-none">
+          <div aria-hidden="true" className="bg-brand absolute -inset-3 rounded-[2rem] opacity-25 blur-2xl" />
           {profile.aboutPhoto ? (
-            <div className="card relative aspect-[4/5] overflow-hidden rounded-[1.75rem] p-1.5 shadow-[0_30px_80px_-30px_var(--glow-blue)]">
-              <div className="group relative size-full overflow-hidden rounded-3xl">
+            <div className="card relative aspect-[4/5] rotate-2 overflow-hidden rounded-[2rem] p-1.5 shadow-[0_30px_80px_-30px_var(--glow-blue)] transition-transform duration-500 hover:rotate-0">
+              <div className="group relative size-full overflow-hidden rounded-[1.6rem]">
                 <Image
                   src={profile.aboutPhoto}
                   alt={profile.name}
                   fill
-                  sizes="(min-width: 1024px) 28rem, 90vw"
+                  sizes="(min-width: 1024px) 26rem, 90vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#04070d]/70 to-transparent" />
@@ -29,60 +100,16 @@ export function About() {
           ) : (
             <CodeCard />
           )}
+
+          {/* huy hiệu nhỏ dưới ảnh */}
+          <div className="card absolute -bottom-6 -left-4 flex items-center gap-2 rounded-2xl px-4 py-3 shadow-[0_20px_50px_-20px_var(--glow-blue)] sm:-left-8">
+            {badgeIcons.map((name) => (
+              <span key={name} className="grid size-9 place-items-center rounded-lg bg-chip">
+                <TechIcon name={name} brandColor className="size-5" />
+              </span>
+            ))}
+          </div>
         </Reveal>
-
-        <div>
-          <Reveal>
-            <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-              About <span className="text-gradient">Me</span>
-            </h2>
-            <div className="bg-brand mt-4 h-1 w-16 rounded-full" aria-hidden="true" />
-          </Reveal>
-
-          {profile.about.map((paragraph, i) => (
-            <Reveal key={paragraph} delay={0.1 + i * 0.1}>
-              <p className="mt-6 leading-relaxed text-muted">{paragraph}</p>
-            </Reveal>
-          ))}
-
-          <Reveal delay={0.3}>
-            <dl className="mt-10 grid grid-cols-3 gap-3 sm:gap-4">
-              {profile.stats.map((stat) => (
-                <div key={stat.label} className="card flex flex-col-reverse rounded-2xl px-3 py-4 text-center sm:px-4">
-                  <dt className="mt-1 text-xs text-muted sm:text-sm">{stat.label}</dt>
-                  <dd className="text-gradient font-heading text-3xl font-extrabold sm:text-4xl">
-                    <CountUp value={stat.value} />
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Reveal>
-
-          <Reveal delay={0.4} className="mt-10">
-            {profile.resumeUrl ? (
-              <a
-                href={profile.resumeUrl}
-                download
-                className="bg-brand shine inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
-              >
-                Download Resume
-                <LuDownload className="size-4" aria-hidden="true" />
-              </a>
-            ) : (
-              github && (
-                <a
-                  href={github.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-brand shine inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
-                >
-                  <FaGithub className="size-4" aria-hidden="true" />
-                  View my GitHub
-                </a>
-              )
-            )}
-          </Reveal>
-        </div>
       </div>
     </section>
   );
@@ -115,12 +142,7 @@ function CodeCard() {
           {"\n  "}
           <span className={key}>role</span>
           <span className={punct}>: </span>
-          <span className={str}>&quot;{profile.roles[0]}&quot;</span>
-          <span className={punct}>,</span>
-          {"\n  "}
-          <span className={key}>location</span>
-          <span className={punct}>: </span>
-          <span className={str}>&quot;{profile.location}&quot;</span>
+          <span className={str}>&quot;{pick(profile.roles[0], "en")}&quot;</span>
           <span className={punct}>,</span>
           {"\n  "}
           <span className={key}>stack</span>
@@ -134,11 +156,6 @@ function CodeCard() {
           ))}
           {"\n  "}
           <span className={punct}>],</span>
-          {"\n  "}
-          <span className={key}>loves</span>
-          <span className={punct}>: </span>
-          <span className={str}>&quot;clean code &amp; shipping&quot;</span>
-          <span className={punct}>,</span>
           {"\n  "}
           <span className={key}>openToWork</span>
           <span className={punct}>: </span>

@@ -9,6 +9,8 @@ import { Projects } from "@/components/sections/projects";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
+import { T } from "@/lib/i18n";
+import { ui } from "@/data/ui";
 
 export default function Home() {
   return (
@@ -17,7 +19,7 @@ export default function Home() {
         href="#main"
         className="sr-only rounded-full bg-brand px-5 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100]"
       >
-        Skip to content
+        <T v={ui.skipToContent} />
       </a>
       <ScrollProgress />
       <Navbar />
