@@ -7,12 +7,14 @@ import { SpotlightCard } from "../ui/spotlight-card";
 import { Stagger, StaggerItem } from "../ui/reveal";
 import { TechIcon } from "../ui/tech-icon";
 
-/** Ô nào rộng gấp đôi trên lưới bento (theo thứ tự trong profile.skills) */
+/** Ô nào rộng gấp đôi trên lưới bento (theo thứ tự trong profile.skills).
+ *  8 ô: màn rộng 3 cột = ô đầu rộng + 2 hàng 3 ô; màn vừa 2 cột = ô đầu và ô cuối rộng. */
 const spans: Record<number, string> = {
   0: "sm:col-span-2",
-  5: "lg:col-span-2",
-  8: "lg:col-span-2",
+  7: "sm:col-span-2 lg:col-span-1",
 };
+/** Ô hiện icon lớn mờ ở góc (ô rộng trên mọi màn hình) */
+const featured = new Set([0]);
 
 export function Skills() {
   // Nhân đôi danh sách để dải logo chạy liền mạch
@@ -25,7 +27,7 @@ export function Skills() {
 
         <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {profile.skills.map((skill, i) => {
-            const wide = i in spans;
+            const wide = featured.has(i);
             return (
               <StaggerItem key={pick(skill.name, "en")} className={`h-full ${spans[i] ?? ""}`}>
                 <SpotlightCard className="relative flex h-full flex-col overflow-hidden p-6 sm:p-7">

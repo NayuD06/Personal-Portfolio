@@ -92,8 +92,8 @@ export const profile = {
   } as Text,
 
   intro: {
-    en: "I build full-stack web apps with React, Next.js, NestJS and Python, from REST APIs and databases to AI features like document search and PDF-to-quiz generation.",
-    vi: "Mình làm ứng dụng web full-stack với React, Next.js, NestJS và Python, từ REST API, cơ sở dữ liệu cho tới các tính năng AI như tìm kiếm tài liệu và tạo câu hỏi từ file PDF.",
+    en: "I build full-stack web apps with React, Next.js, NestJS and Python, and I love vibe coding with AI tools to go from an idea to a working product fast.",
+    vi: "Mình làm ứng dụng web full-stack với React, Next.js, NestJS và Python, và rất thích vibe coding cùng các công cụ AI để đi nhanh từ ý tưởng tới sản phẩm chạy được.",
   } as Text,
 
   /** Đang làm gì: hiện trên thẻ nhỏ cạnh ảnh đại diện */
@@ -118,8 +118,8 @@ export const profile = {
       vi: "Mình là sinh viên năm 3 ngành Công nghệ thông tin tại UTH, một lập trình viên đến từ Việt Nam, thích làm một sản phẩm trọn vẹn: thiết kế cơ sở dữ liệu, viết API rồi dựng giao diện gọn gàng, chạy tốt trên mọi màn hình. Phần lớn dự án gần đây của mình là monorepo TypeScript, backend dùng NestJS hoặc Express, frontend dùng React hoặc Next.js.",
     },
     {
-      en: "Lately I've been bringing AI into real apps: generating exam questions from PDFs with the Claude API, semantic search and RAG with pgvector and Qdrant, and Python services built with FastAPI. I also care about the parts that make a project last, like automated tests, Docker and CI/CD pipelines.",
-      vi: "Dạo gần đây mình đưa AI vào ứng dụng thật: tạo câu hỏi thi từ PDF bằng Claude API, tìm kiếm ngữ nghĩa và RAG với pgvector, Qdrant, cùng các dịch vụ Python viết bằng FastAPI. Mình cũng chăm chút những thứ giúp dự án sống lâu như test tự động, Docker và CI/CD.",
+      en: "I'm a big fan of vibe coding: I work alongside AI coding assistants to turn ideas into working prototypes quickly, then read through, test and refine the code myself so I understand every part of it. I've also built AI features into my own projects, like generating quizzes from PDFs with the Claude API and semantic search with pgvector.",
+      vi: "Mình rất mê vibe coding: làm việc cùng các trợ lý lập trình AI để biến ý tưởng thành bản chạy thử thật nhanh, rồi tự đọc lại, test và chỉnh sửa để hiểu rõ từng phần code. Mình cũng đưa AI vào chính các dự án của mình, như tạo câu hỏi từ PDF bằng Claude API và tìm kiếm ngữ nghĩa với pgvector.",
     },
   ] satisfies Text[],
 
@@ -245,15 +245,6 @@ export const profile = {
       tools: ["nodejs", "nestjs", "express", "socketio"],
     },
     {
-      name: "Python & FastAPI",
-      icon: "python",
-      description: {
-        en: "AI services for PDF parsing, embeddings and RAG, plus graph algorithms with NetworkX.",
-        vi: "Dịch vụ AI đọc PDF, tạo embedding và RAG, cùng thuật toán đồ thị với NetworkX.",
-      },
-      tools: ["python", "fastapi"],
-    },
-    {
       name: { en: "Databases", vi: "Cơ sở dữ liệu" },
       icon: "postgresql",
       description: {
@@ -263,22 +254,13 @@ export const profile = {
       tools: ["postgresql", "mysql", "mongodb", "redis", "prisma"],
     },
     {
-      name: "Docker & CI/CD",
-      icon: "docker",
+      name: "Python & FastAPI",
+      icon: "python",
       description: {
-        en: "Docker Compose environments, GitHub Actions pipelines, Prometheus monitoring and Vercel deploys.",
-        vi: "Môi trường Docker Compose, pipeline GitHub Actions, giám sát bằng Prometheus và deploy lên Vercel.",
+        en: "AI services for PDF parsing, embeddings and RAG, plus graph algorithms with NetworkX.",
+        vi: "Dịch vụ AI đọc PDF, tạo embedding và RAG, cùng thuật toán đồ thị với NetworkX.",
       },
-      tools: ["docker", "githubactions", "prometheus", "vercel"],
-    },
-    {
-      name: "AI & RAG",
-      icon: "anthropic",
-      description: {
-        en: "LLM features with the Claude API, vector search with pgvector and Qdrant, local models with Ollama.",
-        vi: "Tính năng LLM với Claude API, tìm kiếm vector bằng pgvector và Qdrant, chạy model trên máy với Ollama.",
-      },
-      tools: ["anthropic", "ollama", "python"],
+      tools: ["python", "fastapi"],
     },
     {
       name: "PHP & Laravel",
@@ -297,6 +279,15 @@ export const profile = {
         vi: "Ứng dụng di động đa nền tảng với Expo, React Native và Flutter.",
       },
       tools: ["expo", "react", "flutter"],
+    },
+    {
+      name: "Docker & CI/CD",
+      icon: "docker",
+      description: {
+        en: "Docker Compose environments, GitHub Actions pipelines, Prometheus monitoring and Vercel deploys.",
+        vi: "Môi trường Docker Compose, pipeline GitHub Actions, giám sát bằng Prometheus và deploy lên Vercel.",
+      },
+      tools: ["docker", "githubactions", "prometheus", "vercel"],
     },
   ] satisfies Skill[],
 
@@ -377,22 +368,6 @@ export const profile = {
       description: {
         en: "Login systems with JWT, Google sign-in, role-based access control and safely hashed passwords.",
         vi: "Đăng nhập bằng JWT, Google, phân quyền theo vai trò và mã hóa mật khẩu an toàn.",
-      },
-    },
-    {
-      title: { en: "AI integration", vi: "Tích hợp AI" },
-      icon: "brain",
-      description: {
-        en: "Chat over your documents, semantic search and content generation using LLM APIs and vector databases.",
-        vi: "Hỏi đáp trên tài liệu, tìm kiếm ngữ nghĩa và sinh nội dung bằng API LLM cùng cơ sở dữ liệu vector.",
-      },
-    },
-    {
-      title: { en: "DevOps & deployment", vi: "DevOps & triển khai" },
-      icon: "rocket",
-      description: {
-        en: "Dockerized apps, CI/CD with GitHub Actions, monitoring with Prometheus and deploys to Vercel.",
-        vi: "Đóng gói Docker, CI/CD với GitHub Actions, giám sát bằng Prometheus và deploy lên Vercel.",
       },
     },
     {

@@ -47,8 +47,8 @@ export const ui = {
   services: {
     title: { en: "What I can build", vi: "Mình có thể làm gì" },
     subtitle: {
-      en: "From the first database table to a deployed and monitored product.",
-      vi: "Từ bảng dữ liệu đầu tiên cho tới sản phẩm đã triển khai và được giám sát.",
+      en: "From the first database table to a polished interface that works on every screen.",
+      vi: "Từ bảng dữ liệu đầu tiên cho tới giao diện hoàn chỉnh, chạy tốt trên mọi màn hình.",
     },
   },
   projects: {
