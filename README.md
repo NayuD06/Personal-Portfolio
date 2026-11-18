@@ -2,7 +2,7 @@
 
 Trang portfolio cá nhân làm bằng **Next.js 16 (App Router) + TypeScript + Tailwind CSS 4**, animation bằng **Motion**, có nút chuyển **sáng / tối** và **tiếng Anh / tiếng Việt (EN / VI)**. Sẵn sàng deploy lên **Vercel**.
 
-Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Testimonials (carousel), Contact (form) và Footer.
+Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Journey (hành trình, đường kẻ tự vẽ khi cuộn), GitHub Activity (số liệu GitHub tự cập nhật), Contact (form) và Footer. Trên điện thoại có thanh menu dưới đáy màn hình kiểu app.
 
 ## Chạy trên máy
 
@@ -38,8 +38,8 @@ Những chỗ nên thay ngay:
 - **`email`**: đang là `hello@example.com`.
 - **`avatar`**: đặt ảnh vào `public/avatar.jpg` rồi ghi `avatar: "/avatar.jpg"`. Để trống thì hiện chữ viết tắt.
 - **`resumeUrl`**: đặt CV vào `public/cv.pdf` rồi ghi `resumeUrl: "/cv.pdf"` để hiện nút "Download CV" thay cho nút GitHub.
-- **`socials`**: link LinkedIn, Facebook đang là link mẫu.
-- **`testimonials`**: đang là **nội dung mẫu**, hãy thay bằng nhận xét thật hoặc xóa hết phần tử để ẩn mục này.
+- **`socials`**: link Discord, Facebook đang là link mẫu (cách lấy link ghi ngay trên mục `socials`).
+- **`timeline`**: các mốc trong mục Hành trình (mới nhất ở trên). Đang lấy theo lịch sử repo GitHub, có sẵn ví dụ để thêm mốc học tập (tên trường).
 - **`projects`**: mỗi dự án có thể thêm `image: "/projects/ten-anh.png"` (ảnh chụp màn hình đặt trong `public/projects/`) để thay cho ảnh bìa tự vẽ, và `liveUrl` nếu có bản chạy thật. Dự án có `featured: true` hiện to ở đầu mục Projects, các dự án còn lại nằm trong lưới "More projects".
 
 Tên icon dùng trong file dữ liệu lấy từ `src/lib/icons.tsx` (thêm icon mới ở đó nếu cần).
@@ -53,6 +53,14 @@ Muốn tin nhắn gửi thẳng về email của bạn:
 1. Tạo form miễn phí tại https://formspree.io, lấy ID dạng `xyzabcd`.
 2. Tạo file `.env.local` (xem `.env.example`) với dòng `NEXT_PUBLIC_FORMSPREE_ID=xyzabcd`.
 3. Trên Vercel, thêm biến môi trường cùng tên rồi deploy lại.
+
+## Mục GitHub Activity
+
+Số liệu (số repo, số sao, ngôn ngữ, repo cập nhật gần đây, biểu đồ đóng góp) được lấy từ GitHub của tài khoản ghi ở `githubUsername` trong `profile.ts`:
+
+- Lấy một lần lúc build, sau đó Vercel tự làm mới ngầm khoảng **mỗi giờ**, không cần deploy lại.
+- Không cần token. Nếu GitHub báo vượt giới hạn lượt gọi (hiếm), tạo token tại https://github.com/settings/personal-access-tokens (loại fine-grained, chỉ đọc repo công khai, không cần thêm quyền) rồi đặt biến `GITHUB_TOKEN` trên Vercel. Token chỉ dùng ở server, không lộ ra trình duyệt.
+- Nếu lúc build không gọi được GitHub, trang dùng số liệu lưu sẵn trong `src/data/github-snapshot.ts` để mục này không bị trống.
 
 ## Deploy lên Vercel
 
@@ -76,7 +84,7 @@ src/
 │  ├─ sitemap.ts, robots.ts
 ├─ components/
 │  ├─ navbar.tsx            menu, đánh dấu mục đang xem, menu mobile
-│  ├─ sections/             hero, about, skills, services, projects, testimonials, contact, footer
+│  ├─ sections/             hero, about, skills, services, projects, journey, github-activity, contact, footer
 │  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI...)
 ├─ data/
 │  ├─ profile.ts            ★ nội dung về bạn

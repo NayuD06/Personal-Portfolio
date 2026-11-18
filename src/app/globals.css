@@ -23,6 +23,12 @@
   --grid-line: rgb(15 23 42 / 0.05);
   --brand-blue: #2563eb;
   --brand-sky: #0ea5e9;
+  /* biểu đồ đóng góp GitHub: ít → nhiều */
+  --heat-0: rgb(15 23 42 / 0.07);
+  --heat-1: #bfdbfe;
+  --heat-2: #60a5fa;
+  --heat-3: #2563eb;
+  --heat-4: #1e3a8a;
 }
 
 /* ---------- Màu sắc: chế độ tối (đen + xanh dương) ---------- */
@@ -45,6 +51,11 @@
   --grid-line: rgb(96 165 250 / 0.06);
   --brand-blue: #3b82f6;
   --brand-sky: #38bdf8;
+  --heat-0: rgb(148 163 184 / 0.1);
+  --heat-1: #1e3a8a;
+  --heat-2: #1d4ed8;
+  --heat-3: #3b82f6;
+  --heat-4: #93c5fd;
 }
 
 @theme inline {
@@ -65,6 +76,8 @@
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
+  /* bỏ ô sáng xanh khi chạm vào nút trên điện thoại */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -235,19 +248,6 @@ h4 {
   translate: 120% 0;
 }
 
-/* Thanh thời gian tự chuyển của phần nhận xét */
-.progress-bar {
-  animation: progress linear forwards;
-}
-@keyframes progress {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -257,8 +257,7 @@ h4 {
   .orbit-item,
   .blob,
   .marquee-track,
-  .caret,
-  .progress-bar {
+  .caret {
     animation: none;
   }
 }

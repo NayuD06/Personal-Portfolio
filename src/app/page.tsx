@@ -6,7 +6,8 @@ import { About } from "@/components/sections/about";
 import { Skills } from "@/components/sections/skills";
 import { Services } from "@/components/sections/services";
 import { Projects } from "@/components/sections/projects";
-import { Testimonials } from "@/components/sections/testimonials";
+import { Journey } from "@/components/sections/journey";
+import { GitHubActivity } from "@/components/sections/github-activity";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
 import { T } from "@/lib/i18n";
@@ -29,7 +30,8 @@ export default function Home() {
         <Skills />
         <Services />
         <Projects />
-        <Testimonials />
+        <Journey />
+        <GitHubActivity />
         <Contact />
       </main>
       <Footer />

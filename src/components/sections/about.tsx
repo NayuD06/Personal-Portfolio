@@ -34,6 +34,37 @@ export function About() {
             </Reveal>
           ))}
 
+          {profile.education.length > 0 && (
+            <Reveal delay={0.25}>
+              <h3 className="mt-9 text-lg font-bold">
+                <T v={ui.about.education} />
+              </h3>
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                {profile.education.map((item) => (
+                  <li
+                    key={item.short}
+                    className="card flex items-start gap-3.5 rounded-2xl p-4 transition-transform duration-300 hover:-translate-y-1"
+                  >
+                    <span className="bg-brand grid size-11 shrink-0 place-items-center rounded-xl font-heading text-xs font-black tracking-tight text-white">
+                      {item.short}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-sm leading-snug font-bold">
+                        <T v={item.school} />
+                      </span>
+                      <span className="mt-1 block text-xs text-muted">
+                        <T v={item.program} />
+                      </span>
+                      <span className="mt-1.5 block font-mono text-xs font-semibold text-brand-blue">
+                        <T v={item.period} />
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          )}
+
           <Reveal delay={0.3}>
             <dl className="mt-10 grid grid-cols-3 divide-x divide-border border-y border-border">
               {profile.stats.map((stat) => (

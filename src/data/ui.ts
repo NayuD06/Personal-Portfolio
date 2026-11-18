@@ -1,9 +1,12 @@
+import type { Text } from "@/lib/i18n";
+
 // Chữ trên giao diện (menu, tiêu đề mục, nút bấm...) bằng hai ngôn ngữ.
 // Nội dung về bạn (giới thiệu, dự án, kỹ năng...) nằm ở src/data/profile.ts
 
-export const navLinks = [
+// short: chữ ngắn hơn cho thanh menu dưới đáy trên điện thoại
+export const navLinks: { href: string; label: Text; short?: Text }[] = [
   { href: "#home", label: { en: "Home", vi: "Trang chủ" } },
-  { href: "#about", label: { en: "About", vi: "Giới thiệu" } },
+  { href: "#about", label: { en: "About", vi: "Giới thiệu" }, short: { en: "About", vi: "Về mình" } },
   { href: "#skills", label: { en: "Skills", vi: "Kỹ năng" } },
   { href: "#services", label: { en: "Services", vi: "Dịch vụ" } },
   { href: "#projects", label: { en: "Projects", vi: "Dự án" } },
@@ -14,8 +17,6 @@ export const ui = {
   skipToContent: { en: "Skip to content", vi: "Bỏ qua tới nội dung" },
   nav: {
     cta: { en: "Let's talk", vi: "Trò chuyện" },
-    openMenu: { en: "Open menu", vi: "Mở menu" },
-    closeMenu: { en: "Close menu", vi: "Đóng menu" },
     toTop: { en: "Back to top", vi: "Lên đầu trang" },
     lightMode: { en: "Switch to light mode", vi: "Chuyển sang giao diện sáng" },
     darkMode: { en: "Switch to dark mode", vi: "Chuyển sang giao diện tối" },
@@ -34,6 +35,7 @@ export const ui = {
     github: { en: "View my GitHub", vi: "Xem GitHub của mình" },
     resume: { en: "Download CV", vi: "Tải CV" },
     contact: { en: "Get in touch", vi: "Liên hệ" },
+    education: { en: "Education", vi: "Học vấn" },
   },
   skills: {
     title: { en: "Skills & technologies", vi: "Kỹ năng & công nghệ" },
@@ -64,14 +66,40 @@ export const ui = {
     live: { en: "Live demo", vi: "Bản chạy thử" },
     builtWith: { en: "Built with", vi: "Công nghệ" },
   },
-  testimonials: {
-    title: { en: "Kind words", vi: "Nhận xét" },
+  journey: {
+    title: { en: "My journey", vi: "Hành trình" },
     subtitle: {
-      en: "What lecturers, teammates and collaborators say about working with me.",
-      vi: "Giảng viên, đồng đội và những người từng làm cùng nói gì về mình.",
+      en: "From first C++ exercises to AI-powered platforms: how my skills grew, one repository at a time.",
+      vi: "Từ những bài tập C++ đầu tiên tới nền tảng có AI: chặng đường mình lớn lên qua từng repo.",
     },
-    prev: { en: "Previous", vi: "Trước" },
-    next: { en: "Next", vi: "Tiếp" },
+    now: { en: "Now", vi: "Hiện tại" },
+  },
+  github: {
+    title: { en: "GitHub activity", vi: "Hoạt động GitHub" },
+    subtitle: {
+      en: "Numbers pulled from my GitHub profile and refreshed automatically.",
+      vi: "Số liệu lấy từ tài khoản GitHub của mình và tự cập nhật.",
+    },
+    repos: { en: "Public repositories", vi: "Repo công khai" },
+    stars: { en: "Stars earned", vi: "Sao nhận được" },
+    contributions: { en: "Contributions in 12 months", vi: "Đóng góp trong 12 tháng" },
+    languagesUsed: { en: "Languages used", vi: "Ngôn ngữ đã dùng" },
+    since: { en: "On GitHub since", vi: "Dùng GitHub từ" },
+    graphTitle: { en: "contributions in the last year", vi: "đóng góp trong 12 tháng qua" },
+    graphUnavailable: {
+      en: "The contribution graph couldn't be loaded right now.",
+      vi: "Chưa tải được biểu đồ đóng góp lúc này.",
+    },
+    less: { en: "Less", vi: "Ít" },
+    more: { en: "More", vi: "Nhiều" },
+    contributionOne: { en: "contribution on", vi: "đóng góp ngày" },
+    contributionMany: { en: "contributions on", vi: "đóng góp ngày" },
+    languages: { en: "Top languages", vi: "Ngôn ngữ dùng nhiều" },
+    languagesNote: { en: "Share of repositories by main language", vi: "Tỉ lệ repo theo ngôn ngữ chính" },
+    recent: { en: "Recently updated", vi: "Cập nhật gần đây" },
+    updated: { en: "Updated", vi: "Cập nhật" },
+    viewProfile: { en: "View GitHub profile", vi: "Xem trang GitHub" },
+    dataNote: { en: "Data from the GitHub API, last refreshed", vi: "Dữ liệu từ GitHub API, làm mới lần cuối" },
   },
   contact: {
     title: { en: "Let's work together", vi: "Cùng làm việc nhé" },

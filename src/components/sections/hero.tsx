@@ -32,7 +32,7 @@ export function Hero() {
   const roles = useMemo(() => profile.roles.map((role) => pick(role, lang)), [lang]);
 
   return (
-    <section id="home" className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-28 pb-20">
+    <section id="home" className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-20">
       {/* Nền: lưới mờ và hai đốm sáng trôi */}
       <div
         aria-hidden="true"
@@ -44,7 +44,7 @@ export function Hero() {
         className="blob absolute bottom-0 -left-40 -z-10 size-[24rem] rounded-full bg-brand-sky/15 blur-[110px] [animation-delay:-7s]"
       />
 
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:gap-16 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
         <motion.div variants={container} initial="hidden" animate="show">
           {profile.availability && (
             <motion.p
@@ -127,7 +127,7 @@ export function Hero() {
         </motion.div>
 
         {/* Ảnh đại diện trong khung bo góc + vòng icon công nghệ */}
-        <div className="relative mx-auto grid aspect-square w-full max-w-[22rem] place-items-center sm:max-w-[28rem] [--r:9.5rem] sm:[--r:12.75rem]">
+        <div className="relative order-first mx-auto grid aspect-square w-full max-w-[19rem] place-items-center [--r:8.25rem] sm:max-w-[28rem] sm:[--r:12.75rem] lg:order-none">
           {/* đường quỹ đạo */}
           <div
             aria-hidden="true"
@@ -166,7 +166,7 @@ export function Hero() {
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.8 + i * 0.08, type: "spring", stiffness: 260, damping: 18 }}
-                    className="grid size-11 place-items-center rounded-xl border border-brand-blue/40 bg-[var(--card-from)] text-fg shadow-[0_0_24px_-4px_var(--glow-blue)] sm:size-12"
+                    className="grid size-10 place-items-center rounded-xl border border-brand-blue/40 bg-[var(--card-from)] text-fg shadow-[0_0_24px_-4px_var(--glow-blue)] sm:size-12"
                   >
                     <TechIcon name={name} brandColor className="size-5 sm:size-6" />
                   </motion.div>
@@ -176,7 +176,7 @@ export function Hero() {
           </div>
 
           {/* thẻ thông tin nổi */}
-          <FloatingCard className="-bottom-2 left-0 sm:bottom-4 sm:-left-6" delay={1.3} drift={-8}>
+          <FloatingCard className="-bottom-3 -left-2 sm:bottom-4 sm:-left-6" delay={1.3} drift={-8}>
             <span className="bg-brand grid size-9 place-items-center rounded-lg text-white">
               <LuHammer className="size-4" aria-hidden="true" />
             </span>
@@ -187,7 +187,7 @@ export function Hero() {
               <span className="block text-sm font-bold">{profile.currentlyBuilding}</span>
             </span>
           </FloatingCard>
-          <FloatingCard className="top-0 right-0 sm:top-6 sm:-right-4" delay={1.5} drift={8}>
+          <FloatingCard className="-top-1 -right-2 sm:top-6 sm:-right-4" delay={1.5} drift={8}>
             <span className="grid size-9 place-items-center rounded-lg bg-chip text-brand-blue">
               <LuMapPin className="size-4" aria-hidden="true" />
             </span>
@@ -237,7 +237,7 @@ function FloatingCard({
         scale: { delay, type: "spring", stiffness: 260, damping: 20 },
         y: { delay, duration: 5, repeat: Infinity, ease: "easeInOut" },
       }}
-      className={`card absolute z-10 flex items-center gap-3 rounded-2xl py-2.5 pr-4 pl-2.5 shadow-[0_20px_50px_-20px_var(--glow-blue)] backdrop-blur-md ${className}`}
+      className={`card absolute z-10 flex items-center gap-2.5 rounded-2xl py-2 pr-3 pl-2 sm:gap-3 sm:py-2.5 sm:pr-4 sm:pl-2.5 shadow-[0_20px_50px_-20px_var(--glow-blue)] backdrop-blur-md ${className}`}
     >
       {children}
     </motion.div>
