@@ -267,3 +267,50 @@ html[data-lang="vi"] .l-en,
 html:not([data-lang="vi"]) .l-vi {
   display: none;
 }
+
+/* ---------- Trang CV (/cv): khổ A4, in ra đúng một trang ---------- */
+.cv-sheet {
+  page: cv;
+  width: 210mm;
+  min-height: 297mm;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+@page cv {
+  size: A4;
+  margin: 0;
+}
+/* thu nhỏ bản xem trước trên màn hình hẹp để không phải cuộn ngang */
+@media screen and (max-width: 840px) {
+  .cv-sheet {
+    zoom: 0.8;
+  }
+}
+@media screen and (max-width: 680px) {
+  .cv-sheet {
+    zoom: 0.6;
+  }
+}
+@media screen and (max-width: 520px) {
+  .cv-sheet {
+    zoom: 0.46;
+  }
+}
+@media screen and (max-width: 400px) {
+  .cv-sheet {
+    zoom: 0.42;
+  }
+}
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  .cv-screen {
+    padding: 0 !important;
+  }
+  .cv-sheet {
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+}

@@ -2,7 +2,7 @@
 
 import { motion, type Variants } from "motion/react";
 import { useMemo, type CSSProperties } from "react";
-import { LuArrowDownRight, LuHammer, LuMail, LuMapPin, LuMouse } from "react-icons/lu";
+import { LuArrowDownRight, LuDownload, LuHammer, LuMail, LuMapPin, LuMouse } from "react-icons/lu";
 import { profile } from "@/data/profile";
 import { linkProps } from "@/lib/site";
 import { ui } from "@/data/ui";
@@ -10,6 +10,7 @@ import { pick, T } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons";
 import { useLang } from "@/lib/use-lang";
 import { Avatar } from "../ui/avatar";
+import { ResumeLink } from "../ui/resume-link";
 import { TechIcon } from "../ui/tech-icon";
 import { Typewriter } from "../ui/typewriter";
 
@@ -88,7 +89,7 @@ export function Hero() {
             <T v={profile.intro} />
           </motion.p>
 
-          <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-3 sm:gap-4">
+          <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-3">
             <motion.a
               href="#projects"
               whileHover={{ scale: 1.04 }}
@@ -98,15 +99,20 @@ export function Hero() {
               <T v={ui.hero.viewProjects} />
               <LuArrowDownRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" aria-hidden="true" />
             </motion.a>
-            <motion.a
+            <ResumeLink className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-7 py-3.5 font-semibold transition-[color,border-color,scale] hover:scale-[1.04] hover:border-brand-blue hover:text-brand-blue active:scale-[0.97]">
+              <LuDownload className="size-4" aria-hidden="true" />
+              <T v={ui.hero.cv} />
+            </ResumeLink>
+            {/* nút phụ thứ ba: chỉ chữ, nhẹ hơn hai nút trên */}
+            <a
               href="#contact"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-7 py-3.5 font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue"
+              className="group/contact inline-flex items-center gap-2 px-2 py-3.5 font-semibold text-muted transition-colors hover:text-brand-blue"
             >
               <LuMail className="size-4" aria-hidden="true" />
-              <T v={ui.hero.contact} />
-            </motion.a>
+              <span className="underline-offset-4 group-hover/contact:underline">
+                <T v={ui.hero.contact} />
+              </span>
+            </a>
           </motion.div>
 
           <motion.ul variants={item} className="mt-10 flex items-center gap-2">

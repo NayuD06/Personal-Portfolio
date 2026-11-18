@@ -2,9 +2,10 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { FaGithub } from "react-icons/fa6";
-import { LuArrowUpRight } from "react-icons/lu";
+import { LuArrowRight, LuArrowUpRight } from "react-icons/lu";
 import { profile, type Project, type ProjectCategory } from "@/data/profile";
 import { ui } from "@/data/ui";
 import { pick, T } from "@/lib/i18n";
@@ -118,7 +119,12 @@ function FeaturedProject({ project, flip }: { project: Project; flip: boolean })
   return (
     <article className="grid items-center gap-8 lg:grid-cols-[1.25fr_1fr] lg:gap-14">
       <Reveal from={flip ? "right" : "left"} className={flip ? "lg:order-2" : ""}>
-        <div className="group card relative overflow-hidden rounded-2xl shadow-[0_30px_80px_-35px_var(--glow-blue)]">
+        <Link
+          href={`/projects/${project.slug}`}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="group card relative block overflow-hidden rounded-2xl shadow-[0_30px_80px_-35px_var(--glow-blue)]"
+        >
           <div className="flex items-center gap-2 border-b border-border px-4 py-3">
             <span className="size-2.5 rounded-full bg-[#ff5f57]" />
             <span className="size-2.5 rounded-full bg-[#febc2e]" />
@@ -138,7 +144,7 @@ function FeaturedProject({ project, flip }: { project: Project; flip: boolean })
               <ProjectCover project={project} bare />
             )}
           </div>
-        </div>
+        </Link>
       </Reveal>
 
       <Reveal from={flip ? "left" : "right"} delay={0.1}>
@@ -153,7 +159,11 @@ function FeaturedProject({ project, flip }: { project: Project; flip: boolean })
             </span>
           ))}
         </div>
-        <h3 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{project.title}</h3>
+        <h3 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
+          <Link href={`/projects/${project.slug}`} className="transition-colors hover:text-brand-blue">
+            {project.title}
+          </Link>
+        </h3>
         <p className="mt-4 leading-relaxed text-muted">
           <T v={project.description} />
         </p>
@@ -180,7 +190,11 @@ function ProjectCard({ project }: { project: Project }) {
 
       <div className="flex flex-1 flex-col px-1 pt-5 pb-1">
         <div className="flex items-baseline justify-between gap-3">
-          <h3 className="text-xl font-bold">{project.title}</h3>
+          <h3 className="text-xl font-bold">
+            <Link href={`/projects/${project.slug}`} className="transition-colors hover:text-brand-blue">
+              {project.title}
+            </Link>
+          </h3>
           <span className="shrink-0 font-mono text-xs text-muted">{project.year}</span>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted">
@@ -207,6 +221,14 @@ function ProjectLinks({ project, compact = false }: { project: Project; compact?
   const size = compact ? "px-4 py-2 text-sm" : "px-5 py-2.5 text-sm";
   return (
     <div className={`flex flex-wrap gap-3 ${compact ? "pt-6" : "pt-7"}`}>
+      <Link
+        href={`/projects/${project.slug}`}
+        className={`bg-brand shine group/details inline-flex items-center gap-1.5 rounded-xl font-semibold text-white transition-transform hover:scale-105 ${size}`}
+      >
+        <T v={ui.projects.details} />
+        <LuArrowRight className="size-4 transition-transform group-hover/details:translate-x-0.5" aria-hidden="true" />
+        <span className="sr-only">: {project.title}</span>
+      </Link>
       {project.githubUrl && (
         <a
           href={project.githubUrl}
@@ -224,7 +246,7 @@ function ProjectLinks({ project, compact = false }: { project: Project; compact?
           href={project.liveUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={`bg-brand shine inline-flex items-center gap-1.5 rounded-xl font-semibold text-white transition-transform hover:scale-105 ${size}`}
+          className={`inline-flex items-center gap-1.5 rounded-xl border border-border bg-input font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue ${size}`}
         >
           <T v={ui.projects.live} />
           <LuArrowUpRight className="size-4" aria-hidden="true" />

@@ -7,6 +7,7 @@ import { pick, T } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons";
 import { linkProps } from "@/lib/site";
 import { CountUp } from "../ui/count-up";
+import { ResumeLink } from "../ui/resume-link";
 import { Reveal } from "../ui/reveal";
 import { TechIcon } from "../ui/tech-icon";
 
@@ -51,34 +52,31 @@ export function About() {
           </Reveal>
 
           <Reveal delay={0.4} className="mt-10 flex flex-wrap gap-3">
-            {profile.resumeUrl ? (
+            {github && (
               <a
-                href={profile.resumeUrl}
-                download
+                href={github.href}
+                {...linkProps(github.href)}
                 className="bg-brand shine inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
               >
+                <FaGithub className="size-4" aria-hidden="true" />
+                <T v={ui.about.github} />
+              </a>
+            )}
+            {/* có file CV thì hiện nút tải CV, không thì hiện nút liên hệ */}
+            {profile.resumeUrl ? (
+              <ResumeLink className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-7 py-3.5 font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue">
                 <LuDownload className="size-4" aria-hidden="true" />
                 <T v={ui.about.resume} />
-              </a>
+              </ResumeLink>
             ) : (
-              github && (
-                <a
-                  href={github.href}
-                  {...linkProps(github.href)}
-                  className="bg-brand shine inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
-                >
-                  <FaGithub className="size-4" aria-hidden="true" />
-                  <T v={ui.about.github} />
-                </a>
-              )
+              <a
+                href="#contact"
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-7 py-3.5 font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue"
+              >
+                <LuMail className="size-4" aria-hidden="true" />
+                <T v={ui.about.contact} />
+              </a>
             )}
-            <a
-              href="#contact"
-              className="inline-flex items-center gap-2 rounded-xl border border-border bg-input px-7 py-3.5 font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue"
-            >
-              <LuMail className="size-4" aria-hidden="true" />
-              <T v={ui.about.contact} />
-            </a>
           </Reveal>
         </div>
 

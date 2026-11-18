@@ -28,6 +28,8 @@ export type ProjectCategory = "AI" | "Full-stack" | "Backend" | "DevOps";
 
 export type Project = {
   title: string;
+  /** Đường dẫn trang chi tiết: /projects/<slug>. Chỉ dùng chữ thường, số và dấu gạch ngang. */
+  slug: string;
   year: string;
   description: Text;
   tags: string[];
@@ -42,6 +44,18 @@ export type Project = {
   image?: string;
   githubUrl?: string;
   liveUrl?: string;
+
+  // ----- Trang chi tiết dự án (/projects/<slug>) -----
+  /** Nhãn nhỏ cạnh năm, vd. "Đồ án nhóm 5 người" hay "Đang làm". Bỏ đi để ẩn. */
+  context?: Text;
+  /** Dự án giải quyết vấn đề gì */
+  problem: Text;
+  /** Cách mình làm: mỗi phần tử là một ý */
+  approach: Text[];
+  /** Tính năng chính: mỗi phần tử là một dòng ngắn */
+  features: Text[];
+  /** Ảnh chụp thêm (bấm vào để phóng to). Đặt trong public/projects/<slug>/ */
+  gallery?: { src: string; caption: Text }[];
 };
 
 export type Education = {
@@ -102,8 +116,15 @@ export const profile = {
   avatar: "/avatar.jpg",
   /** Ảnh dọc ở phần About (tỉ lệ 4:5). Để trống "" sẽ dùng khung code thay ảnh. */
   aboutPhoto: "/about.jpg",
-  /** Link CV: đặt file vào public (vd. public/cv.pdf) rồi ghi "/cv.pdf". Để trống để ẩn nút tải CV. */
-  resumeUrl: "",
+  /**
+   * File CV cho nút "Tải CV" (đầu trang và mục Về mình), mỗi ngôn ngữ một file trong public/cv/.
+   * Hai file hiện có được xuất từ trang /cv (dựng tự động từ nội dung file này).
+   * Muốn dùng CV của riêng bạn: chép file PDF vào public/cv/ rồi sửa đường dẫn,
+   * chỉ có một file thì ghi một chuỗi, vd. "/cv/Duy-An-CV.pdf". Để trống "" để ẩn nút.
+   */
+  resumeUrl: { en: "/cv/Duy-An-CV-EN.pdf", vi: "/cv/Duy-An-CV-VI.pdf" } as Text,
+  /** Tên miền của trang, hiện trên CV */
+  website: "feb20th.click",
 
   location: { en: "Vietnam", vi: "Việt Nam" } as Text,
   /** Email liên hệ. Nếu đổi thì sửa luôn link "mailto:" trong socials bên dưới */
@@ -380,6 +401,7 @@ export const profile = {
   projects: [
     {
       title: "StudyMind AI",
+      slug: "studymind-ai",
       year: "2026",
       description: {
         en: "Study material sharing platform with semantic search and AI Q&A over PDFs, an in-browser PDF reader, ratings, a moderation dashboard and 55 automated API tests running in CI.",
@@ -392,9 +414,55 @@ export const profile = {
       coverColors: ["#0369a1", "#2563eb"],
       image: "/projects/studymind.jpg",
       githubUrl: "https://github.com/NayuD06/StudyMind-AI",
+      problem: {
+        en: "Students share notes and past papers across scattered chat groups and drives, so good material is hard to find, quality is uneven, and finding the right page in a long PDF takes ages.",
+        vi: "Sinh viên chia sẻ tài liệu, đề cũ rải rác trong các nhóm chat và ổ đĩa, nên tài liệu tốt khó tìm, chất lượng không đồng đều, và tìm đúng trang cần trong một file PDF dài rất mất thời gian.",
+      },
+      approach: [
+        {
+          en: "Split the system into four parts: a student site and a separate admin site (React, Vite, TypeScript, Tailwind), a REST API with Express and Prisma on MySQL, and a Python FastAPI service that reads PDFs, creates embeddings and answers questions with RAG over Qdrant.",
+          vi: "Chia hệ thống thành bốn phần: trang sinh viên và trang quản trị riêng (React, Vite, TypeScript, Tailwind), REST API bằng Express và Prisma trên MySQL, và một dịch vụ Python FastAPI đọc PDF, tạo embedding và trả lời câu hỏi bằng RAG trên Qdrant.",
+        },
+        {
+          en: "Built a moderation flow: new uploads wait for admin approval, PDFs are checked by their content rather than the file extension, and the first 30 pages are scanned for emails and phone numbers to warn about personal data.",
+          vi: "Làm quy trình kiểm duyệt: tài liệu mới chờ quản trị viên duyệt, file PDF được kiểm tra theo nội dung thật chứ không tin phần đuôi, 30 trang đầu được quét email và số điện thoại để cảnh báo lộ thông tin cá nhân.",
+        },
+        {
+          en: "Hardened sign-in: short-lived access tokens kept in memory, rotating httpOnly refresh cookies that end every session if one is reused, and rate limits on login, sign-up, uploads and comments.",
+          vi: "Siết chặt đăng nhập: access token sống ngắn chỉ nằm trong bộ nhớ, refresh token trong cookie httpOnly được đổi mới mỗi lần dùng và hủy mọi phiên nếu bị dùng lại, giới hạn tần suất cho đăng nhập, đăng ký, tải lên và bình luận.",
+        },
+        {
+          en: "Wrote 55 API tests that run against a separate test database, with GitHub Actions running them on every push and packaging Docker builds for release.",
+          vi: "Viết 55 test API chạy trên database riêng cho test, GitHub Actions chạy bộ test ở mỗi lần push và đóng gói bản phát hành bằng Docker.",
+        },
+      ],
+      features: [
+        {
+          en: "Library search with filters by subject, school, major and rating",
+          vi: "Thư viện tìm kiếm, lọc theo môn, trường, ngành và điểm đánh giá",
+        },
+        { en: "In-browser PDF reader with zoom and page navigation", vi: "Đọc PDF ngay trên trang, chuyển trang và phóng to" },
+        {
+          en: "Ratings, saved documents, downloads, comments and abuse reports",
+          vi: "Chấm sao, lưu tài liệu, tải xuống, bình luận và báo cáo vi phạm",
+        },
+        {
+          en: "AI Q&A, summaries and semantic search over documents",
+          vi: "Hỏi đáp, tóm tắt và tìm kiếm ngữ nghĩa trên tài liệu bằng AI",
+        },
+        {
+          en: "Admin dashboard with charts, a moderation queue, user management and an audit log",
+          vi: "Trang quản trị có biểu đồ, hàng chờ kiểm duyệt, quản lý người dùng và nhật ký thao tác",
+        },
+        {
+          en: "Notifications, password reset by email, light/dark theme and Vietnamese/English",
+          vi: "Chuông thông báo, đặt lại mật khẩu qua email, giao diện sáng/tối và tiếng Việt/tiếng Anh",
+        },
+      ],
     },
     {
       title: "SpendWise Money Manager",
+      slug: "spendwise",
       year: "2026",
       description: {
         en: "Personal finance tracker with JWT auth, category reports and Excel support, Jest and Supertest coverage, Prometheus metrics with alert rules and a GitHub Actions release pipeline.",
@@ -415,9 +483,46 @@ export const profile = {
       image: "/projects/spendwise.jpg",
       githubUrl: "https://github.com/NayuD06/DEVOPS-Money-Manager",
       liveUrl: "https://devops-money-manager.vercel.app",
+      problem: {
+        en: "Most people know roughly what they earn but not where it goes each month. SpendWise makes daily income and spending quick to record and easy to review, and doubles as practice for the full DevOps loop: tests, CI/CD, deployment and monitoring.",
+        vi: "Nhiều người biết mình kiếm được bao nhiêu nhưng không rõ tiền đi đâu mỗi tháng. SpendWise giúp ghi thu chi hằng ngày thật nhanh và xem lại dễ dàng, đồng thời là bài luyện trọn vòng DevOps: test, CI/CD, triển khai và giám sát.",
+      },
+      approach: [
+        {
+          en: "A React (Vite) client and an Express REST API on MongoDB, with Mongoose models for users, categories and transactions, JWT sign-in, bcrypt-hashed passwords and avatar uploads.",
+          vi: "Client React (Vite) và REST API Express trên MongoDB, model Mongoose cho người dùng, danh mục và giao dịch, đăng nhập bằng JWT, mật khẩu băm bằng bcrypt và tải ảnh đại diện.",
+        },
+        {
+          en: "API tests with Jest and Supertest. A CI workflow runs them and builds the client on every push.",
+          vi: "Test API bằng Jest và Supertest. Workflow CI chạy test và build client ở mỗi lần push.",
+        },
+        {
+          en: "A CD workflow bundles a release, copies it to a VPS over SCP, reloads the app with PM2, runs a health check and reports the result to Telegram.",
+          vi: "Workflow CD đóng gói bản phát hành, chép lên VPS qua SCP, khởi động lại bằng PM2, kiểm tra health check rồi gửi kết quả về Telegram.",
+        },
+        {
+          en: "The API exposes Prometheus metrics, and alert rules fire when the API goes down or the server runs low on CPU, memory or disk.",
+          vi: "API xuất số liệu cho Prometheus, luật cảnh báo báo động khi API sập hoặc máy chủ thiếu CPU, RAM hay ổ đĩa.",
+        },
+      ],
+      features: [
+        { en: "Record income and expenses by category", vi: "Ghi khoản thu và khoản chi theo danh mục" },
+        { en: "Monthly totals and a spending pie chart", vi: "Tổng thu chi theo tháng và biểu đồ tròn theo danh mục" },
+        { en: "Monthly budgets per category with progress", vi: "Ngân sách theo tháng cho từng danh mục, kèm tiến độ" },
+        {
+          en: "Insights comparing this month with the previous one",
+          vi: "Gợi ý so sánh thu chi tháng này với tháng trước",
+        },
+        {
+          en: "Excel report export with an overview sheet and a transaction list",
+          vi: "Xuất báo cáo Excel gồm trang tổng quan và danh sách giao dịch",
+        },
+        { en: "Custom categories and a profile with avatar", vi: "Tự tạo danh mục, hồ sơ có ảnh đại diện" },
+      ],
     },
     {
       title: "Online E-Learning",
+      slug: "online-elearning",
       year: "2026",
       description: {
         en: "E-learning platform with courses, sections and lessons, quizzes with attempts, enrollments and orders, reviews, completion certificates and an admin dashboard.",
@@ -430,9 +535,81 @@ export const profile = {
       coverColors: ["#1e40af", "#38bdf8"],
       image: "/projects/elearning.jpg",
       githubUrl: "https://github.com/NayuD06/online_elearning",
+      problem: {
+        en: "Students need one place to find courses, learn at their own pace and track progress, while teachers need to publish and manage their own content without touching code.",
+        vi: "Sinh viên cần một nơi để tìm khóa học, tự học theo tiến độ của mình và theo dõi quá trình, còn giảng viên cần tự đăng và quản lý nội dung mà không phải đụng tới code.",
+      },
+      approach: [
+        {
+          en: "A Laravel 13 MVC app with Eloquent on MySQL and Blade views styled with Tailwind CSS and Alpine.js, built with Vite.",
+          vi: "Ứng dụng Laravel 13 theo mô hình MVC, Eloquent trên MySQL, giao diện Blade với Tailwind CSS và Alpine.js, build bằng Vite.",
+        },
+        {
+          en: "Three roles (admin, teacher, student) enforced with middleware and policies, so teachers can only edit their own courses.",
+          vi: "Ba vai trò admin, giảng viên, học viên được kiểm soát bằng middleware và policy, giảng viên chỉ sửa được khóa học của mình.",
+        },
+        {
+          en: "Course descriptions and lessons are written in CKEditor 5 and sanitized before display to prevent XSS.",
+          vi: "Mô tả khóa học và bài học soạn bằng CKEditor 5, được lọc trước khi hiển thị để chống XSS.",
+        },
+        {
+          en: "Paid courses go through VNPay or MoMo sandbox checkout and then enroll the student automatically. Google sign-in uses Socialite, and the app is deployed on Render.",
+          vi: "Khóa học trả phí thanh toán qua VNPay hoặc MoMo (môi trường thử) rồi tự ghi danh. Đăng nhập Google dùng Socialite, ứng dụng được triển khai lên Render.",
+        },
+      ],
+      features: [
+        {
+          en: "Course library with search, filters by category, level and price, and sorting",
+          vi: "Thư viện khóa học: tìm kiếm, lọc theo danh mục, trình độ, học phí và sắp xếp",
+        },
+        {
+          en: "Video lessons, lesson files, completion tracking and a progress bar per course",
+          vi: "Bài giảng video, tài liệu bài học, đánh dấu hoàn thành và thanh tiến độ từng khóa",
+        },
+        { en: "Student dashboard with stats and a continue-learning list", vi: "Góc học tập có thống kê và danh sách học tiếp" },
+        {
+          en: "Reviews, favorites, lesson Q&A with email replies and PDF certificates",
+          vi: "Đánh giá, khóa học yêu thích, hỏi đáp bài học có email báo trả lời và chứng chỉ PDF",
+        },
+        {
+          en: "Admin dashboard with Chart.js charts and course, user, category and announcement management",
+          vi: "Trang quản trị có biểu đồ Chart.js, quản lý khóa học, người dùng, danh mục và thông báo",
+        },
+        {
+          en: "Responsive on phones, Vietnamese interface and custom error pages",
+          vi: "Chạy tốt trên điện thoại, giao diện tiếng Việt và trang lỗi riêng",
+        },
+      ],
+      gallery: [
+        {
+          src: "/projects/online-elearning/library.jpg",
+          caption: { en: "Course library with filters", vi: "Thư viện khóa học có bộ lọc" },
+        },
+        {
+          src: "/projects/online-elearning/course.jpg",
+          caption: { en: "Course detail page", vi: "Trang chi tiết khóa học" },
+        },
+        {
+          src: "/projects/online-elearning/lesson.jpg",
+          caption: { en: "Lesson view with progress", vi: "Trang học bài kèm tiến độ" },
+        },
+        {
+          src: "/projects/online-elearning/dashboard.jpg",
+          caption: { en: "Student dashboard", vi: "Góc học tập của học viên" },
+        },
+        {
+          src: "/projects/online-elearning/admin.jpg",
+          caption: { en: "Admin dashboard", vi: "Bảng điều khiển quản trị" },
+        },
+        {
+          src: "/projects/online-elearning/editor.jpg",
+          caption: { en: "Editing a course in CKEditor", vi: "Soạn khóa học bằng CKEditor" },
+        },
+      ],
     },
     {
       title: "EduForge AI",
+      slug: "eduforge-ai",
       year: "2026",
       description: {
         en: "Course and online exam platform: question banks with 8 question types, randomized timed exams with auto-grading, live timer sync and AI question generation from PDFs.",
@@ -443,9 +620,53 @@ export const profile = {
       coverIcon: "graduation",
       coverColors: ["#1d4ed8", "#0ea5e9"],
       githubUrl: "https://github.com/NayuD06/EduForge-AI",
+      context: { en: "In progress: API done, apps next", vi: "Đang làm: xong API, đang dựng app" },
+      problem: {
+        en: "Instructors need one place to build courses, keep question banks and run fair, timed online exams, and writing good questions from course material by hand takes a lot of time.",
+        vi: "Giảng viên cần một nơi để xây khóa học, giữ ngân hàng câu hỏi và tổ chức thi trực tuyến có giới hạn thời gian thật công bằng, trong khi tự soạn câu hỏi từ tài liệu rất tốn thời gian.",
+      },
+      approach: [
+        {
+          en: "A pnpm and Turborepo monorepo: a NestJS API, Next.js apps for students and instructors, an Expo mobile app, and a shared package of types and an API client used by all four.",
+          vi: "Monorepo pnpm và Turborepo: API NestJS, hai app Next.js cho học viên và giảng viên, app di động Expo, cùng một package dùng chung kiểu dữ liệu và API client cho cả bốn app.",
+        },
+        {
+          en: "The exam engine is written as pure functions with unit tests: seeded random exams that can be reproduced, shuffled questions and options, and partial-credit grading for 8 question types.",
+          vi: "Exam engine viết bằng hàm thuần có unit test: đề ngẫu nhiên theo seed nên tái lập được, xáo câu và đáp án, chấm điểm từng phần cho 8 dạng câu hỏi.",
+        },
+        {
+          en: "The server owns the deadline: clients sync time over Socket.IO, answers autosave per question, and a BullMQ job submits the attempt when time runs out.",
+          vi: "Máy chủ giữ hạn nộp: client đồng bộ giờ qua Socket.IO, câu trả lời tự lưu từng câu, job BullMQ tự nộp bài khi hết giờ.",
+        },
+        {
+          en: "AI pipeline: uploaded PDFs are split and embedded into PostgreSQL with pgvector, Claude reads the PDF and returns structured draft questions for review, and students get answer explanations that cite the course material.",
+          vi: "Luồng AI: PDF tải lên được cắt đoạn và nhúng vector vào PostgreSQL với pgvector, Claude đọc PDF và trả về câu hỏi nháp có cấu trúc để giảng viên duyệt, học viên nhận giải thích đáp án có trích nguồn tài liệu khóa học.",
+        },
+      ],
+      features: [
+        { en: "Courses, lessons and enrollment", vi: "Khóa học, bài học và ghi danh" },
+        {
+          en: "Question banks with 8 types, from multiple choice to matching, ordering and essays",
+          vi: "Ngân hàng câu hỏi 8 dạng, từ trắc nghiệm tới ghép cặp, sắp xếp và tự luận",
+        },
+        {
+          en: "Random exams built from rules: N questions by type, difficulty or tag",
+          vi: "Đề ngẫu nhiên theo quy tắc: rút N câu theo dạng, độ khó hoặc tag",
+        },
+        {
+          en: "Pick up an attempt again after a reload or on another device",
+          vi: "Tải lại trang hay đổi thiết bị vẫn làm tiếp đúng lượt thi",
+        },
+        {
+          en: "Analytics: score distribution, pass rate and real difficulty per question",
+          vi: "Phân tích: phổ điểm, tỉ lệ đạt và độ khó thực tế từng câu",
+        },
+        { en: "Swagger docs for every endpoint", vi: "Tài liệu Swagger cho mọi API" },
+      ],
     },
     {
       title: "Digital Map Pathfinding",
+      slug: "digital-map-pathfinding",
       year: "2026",
       description: {
         en: "Compares Dijkstra and A* shortest-path search on a real district map from OpenStreetMap, with routes drawn on an interactive Leaflet map.",
@@ -456,9 +677,38 @@ export const profile = {
       coverIcon: "map",
       coverColors: ["#0c4a6e", "#0284c7"],
       githubUrl: "https://github.com/NayuD06/digital-map-pathfinding",
+      context: { en: "Team project, 5 members", vi: "Đồ án nhóm 5 người" },
+      problem: {
+        en: "A course project on digital maps: how a real road network becomes a graph, and how much less work A* does than Dijkstra on real streets.",
+        vi: "Đồ án môn học về bản đồ số: mạng lưới đường thật được mô hình hóa thành đồ thị như thế nào, và A* phải duyệt ít hơn Dijkstra bao nhiêu trên đường phố thật.",
+      },
+      approach: [
+        {
+          en: "OSMnx downloads the road network of District 1, Ho Chi Minh City from OpenStreetMap into a directed, weighted NetworkX graph.",
+          vi: "OSMnx tải mạng lưới đường Quận 1, TP.HCM từ OpenStreetMap thành đồ thị có hướng, có trọng số bằng NetworkX.",
+        },
+        {
+          en: "Dijkstra and A* (with a Haversine heuristic) are written by hand with heapq so the visited nodes can be counted, and pytest checks that both return the same route.",
+          vi: "Dijkstra và A* (heuristic Haversine) được tự cài đặt bằng heapq để đếm được số nút đã duyệt, pytest kiểm tra hai thuật toán cho cùng một tuyến đường.",
+        },
+        {
+          en: "A FastAPI backend returns graph info and routes, and a React, Vite and Leaflet frontend shows them on the map.",
+          vi: "Backend FastAPI trả thông tin đồ thị và tuyến đường, frontend React, Vite và Leaflet hiển thị lên bản đồ.",
+        },
+      ],
+      features: [
+        { en: "Pick start and end points on the map", vi: "Chọn điểm đi và điểm đến trên bản đồ" },
+        {
+          en: "Route plus the nodes each algorithm visited",
+          vi: "Tuyến đường và các nút mà mỗi thuật toán đã duyệt",
+        },
+        { en: "Distance, run time and visited node count", vi: "Độ dài, thời gian chạy và số nút đã duyệt" },
+        { en: "Chart comparing Dijkstra and A*", vi: "Biểu đồ so sánh Dijkstra và A*" },
+      ],
     },
     {
       title: "Auth Microservice",
+      slug: "auth-microservice",
       year: "2026",
       description: {
         en: "Standalone authentication service for a microservice setup: sign-up, login and JWT issuing with bcrypt-hashed passwords and validated request DTOs.",
@@ -469,6 +719,30 @@ export const profile = {
       coverIcon: "lock",
       coverColors: ["#172554", "#2563eb"],
       githubUrl: "https://github.com/NayuD06/K24WD02-micro-service-auth-api",
+      problem: {
+        en: "In a microservice system every service needs to know who is calling it, but only one service should deal with passwords and tokens.",
+        vi: "Trong hệ thống microservice, dịch vụ nào cũng cần biết ai đang gọi mình, nhưng chỉ nên có một dịch vụ lo mật khẩu và token.",
+      },
+      approach: [
+        {
+          en: "A standalone NestJS service with its own MongoDB database for user accounts.",
+          vi: "Một dịch vụ NestJS độc lập với database MongoDB riêng cho tài khoản người dùng.",
+        },
+        {
+          en: "Passwords are hashed with bcrypt, and sign-up and login return a signed JWT that other services can verify.",
+          vi: "Mật khẩu băm bằng bcrypt, đăng ký và đăng nhập trả về JWT có chữ ký để các dịch vụ khác kiểm tra.",
+        },
+        {
+          en: "Request bodies are validated with DTOs before they reach the business logic, and the service is covered by Jest tests.",
+          vi: "Dữ liệu gửi lên được kiểm tra bằng DTO trước khi vào phần xử lý, dịch vụ có test bằng Jest.",
+        },
+      ],
+      features: [
+        { en: "Sign-up and login endpoints", vi: "API đăng ký và đăng nhập" },
+        { en: "JWT issuing for other services", vi: "Cấp JWT cho các dịch vụ khác" },
+        { en: "bcrypt password hashing", vi: "Băm mật khẩu bằng bcrypt" },
+        { en: "Validated request DTOs", vi: "Kiểm tra dữ liệu đầu vào bằng DTO" },
+      ],
     },
   ] satisfies Project[],
 

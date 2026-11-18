@@ -5,14 +5,15 @@ import { T } from "@/lib/i18n";
 import { CurrentYear } from "../ui/current-year";
 import { TechIcon } from "../ui/tech-icon";
 
-export function Footer() {
+/** base: "/" khi dùng ở trang con, để các link #mục quay về trang chủ */
+export function Footer({ base = "" }: { base?: string }) {
   return (
     <footer className="relative overflow-hidden border-t border-border bg-bg">
       <div aria-hidden="true" className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-sky/60 to-transparent" />
-      <div className="mx-auto max-w-6xl px-5 pt-14 pb-32 sm:px-8 lg:pb-8">
+      <div className={`mx-auto max-w-6xl px-5 pt-14 sm:px-8 lg:pb-8 ${base ? "pb-10" : "pb-32"}`}>
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <a href="#home" className="inline-flex items-center gap-3">
+            <a href={`${base}#home`} className="inline-flex items-center gap-3">
               <span className="bg-brand grid size-10 place-items-center rounded-xl font-heading text-sm font-black text-white">
                 {profile.initials}
               </span>
@@ -27,7 +28,7 @@ export function Footer() {
             <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <a href={link.href} className="text-muted transition-colors hover:text-brand-blue">
+                  <a href={`${base}${link.href}`} className="text-muted transition-colors hover:text-brand-blue">
                     <T v={link.label} />
                   </a>
                 </li>

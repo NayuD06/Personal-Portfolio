@@ -120,3 +120,9 @@ export const icons = {
 } satisfies Record<string, { Icon: IconType; label: string; color: string }>;
 
 export type IconName = keyof typeof icons;
+
+/** Tìm icon theo tên hiển thị, vd. "Next.js" -> "nextjs". Không có thì trả undefined. */
+export function iconForLabel(label: string): IconName | undefined {
+  const key = label.toLowerCase();
+  return (Object.keys(icons) as IconName[]).find((name) => icons[name].label.toLowerCase() === key);
+}
