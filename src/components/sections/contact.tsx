@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { useState, type FormEvent } from "react";
+import { useState, type CSSProperties, type FormEvent } from "react";
 import {
   LuCircleAlert,
   LuLoaderCircle,
@@ -32,12 +32,15 @@ export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
   const [sentInfo, setSentInfo] = useState<SentInfo | null>(null);
   const lang = useLang();
+  // đã quay lại form sau khi gửi: các ô hiện lại lần lượt (class form-return trong globals.css)
+  const [returned, setReturned] = useState(false);
   const isSent = status === "sent" && sentInfo !== null;
 
   function sendAnother() {
     setStatus("idle");
     setSentInfo(null);
-    requestAnimationFrame(() => document.getElementById("name")?.focus());
+    setReturned(true);
+    requestAnimationFrame(() => document.getElementById("name")?.focus({ preventScroll: true }));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -189,13 +192,13 @@ export function Contact() {
                   inert để không bấm hay tab vào được phần form đang ẩn. */}
               <div
                 inert={isSent}
-                className={isSent ? "opacity-0 transition-opacity duration-300" : undefined}
+                className={isSent ? "opacity-0 transition-opacity duration-300" : returned ? "form-return" : undefined}
               >
-              <h3 className="mb-6 text-xl font-bold">
+              <h3 style={{ "--i": 0 } as CSSProperties} className="return-item mb-6 text-xl font-bold">
                 <T v={ui.contact.formTitle} />
               </h3>
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label={ui.contact.name} htmlFor="name">
+                <Field label={ui.contact.name} htmlFor="name" index={1}>
                   <input
                     id="name"
                     name="name"
@@ -206,7 +209,7 @@ export function Contact() {
                     className={fieldClass}
                   />
                 </Field>
-                <Field label={ui.contact.email} htmlFor="email">
+                <Field label={ui.contact.email} htmlFor="email" index={2}>
                   <input
                     id="email"
                     name="email"
@@ -218,7 +221,7 @@ export function Contact() {
                     className={fieldClass}
                   />
                 </Field>
-                <Field label={ui.contact.phone} htmlFor="phone">
+                <Field label={ui.contact.phone} htmlFor="phone" index={3}>
                   <input
                     id="phone"
                     name="phone"
@@ -229,7 +232,7 @@ export function Contact() {
                     className={fieldClass}
                   />
                 </Field>
-                <Field label={ui.contact.company} htmlFor="company">
+                <Field label={ui.contact.company} htmlFor="company" index={4}>
                   <input
                     id="company"
                     name="company"
@@ -241,7 +244,7 @@ export function Contact() {
                 </Field>
               </div>
               <div className="mt-5">
-                <Field label={ui.contact.message} htmlFor="message">
+                <Field label={ui.contact.message} htmlFor="message" index={5}>
                   <textarea
                     id="message"
                     name="message"
@@ -260,6 +263,7 @@ export function Contact() {
                 <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
               </div>
 
+              <div style={{ "--i": 6 } as CSSProperties} className="return-item">
               <motion.button
                 type="submit"
                 disabled={status === "sending"}
@@ -282,6 +286,7 @@ export function Contact() {
                   </>
                 )}
               </motion.button>
+              </div>
 
               <AnimatePresence>
                 {status === "error" && (
@@ -310,14 +315,17 @@ export function Contact() {
 function Field({
   label,
   htmlFor,
+  index,
   children,
 }: {
   label: Text;
   htmlFor: string;
+  /** thứ tự hiện ra khi quay lại form sau khi gửi */
+  index: number;
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div style={{ "--i": index } as CSSProperties} className="return-item">
       <label htmlFor={htmlFor} className="mb-2 block text-sm font-semibold">
         <T v={label} />
       </label>

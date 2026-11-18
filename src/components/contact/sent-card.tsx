@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { LuArrowDownRight, LuCheck, LuRotateCcw, LuSend } from "react-icons/lu";
 import { ui } from "@/data/ui";
 import { T, type Text } from "@/lib/i18n";
@@ -36,6 +36,15 @@ export type SentInfo = { name: string; email: string; time: string };
  */
 export function SentCard({ info, onReset }: { info: SentInfo; onReset: () => void }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [leaving, setLeaving] = useState(false);
+
+  // "Gửi tin khác": thẻ thu nhỏ, mờ đi rồi mới trả lại form (bỏ qua nếu máy bật giảm chuyển động)
+  function leave() {
+    if (leaving) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return onReset();
+    setLeaving(true);
+    window.setTimeout(onReset, 280);
+  }
 
   // đưa focus tới lời cảm ơn để trình đọc màn hình đọc ngay, và để nút Gửi (đã bị ẩn) không giữ focus
   useEffect(() => {
@@ -43,7 +52,7 @@ export function SentCard({ info, onReset }: { info: SentInfo; onReset: () => voi
   }, []);
 
   return (
-    <div className="sent-panel absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-8 text-center sm:px-10">
+    <div className={`sent-panel ${leaving ? "sent-leave" : ""} absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-3xl px-6 py-8 text-center sm:px-10`}>
       {/* Cảnh: đường bay, máy bay giấy, dấu tick, giấy màu */}
       <div aria-hidden="true" className="relative h-[120px] w-[280px] shrink-0">
         <svg viewBox="0 0 280 120" className="absolute inset-0 size-full overflow-visible" fill="none">
@@ -123,7 +132,7 @@ export function SentCard({ info, onReset }: { info: SentInfo; onReset: () => voi
       <div style={{ "--i": 3 } as CSSProperties} className="sent-in mt-6 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
         <button
           type="button"
-          onClick={onReset}
+          onClick={leave}
           className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-input px-5 py-3 text-sm font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue"
         >
           <LuRotateCcw className="size-4" aria-hidden="true" />

@@ -64,14 +64,22 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           {/* Chiều cao phần chữ cố định trên máy tính (tên một dòng, chỗ cho mô tả 4 dòng) để khung ảnh
               luôn nằm cùng một chỗ khi chuyển giữa các dự án. Trên điện thoại ảnh lên trước chữ vì cùng lý do. */}
           <div className="mx-auto flex max-w-6xl flex-col px-5 sm:px-8">
-            <div className="enter -order-2 lg:order-none">
+            {/* Hàng trên cùng: về danh sách dự án + chuyển dự án trước / sau (luôn cao 40px để không giật) */}
+            <div className="enter -order-2 flex h-10 items-center justify-between gap-3 lg:order-none">
               <Link
                 href="/#projects"
-                className="group inline-flex items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-brand-blue"
+                className="group inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-muted transition-colors hover:text-brand-blue"
               >
                 <LuArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" aria-hidden="true" />
                 <T v={ui.project.back} />
               </Link>
+              <nav aria-label="Projects" className="flex min-w-0 items-center gap-2">
+                <PagerLink project={prev} label={ui.project.prev} direction="prev" />
+                <span className="px-1 font-mono text-xs text-muted tabular-nums">
+                  {index + 1}/{projects.length}
+                </span>
+                <PagerLink project={next} label={ui.project.next} direction="next" />
+              </nav>
             </div>
 
             <div style={{ "--i": 1 } as CSSProperties} className="enter mt-8">
@@ -219,13 +227,6 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
           </section>
         )}
 
-        {/* Dự án trước / tiếp theo */}
-        <nav aria-label="Projects" className="border-t border-border py-14 sm:py-20">
-          <div className="mx-auto grid max-w-6xl gap-4 px-5 sm:grid-cols-2 sm:px-8">
-            <PagerLink project={prev} label={ui.project.prev} direction="prev" />
-            <PagerLink project={next} label={ui.project.next} direction="next" />
-          </div>
-        </nav>
       </main>
       <Footer base="/" />
     </>
@@ -285,24 +286,26 @@ function ProjectLinks({ project, stacked = false }: { project: Project; stacked?
   );
 }
 
+/** Nút nhỏ chuyển sang dự án trước / sau. Màn hình hẹp chỉ hiện mũi tên, tên dự án vẫn có cho trình đọc màn hình. */
 function PagerLink({ project, label, direction }: { project: Project; label: Text; direction: "prev" | "next" }) {
   const isNext = direction === "next";
   const Arrow = isNext ? LuArrowRight : LuArrowLeft;
   return (
     <Link
       href={`/projects/${project.slug}`}
-      className={`group card flex items-center gap-4 rounded-2xl p-5 transition-colors hover:border-brand-blue sm:p-6 ${
-        isNext ? "flex-row-reverse text-right" : ""
+      className={`group inline-flex h-10 min-w-10 items-center justify-center gap-2 rounded-xl border border-border bg-input px-3 text-sm font-semibold transition-colors hover:border-brand-blue hover:text-brand-blue ${
+        isNext ? "flex-row-reverse" : ""
       }`}
     >
-      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-chip text-brand-blue transition-transform group-hover:scale-110">
-        <Arrow className="size-5" aria-hidden="true" />
-      </span>
-      <span className="min-w-0">
-        <span className="block text-xs font-semibold text-muted">
-          <T v={label} />
+      <Arrow
+        className={`size-4 shrink-0 text-brand-blue transition-transform ${isNext ? "group-hover:translate-x-0.5" : "group-hover:-translate-x-0.5"}`}
+        aria-hidden="true"
+      />
+      <span className="max-w-[11rem] truncate max-md:sr-only">
+        <span className="sr-only">
+          <T v={label} />:{" "}
         </span>
-        <span className="mt-1 block truncate text-lg font-bold">{project.title}</span>
+        {project.title}
       </span>
     </Link>
   );

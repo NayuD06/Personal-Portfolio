@@ -290,6 +290,8 @@ h4 {
   .enter,
   .enter-avatar,
   .sent-panel,
+  .sent-panel.sent-leave,
+  .form-return .return-item,
   .sent-in,
   .sent-badge,
   .sent-check,
@@ -402,6 +404,21 @@ h4 {
     opacity: 0;
     transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y) + 14px)) rotate(var(--r));
   }
+}
+/* bấm "Gửi tin khác": thẻ cảm ơn thu nhỏ và mờ đi */
+.sent-panel.sent-leave {
+  animation: sent-leave 0.28s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+@keyframes sent-leave {
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.97);
+  }
+}
+/* rồi form hiện lại lần lượt từng ô */
+.form-return .return-item {
+  animation: enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 0.055s);
 }
 /* chữ hiện lần lượt sau dấu tick */
 .sent-in {
