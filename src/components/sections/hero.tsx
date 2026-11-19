@@ -10,6 +10,7 @@ import { pick, T } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons";
 import { useLang } from "@/lib/use-lang";
 import { Avatar } from "../ui/avatar";
+import { HeroParticles } from "../ui/hero-particles";
 import { ResumeLink } from "../ui/resume-link";
 import { TechIcon } from "../ui/tech-icon";
 import { Typewriter } from "../ui/typewriter";
@@ -36,6 +37,8 @@ export function Hero() {
         aria-hidden="true"
         className="blob absolute bottom-0 -left-40 -z-10 size-[24rem] rounded-full bg-brand-sky/15 blur-[110px] [animation-delay:-7s]"
       />
+      {/* hạt sáng chuyển động theo chuột (chỉ máy có chuột) */}
+      <HeroParticles />
 
       <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:gap-16 sm:px-8 lg:grid-cols-[1.1fr_1fr] lg:gap-10">
         <div>

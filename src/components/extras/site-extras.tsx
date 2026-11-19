@@ -3,19 +3,22 @@
 import { AnimatePresence } from "motion/react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 import { LuSparkles } from "react-icons/lu";
 import { ui } from "@/data/ui";
 import { foundSecret, OPEN_ASK, primeAudio, OPEN_TERMINAL, SECRET_FOUND, type SecretId } from "@/lib/extras";
 import { pick, T } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
+import { CustomCursor } from "./cursor";
 
 // Gắn một lần trong layout: nút "Hỏi AI", phím tắt mở Terminal, mã Konami, đếm số lần bấm logo.
 // Terminal, khung chat và hiệu ứng easter egg chỉ được tải về khi mở lần đầu, nên không làm chậm trang.
 
 const Terminal = dynamic(() => import("./terminal"), { ssr: false });
 const ChatPanel = dynamic(() => import("./chat-panel"), { ssr: false });
-const Warp = dynamic(() => import("./warp"), { ssr: false });
+// Hiệu ứng easter egg tải bằng tay (không dùng dynamic): tải xong mới hiện, nên hiện ra ngay không bị React đợi thêm
+let warpModule: Promise<typeof import("./warp")> | undefined;
+const loadWarp = () => (warpModule ??= import("./warp"));
 
 const konami = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
 
@@ -25,6 +28,7 @@ export function SiteExtras() {
   const [terminal, setTerminal] = useState(false);
   const [chat, setChat] = useState<{ open: boolean; question?: string; key: number }>({ open: false, key: 0 });
   const [secret, setSecret] = useState<{ id: SecretId; key: number } | null>(null);
+  const [Warp, setWarp] = useState<ComponentType<{ id: SecretId; onClose: () => void }> | null>(null);
   // chỗ đang focus trước khi mở, để đóng xong trả focus về đó
   const lastFocus = useRef<HTMLElement | null>(null);
 
@@ -43,7 +47,11 @@ export function SiteExtras() {
       setChat((state) => ({ open: true, question, key: state.key + 1 }));
     };
     const onSecret = (event: Event) => {
-      setSecret({ id: (event as CustomEvent<SecretId>).detail, key: Date.now() });
+      const id = (event as CustomEvent<SecretId>).detail;
+      void loadWarp().then((module) => {
+        setWarp(() => module.default);
+        setSecret({ id, key: Date.now() });
+      });
     };
 
     let progress = 0;
@@ -72,6 +80,8 @@ export function SiteExtras() {
       if (!(event.target as HTMLElement | null)?.closest?.("[data-logo]")) return;
       const now = Date.now();
       clicks = [...clicks.filter((time) => now - time < 3000), now];
+      // tải sẵn màn jumpscare từ lần bấm thứ hai, để lần thứ năm hiện ra ngay không phải chờ
+      if (clicks.length === 2) void loadWarp().then((module) => setWarp(() => module.default));
       if (clicks.length >= 5) {
         clicks = [];
         primeAudio();
@@ -124,7 +134,9 @@ export function SiteExtras() {
 
       <AnimatePresence onExitComplete={restoreFocus}>{terminal && <Terminal key="terminal" onClose={() => setTerminal(false)} />}</AnimatePresence>
 
-      {secret && <Warp key={secret.key} id={secret.id} onClose={() => setSecret(null)} />}
+      {secret && Warp && <Warp key={secret.key} id={secret.id} onClose={() => setSecret(null)} />}
+
+      <CustomCursor />
     </>
   );
 }

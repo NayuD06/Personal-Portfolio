@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { getAudio } from "@/lib/extras";
-import { T } from "@/lib/i18n";
 
-// Easter egg bấm logo 5 lần: màn hình tối, một câu thì thầm, rồi BÙM: gương mặt ma lao tới, rung màn hình, tiếng hét.
+// Easter egg bấm logo 5 lần: BÙM ngay lập tức, gương mặt ma lao ra đè lên trang, rung màn hình, tiếng hét,
+// rồi trả lại trang như cũ sau khoảng 1,6 giây.
 // Mặt ma vẽ bằng SVG, tiếng hét tạo bằng Web Audio, không dùng ảnh hay file âm thanh bên ngoài.
 // Bấm bất kỳ đâu hoặc Esc để bỏ qua. Máy bật giảm chuyển động thì không hiện màn này (chỉ hiện thẻ thành tích).
 
-const TOTAL = 2800;
-const IMPACT = 1150;
+const TOTAL = 1600;
+/** Bấm chuột trong khoảng này chưa tính là bỏ qua (tránh lần bấm thứ 6 quá tay tắt luôn màn hù) */
+const GUARD = 450;
 
 /** Tiếng hét: vài sóng răng cưa trượt từ cao xuống thấp, rung nhanh, méo tiếng, thêm tiếng rít và một nhịp trống trầm */
 function scream(context: AudioContext) {
@@ -169,11 +170,11 @@ function Face() {
 }
 
 export function Jumpscare({ onEnd }: { onEnd: () => void }) {
-  // bấm nhanh quá tay lần thứ 6 thì chưa bỏ qua, đợi mặt ma hiện ra đã
   const [shownAt] = useState(() => performance.now());
 
   useEffect(() => {
     let stop: (() => void) | undefined;
+    // hét ngay khi mặt ma hiện ra (đợi một nhịp để chế độ dev của React không phát hai lần)
     const impact = window.setTimeout(() => {
       const context = getAudio();
       if (context) {
@@ -183,7 +184,7 @@ export function Jumpscare({ onEnd }: { onEnd: () => void }) {
           // trình duyệt chặn âm thanh: vẫn có hình
         }
       }
-    }, IMPACT);
+    }, 0);
     const done = window.setTimeout(onEnd, TOTAL);
     const skip = (event: KeyboardEvent) => {
       if (event.key === "Escape") onEnd();
@@ -198,10 +199,8 @@ export function Jumpscare({ onEnd }: { onEnd: () => void }) {
   }, [onEnd]);
 
   return (
-    <div role="presentation" onClick={() => performance.now() - shownAt > IMPACT + 500 && onEnd()} className="js-root fixed inset-0 z-[95] cursor-pointer overflow-hidden bg-black print:hidden">
-      <p className="js-whisper absolute inset-x-0 top-1/2 -translate-y-1/2 px-6 text-center font-mono text-sm tracking-[0.2em] text-[#60a5fa]/80">
-        <T v={{ en: "why did you click me five times...", vi: "sao bạn bấm mình tận năm lần..." }} />
-      </p>
+    <div role="presentation" onClick={() => performance.now() - shownAt > GUARD && onEnd()} className="js-root fixed inset-0 z-[95] cursor-pointer overflow-hidden print:hidden">
+      <span aria-hidden="true" className="js-dim absolute inset-0 bg-black" />
       <div className="js-face absolute inset-0 grid place-items-center">
         <div className="js-shake h-[min(96vh,140vw)]">
           <Face />

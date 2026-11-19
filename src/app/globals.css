@@ -628,74 +628,50 @@ h4 {
   }
 }
 
-/* màn jumpscare (bấm logo 5 lần): tổng 2,8 giây, mặt ma xuất hiện ở giây 1,15 */
+/* màn jumpscare (bấm logo 5 lần): mặt ma lao ra ngay lập tức đè lên trang, tổng 1,6 giây rồi trả lại trang */
 .js-root {
-  animation: js-root 2.8s linear both;
+  animation: js-root 1.6s linear both;
 }
 @keyframes js-root {
+  0%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* nền tối sập xuống cùng lúc với mặt ma, trang phía sau còn thấp thoáng ở mép */
+.js-dim {
+  animation: js-dim 1.6s ease-out both;
+}
+@keyframes js-dim {
   0% {
     opacity: 0;
   }
-  6%,
-  90% {
-    opacity: 1;
-  }
+  4%,
   100% {
-    opacity: 0;
-  }
-}
-.js-whisper {
-  animation: js-whisper 2.8s steps(1, end) both;
-}
-@keyframes js-whisper {
-  0%,
-  8% {
-    opacity: 0;
-  }
-  9%,
-  20% {
-    opacity: 1;
-  }
-  21% {
-    opacity: 0.2;
-  }
-  23%,
-  33% {
-    opacity: 1;
-  }
-  34% {
-    opacity: 0.3;
-  }
-  35%,
-  40% {
-    opacity: 1;
-  }
-  41%,
-  100% {
-    opacity: 0;
+    opacity: 0.88;
   }
 }
 .js-face {
-  opacity: 0;
-  animation: js-face 2.8s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  animation: js-face 1.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
 }
 @keyframes js-face {
-  0%,
-  40.9% {
+  0% {
     opacity: 0;
-    transform: scale(0.15);
-  }
-  41% {
-    opacity: 1;
     transform: scale(0.3) rotate(-8deg);
     filter: blur(10px);
   }
-  45% {
+  3% {
+    opacity: 1;
+  }
+  9% {
     transform: scale(1.24) rotate(3deg);
     filter: blur(0);
   }
-  50%,
-  88% {
+  17%,
+  82% {
     opacity: 1;
     transform: scale(1.1) rotate(0);
   }
@@ -705,7 +681,7 @@ h4 {
   }
 }
 .js-shake {
-  animation: js-shake 0.09s linear 1.2s 10 both;
+  animation: js-shake 0.09s linear 0.12s 10 both;
   filter: drop-shadow(5px 0 0 rgb(56 189 248 / 0.45)) drop-shadow(-5px 0 0 rgb(37 99 235 / 0.5));
 }
 @keyframes js-shake {
@@ -728,17 +704,16 @@ h4 {
 .js-flash {
   opacity: 0;
   pointer-events: none;
-  animation: js-flash 2.8s ease-out both;
+  animation: js-flash 1.6s ease-out both;
 }
 @keyframes js-flash {
-  0%,
-  40.9% {
+  0% {
     opacity: 0;
   }
-  41.5% {
+  2% {
     opacity: 0.85;
   }
-  48%,
+  14%,
   100% {
     opacity: 0;
   }
@@ -765,6 +740,89 @@ h4 {
   .term-line,
   .secret-badge::after {
     animation: none;
+  }
+}
+
+/* ---------- Nền hạt ở đầu trang ---------- */
+.hero-particles {
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 80%, transparent);
+}
+.hero-particles.is-on {
+  opacity: 1;
+}
+
+/* ---------- Con trỏ chuột riêng (chỉ máy có chuột) ---------- */
+html.custom-cursor.cursor-on,
+html.custom-cursor.cursor-on * {
+  cursor: none !important;
+}
+/* ô nhập chữ vẫn dùng con trỏ gõ chữ của máy */
+html.custom-cursor.cursor-on
+  :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="submit"], [type="button"]), textarea, [contenteditable="true"]) {
+  cursor: text !important;
+}
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  will-change: transform;
+}
+html.cursor-on .cursor-dot,
+html.cursor-on .cursor-ring {
+  opacity: 1;
+}
+.cursor-dot span,
+.cursor-ring span {
+  position: absolute;
+  border-radius: 9999px;
+  translate: -50% -50%;
+  transition:
+    scale 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.25s,
+    border-color 0.25s,
+    opacity 0.2s;
+}
+.cursor-dot span {
+  width: 6px;
+  height: 6px;
+  background: var(--brand-sky);
+  box-shadow: 0 0 10px var(--brand-sky);
+}
+.cursor-ring span {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid color-mix(in srgb, var(--brand-blue) 70%, transparent);
+}
+/* rê lên nút / đường link: vòng phóng to và tô nhẹ, chấm thu nhỏ */
+.cursor-ring[data-state="hover"] span {
+  scale: 1.6;
+  background-color: color-mix(in srgb, var(--brand-blue) 12%, transparent);
+  border-color: var(--brand-sky);
+}
+.cursor-dot[data-state="hover"] span {
+  scale: 0.6;
+}
+.cursor-ring.is-down span {
+  scale: 0.75;
+}
+.cursor-ring.is-down[data-state="hover"] span {
+  scale: 1.3;
+}
+.cursor-dot[data-state="text"] span,
+.cursor-ring[data-state="text"] span {
+  opacity: 0;
+}
+@media print {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
   }
 }
 

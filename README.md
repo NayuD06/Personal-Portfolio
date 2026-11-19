@@ -2,7 +2,7 @@
 
 Trang portfolio cá nhân làm bằng **Next.js 16 (App Router) + TypeScript + Tailwind CSS 4**, animation bằng **Motion**, có nút chuyển **sáng / tối** và **tiếng Anh / tiếng Việt (EN / VI)**. Sẵn sàng deploy lên **Vercel**.
 
-Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Education (học vấn: mỗi trường một hàng, hình minh họa tự vẽ khi cuộn, thanh tiến độ năm học), GitHub Activity (số liệu GitHub tự cập nhật), Contact (form) và Footer. Trên điện thoại có thanh menu dưới đáy màn hình kiểu app.
+Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Education (học vấn: mỗi trường một hàng, hình minh họa tự vẽ khi cuộn, thanh tiến độ năm học), GitHub Activity (số liệu GitHub tự cập nhật), Sổ lưu bút (khách để lại lời nhắn), Contact (form) và Footer. Trên điện thoại có thanh menu dưới đáy màn hình kiểu app.
 
 Ngoài trang chính còn có:
 
@@ -12,7 +12,11 @@ Ngoài trang chính còn có:
 - **Bảng lệnh Ctrl + K** (⌘ + K trên Mac, hoặc bấm nút kính lúp trên menu): gõ để nhảy tới một mục, mở một dự án, đổi ngôn ngữ, đổi sáng/tối, tải CV, chép email. Gõ có dấu hay không dấu đều được. Dùng được ở mọi trang (`src/components/command-palette.tsx`). Dự án mới thêm vào `profile.ts` tự có trong bảng. Gõ một câu hỏi rồi chọn dòng **Hỏi AI** để hỏi trợ lý AI.
 - **Chế độ Terminal** (nút `>_` trên menu, phím `` ` `` cạnh số 1, hoặc Ctrl + K > Chế độ Terminal): cả trang thành cửa sổ dòng lệnh. Gõ `help` để xem lệnh: `about`, `skills`, `projects`, `projects 1`, `education`, `contact`, `cv`, `neofetch`, `open <tên>`, `theme`, `lang`, `ask <câu hỏi>`... Có Tab để gợi ý, ↑ ↓ để gọi lại lệnh cũ, nút lệnh nhanh cho điện thoại, vài lệnh ẩn (`ls`, `cat`, `whoami`, `sudo`, `secrets`...). Nội dung lấy từ `profile.ts`, lệnh nằm ở `src/components/extras/terminal-commands.tsx`.
 - **Trợ lý AI** (nút **Hỏi AI** ở góc phải dưới): khách hỏi về bạn, ví dụ "An có biết React không?", và nhận câu trả lời dựa trên nội dung portfolio, chữ hiện ra dần như đang gõ. Dùng Google Gemini gói miễn phí, chỉ cần đặt API key, xem mục [Trợ lý AI](#trợ-lý-ai-hỏi-đáp-về-bạn).
-- **Easter egg**: 3 bí mật, tìm được bí mật nào thì hiện thẻ thành tích và đếm "Đã tìm 1/3": gõ mã Konami (↑ ↑ ↓ ↓ ← → ← → B A) ở trang chính, bấm logo 5 lần liên tiếp (màn jumpscare có tiếng, bấm hoặc Esc để thoát), gõ `sudo` trong Terminal. Máy bật "giảm chuyển động" thì bỏ hiệu ứng, chỉ hiện thẻ.
+- **Easter egg**: 3 bí mật, tìm được bí mật nào thì hiện thẻ thành tích và đếm "Đã tìm 1/3": gõ mã Konami (↑ ↑ ↓ ↓ ← → ← → B A) ở trang chính, bấm logo 5 lần liên tiếp (mặt ma nhảy ra ngay kèm tiếng hét, khoảng 1,6 giây là tự tắt, bấm hoặc Esc để tắt sớm), gõ `sudo` trong Terminal. Máy bật "giảm chuyển động" thì bỏ hiệu ứng, chỉ hiện thẻ.
+- **Con trỏ chuột riêng**: chấm xanh bám theo chuột và vòng tròn trôi theo sau, phóng to khi rê lên nút, co lại khi bấm. Ở ô nhập chữ vẫn là con trỏ gõ chữ bình thường (`src/components/extras/cursor.tsx`).
+- **Nền hạt ở đầu trang**: các chấm sáng trôi và nối nhau, rê chuột tới thì dạt ra và nối dây tới con trỏ, bấm chuột thì bắn tung ra (`src/components/ui/hero-particles.tsx`). Chạy sau khi trang tải xong và dừng khi cuộn đi, nên không làm chậm trang.
+  Hai hiệu ứng chuột này chỉ bật trên máy có chuột, tự tắt trên điện thoại, máy tính bảng và khi máy bật "giảm chuyển động".
+- **Sổ lưu bút** (mục ngay trên Contact, hoặc Ctrl + K > Sổ lưu bút): khách nhập tên và lời nhắn, lời nhắn dán lên tường ngay. Cần nối database Upstash Redis miễn phí, xem mục [Sổ lưu bút](#sổ-lưu-bút).
 
 ## Chạy trên máy
 
@@ -117,6 +121,26 @@ Giới hạn của gói miễn phí:
 - Lưu ý: ở gói Free, Google được dùng nội dung câu hỏi để cải thiện sản phẩm của họ. Nội dung portfolio vốn công khai nên không sao, chỉ là đừng đưa thông tin bí mật vào `profile.ts`.
 - Mỗi câu hỏi ghi một dòng `[ask] ...` trong **Vercel > Logs** (model và số token) để bạn theo dõi.
 
+## Sổ lưu bút
+
+Lời nhắn được lưu trong **Upstash Redis** (gói Free: 500.000 lệnh mỗi tháng, 250 MB, không cần thẻ), gọi qua `src/app/api/guestbook/route.ts`. Mỗi lần có người xem sổ lưu bút tốn 1 lệnh (Vercel còn giữ bản sao 10 giây), mỗi lời nhắn mới tốn khoảng 6 lệnh, nên gói Free dư sức.
+
+Cách bật:
+
+1. Trên Vercel, mở project, bấm tab **Storage** > **Create Database** (hoặc **Browse Marketplace**), chọn **Upstash** > **Upstash for Redis** > **Continue**.
+2. Chọn gói **Free**, vùng **Singapore** (gần Việt Nam nhất), đặt tên (vd. `portfolio-guestbook`) rồi **Create**. Lần đầu Vercel sẽ hỏi đồng ý tạo tài khoản Upstash, cứ đồng ý.
+3. Ở bước nối project, chọn project portfolio, giữ nguyên các môi trường rồi bấm **Connect**. Vercel tự thêm hai biến `KV_REST_API_URL` và `KV_REST_API_TOKEN`.
+4. Tùy chọn, để xóa được lời nhắn: vào **Settings > Environment Variables**, thêm `GUESTBOOK_ADMIN_KEY` = một mật khẩu tự đặt (ít nhất 8 ký tự, đừng dùng lại mật khẩu khác).
+5. Bấm **Redeploy**.
+
+Chưa làm các bước trên thì mục Sổ lưu bút vẫn hiện, chỉ báo "sổ lưu bút sắp mở" và khóa ô nhập.
+
+Chống spam có sẵn: tối đa 3 lời nhắn trong 10 phút và 10 lời nhắn một ngày cho mỗi người, tên tối đa 40 ký tự, lời nhắn từ 2 đến 280 ký tự, không nhận đường link, chặn vài từ quá tục, chặn gửi lại y hệt trong 1 giờ, có ô bẫy bot ẩn và chặn gửi ngay trong 3 giây đầu. Sổ chỉ giữ 500 lời nhắn mới nhất. Muốn đổi danh sách từ bị chặn thì sửa biến `rude` trong file route.
+
+**Xóa lời nhắn:** mở `https://feb20th.click/#gbadmin=<mã GUESTBOOK_ADMIN_KEY>` một lần trên trình duyệt của bạn. Mỗi lời nhắn sẽ có nút thùng rác, trình duyệt nhớ mã nên lần sau không cần nhập lại. Bấm **Thoát** ở dòng "Chế độ quản lý" để tắt. Cũng có thể xem và xóa trực tiếp trong trang quản lý Upstash (Vercel > Storage > database > **Open in Upstash** > Data Browser, khóa `guestbook`).
+
+Chạy trên máy: chép hai biến `KV_REST_API_URL`, `KV_REST_API_TOKEN` từ Vercel (Settings > Environment Variables) vào `.env.local`, hoặc chạy `npx vercel env pull .env.local`.
+
 ## Thống kê người xem (Vercel Analytics)
 
 Trang đã gắn sẵn **Vercel Analytics** (số người vào, trang nào được xem, đến từ đâu: Google, Facebook, GitHub..., quốc gia, thiết bị) và **Speed Insights** (tốc độ tải trang thực tế của người xem). Chỉ chạy khi trang ở trên Vercel, chạy trên máy thì không ghi gì.
@@ -147,7 +171,7 @@ Số liệu (số repo, số sao, ngôn ngữ, repo cập nhật gần đây, bi
 
 Gắn tên miền riêng: **Project Settings > Domains**, sau đó đặt `NEXT_PUBLIC_SITE_URL` là tên miền đó (vd. `https://feb20th.click`) để ảnh chia sẻ link và sitemap dùng đúng địa chỉ.
 
-Sau khi deploy nhớ làm thêm mấy việc ở trên: đặt `RESEND_API_KEY` (mục Form liên hệ), đặt `GEMINI_API_KEY` (mục Trợ lý AI) và bật Analytics (mục Thống kê người xem).
+Sau khi deploy nhớ làm thêm mấy việc ở trên: đặt `RESEND_API_KEY` (mục Form liên hệ), đặt `GEMINI_API_KEY` (mục Trợ lý AI), nối Upstash Redis (mục Sổ lưu bút) và bật Analytics (mục Thống kê người xem).
 
 ## Cấu trúc
 
@@ -160,6 +184,7 @@ src/
 │  ├─ opengraph-image.tsx   ảnh xem trước khi chia sẻ link (mỗi dự án cũng có một file riêng)
 │  ├─ api/contact/route.ts  nhận tin nhắn từ form liên hệ và gửi về email qua Resend
 │  ├─ api/ask/route.ts      trợ lý AI: gửi câu hỏi tới Gemini, trả lời dần từng đoạn
+│  ├─ api/guestbook/route.ts sổ lưu bút: đọc, ghi, xóa lời nhắn trong Upstash Redis, chống spam
 │  ├─ icon.svg              favicon
 │  ├─ sitemap.ts, robots.ts
 │  ├─ not-found.tsx         trang 404
@@ -173,14 +198,15 @@ src/
 │  ├─ command-palette.tsx   bảng lệnh Ctrl + K và nút kính lúp trên menu
 │  ├─ not-found-parts.tsx   khung terminal và nút tìm nhanh trên trang 404
 │  ├─ extras/               nút "Hỏi AI" + khung chat, chế độ Terminal (terminal.tsx, terminal-commands.tsx),
-│  │                        easter egg (warp.tsx: hiệu ứng sao và thẻ thành tích, jumpscare.tsx)
+│  │                        easter egg (warp.tsx: hiệu ứng sao và thẻ thành tích, jumpscare.tsx), con trỏ chuột (cursor.tsx)
 │  ├─ cv/print-button.tsx   nút In trên trang CV
-│  ├─ sections/             hero, about, skills, services, projects, education, github-activity, contact, footer
-│  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI...)
+│  ├─ sections/             hero, about, skills, services, projects, education, github-activity, guestbook, contact, footer
+│  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI, nền hạt hero-particles...)
 ├─ data/
 │  ├─ profile.ts            ★ nội dung về bạn
 │  └─ ui.ts                 ★ chữ trên giao diện
 └─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang, font cho ảnh chia sẻ (og.ts),
-                            giao diện email nhận tin nhắn (contact-email.ts), kiến thức của trợ lý AI (ask-knowledge.ts)
+                            giao diện email nhận tin nhắn (contact-email.ts), kiến thức của trợ lý AI (ask-knowledge.ts),
+                            lưu lời nhắn sổ lưu bút (guestbook.ts, guestbook-shared.ts)
 assets/fonts/               font Montserrat dùng để vẽ ảnh xem trước khi chia sẻ link
 ```

@@ -23,6 +23,7 @@ import {
   LuLayers,
   LuMail,
   LuMoon,
+  LuNotebookPen,
   LuSearch,
   LuSend,
   LuSparkles,
@@ -146,6 +147,7 @@ const sectionIcons: Record<string, IconType> = {
   projects: LuFolderGit2,
   education: LuGraduationCap,
   github: LuActivity,
+  guestbook: LuNotebookPen,
   contact: LuMail,
 };
 
@@ -154,6 +156,7 @@ const sections: { id: string; label: Text }[] = [
   ...navLinks.slice(0, 5).map((link) => ({ id: link.href.slice(1), label: link.label })),
   { id: "education", label: ui.palette.education },
   { id: "github", label: ui.palette.github },
+  { id: "guestbook", label: ui.palette.guestbook },
   ...navLinks.slice(5).map((link) => ({ id: link.href.slice(1), label: link.label })),
 ];
 

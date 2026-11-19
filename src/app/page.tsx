@@ -8,6 +8,7 @@ import { Services } from "@/components/sections/services";
 import { Projects } from "@/components/sections/projects";
 import { Education } from "@/components/sections/education";
 import { GitHubActivity } from "@/components/sections/github-activity";
+import { Guestbook } from "@/components/sections/guestbook";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
 import { pick, T } from "@/lib/i18n";
@@ -58,6 +59,7 @@ export default function Home() {
         <Projects />
         <Education />
         <GitHubActivity />
+        <Guestbook />
         <Contact />
       </main>
       <Footer />
