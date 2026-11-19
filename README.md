@@ -2,7 +2,7 @@
 
 Trang portfolio cá nhân làm bằng **Next.js 16 (App Router) + TypeScript + Tailwind CSS 4**, animation bằng **Motion**, có nút chuyển **sáng / tối** và **tiếng Anh / tiếng Việt (EN / VI)**. Sẵn sàng deploy lên **Vercel**.
 
-Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Education (học vấn: mỗi trường một hàng, hình minh họa tự vẽ khi cuộn, thanh tiến độ năm học), GitHub Activity (số liệu GitHub tự cập nhật), Contact (form) và Footer. Trên điện thoại có thanh menu dưới đáy màn hình kiểu app.
+Các mục trên trang: Hero (icon công nghệ xoay quanh ảnh đại diện), About, Skills (lưới bento), Services, Projects (dự án nổi bật + lọc theo nhóm), Education (học vấn: mỗi trường một hàng, hình minh họa tự vẽ khi cuộn, thanh tiến độ năm học), Journey (hành trình: dòng thời gian từ năm nhất tới giờ, đường thời gian sáng dần khi cuộn), GitHub Activity (số liệu GitHub tự cập nhật), Contact (form) và Footer. Trên điện thoại có thanh menu dưới đáy màn hình kiểu app.
 
 Ngoài trang chính còn có:
 
@@ -52,6 +52,7 @@ Những chỗ nên thay ngay:
 - **`resumeUrl`**: file CV cho nút "Tải CV" ở đầu trang và mục About. Hiện trỏ tới hai file `public/cv/Duy-An-CV-VI.pdf` và `public/cv/Duy-An-CV-EN.pdf` (tải đúng file theo ngôn ngữ đang chọn). Hai file này được xuất từ trang `/cv`. Khi sửa nội dung trong `profile.ts`, xuất lại PDF như sau: chạy `npm run dev`, mở http://localhost:3000/cv, chọn ngôn ngữ, bấm **In**, chọn máy in "Lưu dưới dạng PDF" (Save as PDF), khổ A4, lề "Không" (None), rồi lưu đè file trong `public/cv/`. Muốn dùng CV tự làm thì chép file vào `public/cv/` và sửa đường dẫn; chỉ có một file thì ghi một chuỗi, vd. `resumeUrl: "/cv/Duy-An-CV.pdf"`. Để trống `""` để ẩn nút.
 - **`website`**: tên miền của trang, hiện trên CV.
 - **`socials`**: GitHub, Facebook và Email đã có link thật. Link Discord đang là link mẫu nên nút Discord đang ẩn; thay link thật vào là nút tự hiện (cách lấy link ghi ngay trên mục `socials`). Link `mailto:` mở ứng dụng email, các link khác mở tab mới.
+- **`journey`**: các mốc của mục Hành trình, xếp từ cũ tới mới. Mỗi mốc có `year` (gom theo năm), `date` (chữ hiện trên mốc) và `kind`: `university` (học kỳ ở UTH), `academy` (học kỳ ở VTC), `milestone` (cột mốc nhỏ) hoặc `project`. Mốc dự án chỉ cần ghi `project: "<slug>"`, tên và mô tả lấy từ danh sách dự án. Có thể thêm `tags` (môn học, công nghệ) và `link`. Hiệu ứng cuộn chạy bằng CSS nên không làm chậm trang; trình duyệt cũ (Firefox) thì hiện sẵn trạng thái đã sáng.
 - **`education`**: các trường trong mục Học vấn (UTH, VTC Academy). Sửa mô tả và danh sách môn học (`subjects`) cho đúng với chương trình bạn học. Ảnh và logo nằm trong `public/education/`: ảnh UTH lấy từ Wikimedia Commons (giấy phép CC BY-SA 4.0, nên giữ dòng ghi nguồn `imageCredit`), ảnh và logo VTC lấy từ trang vtc.edu.vn, logo UTH lấy từ Wikimedia Commons (CC0). Muốn đổi ảnh khác thì thay file cùng tên (ảnh ngang, nên tỉ lệ 4:3 hoặc 3:2) hoặc sửa `image`, `logo`. Để trống `image` thì dùng hình minh họa tự vẽ, để trống `logo` thì hiện chữ viết tắt. `progress` là năm đang học trên tổng số năm, bỏ đi nếu không muốn hiện thanh tiến độ.
 - **`projects`**: mỗi dự án có thể thêm `image: "/projects/ten-anh.png"` (ảnh chụp màn hình đặt trong `public/projects/`) để thay cho ảnh bìa tự vẽ, và `liveUrl` nếu có bản chạy thật. Dự án có `featured: true` hiện to ở đầu mục Projects, các dự án còn lại nằm trong lưới "More projects".
   Trang chi tiết của mỗi dự án lấy nội dung từ các trường: `slug` (đường dẫn `/projects/<slug>`), `problem` (vấn đề), `approach` (cách làm, mỗi ý một phần tử), `features` (tính năng chính), `context` (nhãn nhỏ như "Đồ án nhóm 5 người", không bắt buộc) và `gallery` (ảnh chụp thêm đặt trong `public/projects/<slug>/`, mỗi ảnh có `caption`, nên dùng ảnh ngang tỉ lệ 16:10). Thêm dự án mới thì nhớ đặt `slug` không trùng với dự án khác.
@@ -178,7 +179,7 @@ src/
 │  ├─ extras/               nút "Hỏi AI" + khung chat, chế độ Terminal (terminal.tsx, terminal-commands.tsx),
 │  │                        easter egg (warp.tsx: hiệu ứng sao và thẻ thành tích, jumpscare.tsx)
 │  ├─ cv/print-button.tsx   nút In trên trang CV
-│  ├─ sections/             hero, about, skills, services, projects, education, github-activity, contact, footer
+│  ├─ sections/             hero, about, skills, services, projects, education, journey, github-activity, contact, footer
 │  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI, nền hạt hero-particles...)
 ├─ data/
 │  ├─ profile.ts            ★ nội dung về bạn

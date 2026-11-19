@@ -86,6 +86,38 @@ export type Education = {
   website?: string;
 };
 
+/**
+ * Một mốc trên dòng thời gian "Hành trình".
+ * - university / academy: một học kỳ ở UTH hoặc VTC Academy
+ * - project: một dự án, chỉ cần ghi slug, tên và mô tả lấy từ danh sách projects bên dưới
+ * - milestone: cột mốc nhỏ (tạo GitHub, lên năm 3...)
+ */
+export type JourneyItem = {
+  /** Năm để gom nhóm (hiện số năm lớn bên trái) */
+  year: number;
+  /** Thời gian hiện trên mốc, vd. "Học kỳ 1, 2024–2025" hay "03/2025" */
+  date: Text;
+} & (
+  | {
+      kind: "university" | "academy" | "milestone";
+      title: Text;
+      /** Dòng nhỏ dưới tiêu đề, vd. "UTH, học kỳ 1 năm nhất" */
+      place?: Text;
+      description: Text;
+      /** Môn học hoặc công nghệ, hiện thành thẻ nhỏ */
+      tags?: Text[];
+      /** Link kèm theo, vd. trang web của đồ án */
+      link?: { href: string; label: Text };
+    }
+  | {
+      kind: "project";
+      /** slug của dự án trong projects */
+      project: string;
+      /** Ghi chú thêm thay cho mô tả dự án, bỏ đi để dùng mô tả có sẵn */
+      note?: Text;
+    }
+);
+
 export const profile = {
   name: "Duy An",
   /** Chữ viết tắt trên logo */
@@ -162,13 +194,16 @@ export const profile = {
         en: "I'm a third-year Information Technology student at UTH. University is where I learn the fundamentals behind everything I build: how to think in algorithms, design a database properly and structure software so it stays maintainable as it grows.",
         vi: "Mình là sinh viên năm 3 ngành Công nghệ thông tin tại UTH. Ở trường mình học phần nền tảng đứng sau mọi thứ mình làm: tư duy thuật toán, thiết kế cơ sở dữ liệu cho đúng và tổ chức phần mềm sao cho dễ bảo trì khi dự án lớn dần.",
       },
+      // Lấy từ bảng điểm, chỉ giữ môn chuyên ngành
       subjects: [
-        { en: "Programming in C++", vi: "Lập trình C++" },
-        { en: "Data structures & algorithms", vi: "Cấu trúc dữ liệu & giải thuật" },
+        { en: "Programming techniques", vi: "Kỹ thuật lập trình" },
         { en: "Object-oriented programming", vi: "Lập trình hướng đối tượng" },
-        { en: "Databases", vi: "Cơ sở dữ liệu" },
-        { en: "Computer networks", vi: "Mạng máy tính" },
+        { en: "Data structures & algorithms", vi: "Cấu trúc dữ liệu & giải thuật" },
+        { en: "Database design", vi: "Thiết kế cơ sở dữ liệu" },
         { en: "Software engineering", vi: "Công nghệ phần mềm" },
+        { en: "Operating systems", vi: "Hệ điều hành" },
+        { en: "Network programming", vi: "Lập trình mạng" },
+        { en: "Java programming", vi: "Lập trình Java" },
       ],
       progress: { current: 3, total: 4 },
       // Ảnh: Wikimedia Commons, giấy phép CC BY-SA 4.0 (phải giữ dòng ghi nguồn)
@@ -182,20 +217,23 @@ export const profile = {
     {
       school: { en: "VTC Academy", vi: "Học viện VTC Academy" },
       short: "VTC",
-      program: { en: "Information Technology", vi: "Ngành Công nghệ thông tin" },
-      period: { en: "Alongside university", vi: "Học song song với đại học" },
-      status: { en: "Studying", vi: "Đang học" },
+      program: { en: "Full-Stack Development", vi: "Lập trình Full-Stack" },
+      period: { en: "2024 – now, alongside university", vi: "2024 – nay, song song với đại học" },
+      status: { en: "Final semester", vi: "Học kỳ cuối" },
       description: {
-        en: "Alongside my degree, I'm studying IT at VTC Academy. The program is hands-on and project-based, so most of my time goes into building real things: web backends and APIs, frontends that work on every screen, and mobile apps.",
-        vi: "Song song với đại học, mình học thêm Công nghệ thông tin tại VTC Academy. Chương trình ở đây thiên về thực hành và làm dự án, nên phần lớn thời gian mình dành để làm sản phẩm thật: backend và API, giao diện web chạy tốt trên mọi màn hình, và ứng dụng di động.",
+        en: "Alongside my degree, I'm taking VTC Academy's Full-Stack Development program: 720 hours over four semesters, from programming fundamentals to web apps, full-stack and mobile, ending with a capstone project. Every semester closes with a project, so most of my time goes into building real things.",
+        vi: "Song song với đại học, mình học chương trình Lập trình Full-Stack của VTC Academy: 720 giờ trong 4 học kỳ, đi từ nền tảng lập trình tới web, full-stack và di động, cuối cùng là đồ án tốt nghiệp. Học kỳ nào cũng kết thúc bằng một dự án, nên phần lớn thời gian mình dành để làm sản phẩm thật.",
       },
+      // Lấy từ chương trình học của VTC Academy
       subjects: [
-        { en: "Web development", vi: "Lập trình web" },
-        { en: "Node.js & NestJS", vi: "Node.js & NestJS" },
-        { en: "React & Next.js", vi: "React & Next.js" },
-        { en: "Mobile apps", vi: "Ứng dụng di động" },
-        { en: "REST APIs & databases", vi: "REST API & cơ sở dữ liệu" },
-        { en: "Git & teamwork", vi: "Git & làm việc nhóm" },
+        { en: "HTML, CSS & JavaScript", vi: "HTML, CSS & JavaScript" },
+        { en: "PHP & MySQL web apps", vi: "Web với PHP & MySQL" },
+        { en: "Node.js programming", vi: "Lập trình Node.js" },
+        { en: "Back-end & front-end frameworks", vi: "Framework back-end & front-end" },
+        { en: "NoSQL databases", vi: "Cơ sở dữ liệu NoSQL" },
+        { en: "Cross-platform mobile apps", vi: "Ứng dụng di động đa nền tảng" },
+        { en: "Back-end with Go", vi: "Back-end với Go" },
+        { en: "Intro to DevOps", vi: "Nhập môn DevOps" },
       ],
       // Ảnh và logo lấy từ trang chính thức vtc.edu.vn
       image: "/education/vtc.jpg",
@@ -206,6 +244,205 @@ export const profile = {
       website: "https://vtc.edu.vn",
     },
   ] satisfies Education[],
+
+  // Dòng thời gian "Hành trình", xếp từ cũ tới mới. Học kỳ UTH lấy từ bảng điểm (chỉ giữ môn chuyên ngành,
+  // không ghi điểm GPA). VTC bắt đầu 9/2024 cùng lúc với đại học; thời gian học kỳ 2 và 3 của VTC
+  // ước theo ngày tạo repo GitHub, sửa lại nếu lệch.
+  journey: [
+    {
+      year: 2024,
+      date: { en: "Semester 1, 2024–25", vi: "Học kỳ 1, 2024–2025" },
+      kind: "university",
+      title: { en: "Started Information Technology at UTH", vi: "Vào ngành Công nghệ thông tin ở UTH" },
+      place: { en: "UTH, first semester", vi: "UTH, học kỳ 1 năm nhất" },
+      description: {
+        en: "Where I wrote my first real code. Programming Techniques taught me variables, loops and functions, and above all how to break a problem into small steps.",
+        vi: "Nơi mình viết những dòng code đầu tiên. Môn Kỹ thuật lập trình dạy mình biến, vòng lặp, hàm, và quan trọng nhất là cách chia một bài toán thành từng bước nhỏ.",
+      },
+      tags: [
+        { en: "Programming techniques", vi: "Kỹ thuật lập trình" },
+        { en: "Introduction to IT", vi: "Nhập môn ngành CNTT" },
+        { en: "Probability & statistics", vi: "Xác suất thống kê" },
+      ],
+    },
+    {
+      year: 2024,
+      date: { en: "Sep 2024", vi: "09/2024" },
+      kind: "academy",
+      title: { en: "And VTC Academy's Full-Stack program, the same month", vi: "Cùng lúc vào chương trình Full-Stack của VTC Academy" },
+      place: { en: "VTC Academy, semester 1: Programming Fundamentals", vi: "VTC Academy, học kỳ 1: Programming Fundamentals" },
+      description: {
+        en: "From day one I studied in two places. VTC took the same foundations from a hands-on angle: a programming language, data structures, OOP and relational databases, finishing with Project 1.",
+        vi: "Ngay từ đầu mình học song song hai nơi. VTC đi phần nền tảng theo hướng thực hành: ngôn ngữ lập trình, cấu trúc dữ liệu, hướng đối tượng và cơ sở dữ liệu quan hệ, cuối kỳ làm Project 1.",
+      },
+      tags: [
+        { en: "Programming basics", vi: "Lập trình cơ bản" },
+        { en: "Data structures & algorithms", vi: "Cấu trúc dữ liệu & giải thuật" },
+        { en: "OOP", vi: "Hướng đối tượng" },
+        { en: "Working with RDBMS", vi: "Làm việc với RDBMS" },
+        { en: "OO analysis & design", vi: "Phân tích thiết kế hướng đối tượng" },
+      ],
+    },
+    {
+      year: 2025,
+      date: { en: "Semester 2, 2024–25", vi: "Học kỳ 2, 2024–2025" },
+      kind: "university",
+      title: { en: "Objects, databases and how computers work", vi: "Hướng đối tượng, cơ sở dữ liệu và máy tính chạy ra sao" },
+      place: { en: "UTH, second semester", vi: "UTH, học kỳ 2 năm nhất" },
+      description: {
+        en: "Organising code into classes and objects, designing tables and writing SQL, plus the groundwork of networks, computer architecture and discrete maths.",
+        vi: "Tổ chức code thành lớp và đối tượng, thiết kế bảng và viết SQL, cùng phần nền về mạng, kiến trúc máy tính và toán rời rạc.",
+      },
+      tags: [
+        { en: "Object-oriented programming", vi: "Lập trình hướng đối tượng" },
+        { en: "Databases", vi: "Cơ sở dữ liệu" },
+        { en: "Computer networks", vi: "Mạng máy tính" },
+        { en: "Computer architecture", vi: "Kiến trúc máy tính" },
+        { en: "Discrete structures", vi: "Cấu trúc rời rạc" },
+      ],
+    },
+    {
+      year: 2025,
+      date: { en: "Mar 2025", vi: "03/2025" },
+      kind: "milestone",
+      title: { en: "Opened my GitHub account", vi: "Tạo tài khoản GitHub" },
+      description: {
+        en: "Pushed my first repository and started keeping every exercise and project in Git.",
+        vi: "Đẩy repo đầu tiên lên và bắt đầu lưu mọi bài tập, dự án bằng Git.",
+      },
+    },
+    {
+      year: 2025,
+      date: { en: "Late 2025", vi: "Cuối 2025" },
+      kind: "academy",
+      title: { en: "Building for the web", vi: "Bắt đầu làm web" },
+      place: { en: "VTC Academy, semester 2: Web Apps Development", vi: "VTC Academy, học kỳ 2: Web Apps Development" },
+      description: {
+        en: "HTML, CSS and JavaScript, UI/UX for developers, web apps with PHP and MySQL, testing and deployment. This is when I built my first Laravel apps, like a library management system.",
+        vi: "HTML, CSS, JavaScript, UI/UX cho lập trình viên, làm web bằng PHP và MySQL, kiểm thử và triển khai. Đây là lúc mình làm những app Laravel đầu tiên, như hệ thống quản lý thư viện.",
+      },
+      tags: [
+        { en: "HTML, CSS & JavaScript", vi: "HTML, CSS & JavaScript" },
+        { en: "UI/UX design", vi: "Thiết kế UI/UX" },
+        { en: "PHP & MySQL", vi: "PHP & MySQL" },
+        { en: "Laravel", vi: "Laravel" },
+        { en: "Software testing", vi: "Kiểm thử phần mềm" },
+      ],
+    },
+    {
+      year: 2025,
+      date: { en: "Semester 1, 2025–26", vi: "Học kỳ 1, 2025–2026" },
+      kind: "university",
+      title: { en: "Data structures and software engineering", vi: "Cấu trúc dữ liệu và công nghệ phần mềm" },
+      place: { en: "UTH, year two", vi: "UTH, năm hai" },
+      description: {
+        en: "The core of computer science: data structures and algorithms, operating systems, system analysis and design, and database design.",
+        vi: "Phần lõi của ngành: cấu trúc dữ liệu và giải thuật, hệ điều hành, phân tích thiết kế hệ thống và thiết kế cơ sở dữ liệu.",
+      },
+      tags: [
+        { en: "Data structures & algorithms", vi: "Cấu trúc dữ liệu & giải thuật" },
+        { en: "Software engineering", vi: "Công nghệ phần mềm" },
+        { en: "Operating systems", vi: "Hệ điều hành" },
+        { en: "System analysis & design", vi: "Phân tích thiết kế hệ thống" },
+        { en: "Database design", vi: "Thiết kế cơ sở dữ liệu" },
+      ],
+    },
+    {
+      year: 2026,
+      date: { en: "2026", vi: "2026" },
+      kind: "academy",
+      title: { en: "Going full-stack", vi: "Lên full-stack" },
+      place: { en: "VTC Academy, semester 3: Full-Stack Development", vi: "VTC Academy, học kỳ 3: Full-Stack Development" },
+      description: {
+        en: "Node.js and Express back ends, front-end frameworks, NoSQL, software architecture and microservices, cross-platform mobile apps, Go and an intro to DevOps. Each module ended as a repo on my GitHub.",
+        vi: "Back-end với Node.js và Express, framework front-end, NoSQL, kiến trúc phần mềm và microservice, app di động đa nền tảng, Go và nhập môn DevOps. Mỗi phần học đều thành một repo trên GitHub của mình.",
+      },
+      tags: [
+        { en: "Node.js", vi: "Node.js" },
+        { en: "Express", vi: "Express" },
+        { en: "NoSQL", vi: "NoSQL" },
+        { en: "Software architecture", vi: "Kiến trúc phần mềm" },
+        { en: "Mobile & Flutter", vi: "Di động & Flutter" },
+        { en: "Go", vi: "Go" },
+      ],
+    },
+    {
+      year: 2026,
+      date: { en: "Semester 2, 2025–26", vi: "Học kỳ 2, 2025–2026" },
+      kind: "university",
+      title: { en: "Networks, algorithms and security", vi: "Mạng, giải thuật và bảo mật" },
+      place: { en: "UTH, year two", vi: "UTH, năm hai" },
+      description: {
+        en: "Programs that talk over a network, analysing and designing algorithms, and the security principles I now use whenever I build sign-in for a project.",
+        vi: "Viết chương trình giao tiếp qua mạng, phân tích và thiết kế giải thuật, cùng các nguyên tắc an toàn thông tin mình dùng lại mỗi khi làm phần đăng nhập cho dự án.",
+      },
+      tags: [
+        { en: "Network programming", vi: "Lập trình mạng" },
+        { en: "Algorithm analysis & design", vi: "Phân tích thiết kế giải thuật" },
+        { en: "Information security", vi: "An toàn thông tin" },
+        { en: "IT business management", vi: "Quản trị doanh nghiệp CNTT" },
+      ],
+    },
+    { year: 2026, date: { en: "Mar 2026", vi: "03/2026" }, kind: "project", project: "auth-microservice" },
+    {
+      year: 2026,
+      date: { en: "Summer term 2026", vi: "Học kỳ hè 2026" },
+      kind: "university",
+      title: { en: "Java and database systems", vi: "Java và hệ quản trị cơ sở dữ liệu" },
+      place: { en: "UTH, summer term", vi: "UTH, học kỳ hè" },
+      description: {
+        en: "I took an extra summer term to move faster: Java programming and database management systems.",
+        vi: "Mình học thêm học kỳ hè để đi nhanh hơn: lập trình Java và hệ quản trị cơ sở dữ liệu.",
+      },
+      tags: [
+        { en: "Java programming", vi: "Lập trình Java" },
+        { en: "Database management systems", vi: "Hệ quản trị cơ sở dữ liệu" },
+      ],
+    },
+    { year: 2026, date: { en: "Jul 2026", vi: "07/2026" }, kind: "project", project: "spendwise" },
+    {
+      year: 2026,
+      date: { en: "Semester 1, 2026–27", vi: "Học kỳ 1, 2026–2027" },
+      kind: "milestone",
+      title: { en: "Year three: building complete products", vi: "Năm ba: tự làm sản phẩm hoàn chỉnh" },
+      description: {
+        en: "From here the focus shifts from exercises to full products, with AI, tests and deployment built in.",
+        vi: "Từ đây mình chuyển từ làm bài tập sang làm sản phẩm hoàn chỉnh, có AI, có test và đưa lên chạy thật.",
+      },
+    },
+    {
+      year: 2026,
+      date: { en: "2026", vi: "2026" },
+      kind: "academy",
+      title: { en: "Capstone: Nexora Travel", vi: "Đồ án tốt nghiệp: Nexora Travel" },
+      place: { en: "VTC Academy, semester 4: team capstone project", vi: "VTC Academy, học kỳ 4: đồ án tốt nghiệp làm nhóm" },
+      description: {
+        en: "With my team I built Nexora, a booking site for small-group tours around Vietnam: tours by destination, booking priced per traveller, custom trip requests, accounts with saved tours, a travel blog and reviews, in light and dark mode.",
+        vi: "Cùng nhóm, mình làm Nexora, trang đặt tour du lịch nhóm nhỏ khắp Việt Nam: xem tour theo điểm đến, đặt tour tính giá theo số khách, gửi yêu cầu thiết kế chuyến đi riêng, tài khoản lưu tour yêu thích, blog du lịch và đánh giá, có giao diện sáng và tối.",
+      },
+      tags: [
+        { en: "Tour booking", vi: "Đặt tour" },
+        { en: "User accounts", vi: "Tài khoản người dùng" },
+        { en: "Blog & reviews", vi: "Blog & đánh giá" },
+        { en: "Cloudinary", vi: "Cloudinary" },
+      ],
+      link: { href: "https://www.nexora-travel.agency/", label: { en: "Visit nexora-travel.agency", vi: "Xem nexora-travel.agency" } },
+    },
+    { year: 2026, date: { en: "Oct 2026", vi: "10/2026" }, kind: "project", project: "studymind-ai" },
+    { year: 2026, date: { en: "Oct 2026", vi: "10/2026" }, kind: "project", project: "digital-map-pathfinding" },
+    { year: 2026, date: { en: "Oct 2026", vi: "10/2026" }, kind: "project", project: "online-elearning" },
+    { year: 2026, date: { en: "Nov 2026", vi: "11/2026" }, kind: "project", project: "eduforge-ai" },
+    {
+      year: 2026,
+      date: { en: "Nov 2026", vi: "11/2026" },
+      kind: "milestone",
+      title: { en: "Launched this portfolio", vi: "Ra mắt portfolio này" },
+      description: {
+        en: "Everything above in one place, at feb20th.click. The next chapter is still being written.",
+        vi: "Gom tất cả những điều trên về một chỗ, tại feb20th.click. Chương tiếp theo vẫn đang viết.",
+      },
+    },
+  ] satisfies JourneyItem[],
 
   stats: [
     {

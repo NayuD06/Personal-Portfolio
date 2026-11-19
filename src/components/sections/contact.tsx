@@ -121,7 +121,7 @@ export function Contact() {
   const optional = pick(ui.contact.optional, lang);
 
   return (
-    <section id="contact" className="section-wash relative py-24 sm:py-32">
+    <section id="contact" className="relative py-24 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading
           tag="contact"

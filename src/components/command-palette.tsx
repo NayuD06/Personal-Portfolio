@@ -5,31 +5,7 @@ import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import type { IconType } from "react-icons";
-import {
-  LuActivity,
-  LuArrowDown,
-  LuArrowUp,
-  LuArrowUpRight,
-  LuCheck,
-  LuCodeXml,
-  LuCopy,
-  LuCornerDownLeft,
-  LuDownload,
-  LuFileText,
-  LuFolderGit2,
-  LuGraduationCap,
-  LuHouse,
-  LuLanguages,
-  LuLayers,
-  LuMail,
-  LuMoon,
-  LuSearch,
-  LuSend,
-  LuSparkles,
-  LuSquareTerminal,
-  LuSun,
-  LuUserRound,
-} from "react-icons/lu";
+import { LuActivity, LuArrowDown, LuArrowUp, LuArrowUpRight, LuCheck, LuCodeXml, LuCopy, LuCornerDownLeft, LuDownload, LuFileText, LuFolderGit2, LuGraduationCap, LuHouse, LuLanguages, LuLayers, LuMail, LuMilestone, LuMoon, LuSearch, LuSend, LuSparkles, LuSquareTerminal, LuSun, LuUserRound } from "react-icons/lu";
 import { profile, type Project } from "@/data/profile";
 import { navLinks, ui } from "@/data/ui";
 import { openAsk, openTerminal } from "@/lib/extras";
@@ -148,6 +124,7 @@ const sectionIcons: Record<string, IconType> = {
   services: LuLayers,
   projects: LuFolderGit2,
   education: LuGraduationCap,
+  journey: LuMilestone,
   github: LuActivity,
   contact: LuMail,
 };
@@ -156,6 +133,7 @@ const sectionIcons: Record<string, IconType> = {
 const sections: { id: string; label: Text }[] = [
   ...navLinks.slice(0, 5).map((link) => ({ id: link.href.slice(1), label: link.label })),
   { id: "education", label: ui.palette.education },
+  { id: "journey", label: ui.palette.journey },
   { id: "github", label: ui.palette.github },
   ...navLinks.slice(5).map((link) => ({ id: link.href.slice(1), label: link.label })),
 ];

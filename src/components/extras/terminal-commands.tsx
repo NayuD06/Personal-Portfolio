@@ -212,7 +212,7 @@ function AskOutput({ question, lang, history, onNavigate }: { question: string; 
 
 // ---------- Tiện ích ----------
 
-const sectionIds = ["about", "skills", "services", "projects", "education", "github", "contact"];
+const sectionIds = ["about", "skills", "services", "projects", "education", "journey", "github", "contact"];
 
 function findProject(query: string) {
   const projects = profile.projects;

@@ -62,6 +62,22 @@ function knowledge() {
     );
   }
 
+  push("## Journey (timeline, oldest first)");
+  for (const item of profile.journey) {
+    if (item.kind === "project") {
+      const project = profile.projects.find((entry) => entry.slug === item.project);
+      if (project) push(`- ${short(item.date)}: project ${project.title} (/projects/${project.slug})`);
+      continue;
+    }
+    push(
+      `- ${short(item.date)} [${item.kind}]: ${short(item.title)}${item.place ? ` (${short(item.place)})` : ""}`,
+      long(item.description, "    "),
+      ...(item.tags?.length ? [`    Subjects/topics: ${item.tags.map(short).join(", ")}`] : []),
+      ...(item.link ? [`    Link: ${item.link.href}`] : []),
+    );
+  }
+  push("");
+
   push("## Skills");
   for (const skill of profile.skills) {
     push(`### ${short(skill.name)}`, long(skill.description), `Tools: ${skill.tools.join(", ")}`, "");
@@ -103,7 +119,7 @@ function knowledge() {
     "- One-page CV to view or print: /cv",
     "",
     "## Pages on this site",
-    "- Home sections: /#about, /#skills, /#services, /#projects, /#education, /#github (GitHub activity), /#contact (contact form)",
+    "- Home sections: /#about, /#skills, /#services, /#projects, /#education, /#journey (timeline of studies and projects), /#github (GitHub activity), /#contact (contact form)",
     "- Project details: /projects/<slug> (slugs listed under each project above)",
     "- The site also has a terminal mode (button in the menu, or Ctrl+K then 'Terminal') and an English/Vietnamese switch.",
   );

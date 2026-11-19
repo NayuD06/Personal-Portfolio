@@ -100,6 +100,19 @@ export const ui = {
     education: { en: "Education", vi: "Học vấn" },
     projects: { en: "Projects", vi: "Dự án" },
   },
+  journey: {
+    title: { en: "My journey", vi: "Hành trình" },
+    subtitle: {
+      en: "From my first line of code in September 2024 to the products I build today: university, academy and projects, in the order they happened.",
+      vi: "Từ dòng code đầu tiên vào tháng 9/2024 tới những sản phẩm mình làm hôm nay: việc học ở đại học, học viện và các dự án, xếp theo thời gian.",
+    },
+    legend: { en: "What the markers mean", vi: "Ý nghĩa các mốc" },
+    university: { en: "UTH", vi: "UTH" },
+    academy: { en: "VTC Academy", vi: "VTC Academy" },
+    project: { en: "Project", vi: "Dự án" },
+    milestone: { en: "Milestone", vi: "Cột mốc" },
+    viewProject: { en: "View project", vi: "Xem dự án" },
+  },
   education: {
     title: { en: "Education", vi: "Học vấn" },
     subtitle: {
@@ -180,6 +193,7 @@ export const ui = {
     groupActions: { en: "Actions", vi: "Thao tác" },
     groupLinks: { en: "Links", vi: "Liên kết" },
     education: { en: "Education", vi: "Học vấn" },
+    journey: { en: "My journey", vi: "Hành trình" },
     github: { en: "GitHub activity", vi: "Hoạt động GitHub" },
     switchLang: { en: "Switch to Vietnamese", vi: "Chuyển sang tiếng Anh" },
     viewCv: { en: "Open the one-page CV", vi: "Xem CV một trang" },

@@ -144,6 +144,173 @@ h4 {
   background-size: 48px 48px;
 }
 
+/* ---------- Hành trình (dòng thời gian) ---------- */
+.journey-rail {
+  left: 11px;
+}
+@media (min-width: 768px) {
+  .journey-rail {
+    left: calc(10rem + 11px);
+  }
+}
+.journey-fill {
+  background: linear-gradient(to bottom, var(--brand-sky), var(--brand-blue) 55%, #1d4ed8);
+  box-shadow: 0 0 14px var(--glow-sky);
+}
+.journey-head {
+  background: #fff;
+  box-shadow:
+    0 0 0 4px rgb(56 189 248 / 0.25),
+    0 0 18px 4px var(--brand-sky);
+}
+.journey-dot {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.journey-dot-university {
+  color: var(--brand-blue);
+  border-color: color-mix(in srgb, var(--brand-blue) 45%, transparent);
+}
+.journey-dot-academy {
+  color: var(--brand-sky);
+  border-color: color-mix(in srgb, var(--brand-sky) 50%, transparent);
+}
+.journey-dot-project {
+  color: var(--fg);
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--fg) 35%, transparent);
+}
+.journey-dot-lit {
+  color: #fff;
+  background: linear-gradient(135deg, #1d4ed8, var(--brand-blue) 55%, var(--brand-sky));
+  box-shadow:
+    0 0 0 4px var(--glow-blue),
+    0 0 16px var(--glow-sky);
+}
+.journey-dot-academy .journey-dot-lit {
+  background: linear-gradient(135deg, #0284c7, var(--brand-sky));
+}
+.journey-dot-project .journey-dot-lit {
+  color: var(--brand-blue);
+  background: #fff;
+}
+.journey-dot-milestone .journey-dot-lit {
+  color: var(--bg);
+  background: var(--fg);
+}
+.year-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--brand-blue) 50%, transparent);
+}
+.journey-head {
+  top: 100%;
+  opacity: 0;
+}
+/* Hiệu ứng theo cuộn (Chrome, Edge, Safari mới). Trình duyệt chưa hỗ trợ thì giữ nguyên trạng thái đã sáng ở trên. */
+@supports (animation-timeline: view()) {
+  .journey {
+    view-timeline-name: --journey;
+  }
+  /* đường sáng chạy từ lúc đầu dòng thời gian tới 62% màn hình cho tới khi cuối dòng thời gian qua mốc đó */
+  .journey-fill,
+  .journey-head {
+    animation-duration: auto;
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: --journey;
+    animation-range: cover 38vh cover calc(100% - 62vh);
+  }
+  .journey-fill {
+    animation-name: journey-fill;
+  }
+  .journey-head {
+    animation-name: journey-head;
+  }
+  /* mốc sáng lên khi đi ngang khoảng giữa màn hình, cuộn ngược lên thì tắt lại */
+  .journey-node {
+    view-timeline-name: --node;
+  }
+  .journey-dot-lit {
+    animation: journey-lit linear both;
+    animation-timeline: --node;
+    animation-range: cover 32vh cover 50vh;
+  }
+  .journey-node {
+    animation: journey-node linear both;
+    animation-timeline: view();
+    animation-range: cover 32vh cover 50vh;
+  }
+  /* số năm tô màu từ trên xuống (mốc cuộn đặt riêng cho từng năm trong journey.tsx) */
+  .year-fill {
+    animation: journey-year linear both;
+    animation-range: cover 30vh cover calc(100% - 45vh);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .journey-stop {
+      animation: journey-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+@keyframes journey-fill {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes journey-head {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  3%,
+  97% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+@keyframes journey-lit {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes journey-node {
+  from {
+    scale: 0.86;
+  }
+  to {
+    scale: 1;
+  }
+}
+@keyframes journey-year {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes journey-in {
+  from {
+    opacity: 0;
+    translate: 28px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
 /* Ánh sáng chạy theo con trỏ trên thẻ (biến --x, --y do JS đặt) */
 .spotlight {
   position: relative;
