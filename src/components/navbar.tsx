@@ -7,6 +7,7 @@ import { LuCodeXml, LuFolderGit2, LuHouse, LuLayers, LuMail, LuMessageCircle, Lu
 import { profile } from "@/data/profile";
 import { navLinks, ui } from "@/data/ui";
 import { T } from "@/lib/i18n";
+import { CommandTrigger } from "./command-palette";
 import { LangToggle } from "./ui/lang-toggle";
 import { ThemeToggle } from "./ui/theme-toggle";
 
@@ -97,6 +98,7 @@ export function Navbar() {
           </ul>
 
           <div className="flex shrink-0 items-center gap-2">
+            <CommandTrigger />
             <LangToggle />
             <ThemeToggle />
             <a

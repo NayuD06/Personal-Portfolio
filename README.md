@@ -8,6 +8,8 @@ Ngoài trang chính còn có:
 
 - **`/projects/<slug>`**: trang chi tiết từng dự án (vấn đề, cách làm, tính năng chính, công nghệ, ảnh chụp bấm vào để phóng to, dự án trước/sau).
 - **`/cv`**: CV một trang A4 dựng tự động từ nội dung portfolio, có nút In và Tải PDF.
+- **Trang 404**: hiện khi mở một đường link không tồn tại. Số 0 là một quỹ đạo có icon công nghệ bay quanh, khung terminal hiện đúng link người xem vừa mở và gợi ý các trang còn lại (`src/app/not-found.tsx`).
+- **Bảng lệnh Ctrl + K** (⌘ + K trên Mac, hoặc bấm nút kính lúp trên menu): gõ để nhảy tới một mục, mở một dự án, đổi ngôn ngữ, đổi sáng/tối, tải CV, chép email. Gõ có dấu hay không dấu đều được. Dùng được ở mọi trang (`src/components/command-palette.tsx`). Dự án mới thêm vào `profile.ts` tự có trong bảng.
 
 ## Chạy trên máy
 
@@ -135,6 +137,7 @@ src/
 │  ├─ api/contact/route.ts  nhận tin nhắn từ form liên hệ và gửi về email qua Resend
 │  ├─ icon.svg              favicon
 │  ├─ sitemap.ts, robots.ts
+│  ├─ not-found.tsx         trang 404
 │  ├─ projects/[slug]/      trang chi tiết dự án
 │  └─ cv/                   trang CV (in ra PDF)
 ├─ components/
@@ -142,6 +145,8 @@ src/
 │  ├─ subpage-header.tsx    thanh trên cùng của trang chi tiết dự án và trang CV
 │  ├─ project/gallery.tsx   lưới ảnh chụp + xem ảnh lớn
 │  ├─ contact/sent-card.tsx thẻ cảm ơn hiện ra sau khi gửi form liên hệ
+│  ├─ command-palette.tsx   bảng lệnh Ctrl + K và nút kính lúp trên menu
+│  ├─ not-found-parts.tsx   khung terminal và nút tìm nhanh trên trang 404
 │  ├─ cv/print-button.tsx   nút In trên trang CV
 │  ├─ sections/             hero, about, skills, services, projects, education, github-activity, contact, footer
 │  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI...)

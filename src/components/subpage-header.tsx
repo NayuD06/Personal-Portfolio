@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { profile } from "@/data/profile";
+import { CommandTrigger } from "./command-palette";
 import { LangToggle } from "./ui/lang-toggle";
 import { ThemeToggle } from "./ui/theme-toggle";
 
@@ -15,6 +16,7 @@ export function SubpageHeader() {
           <span className="truncate font-heading text-lg font-extrabold tracking-tight">{profile.name}</span>
         </Link>
         <div className="flex shrink-0 items-center gap-2">
+          <CommandTrigger />
           <LangToggle />
           <ThemeToggle />
         </div>

@@ -2,6 +2,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Nunito } from "next/font/google";
+import { CommandPalette } from "@/components/command-palette";
 import { Providers } from "@/components/providers";
 import { profile } from "@/data/profile";
 import { pick, langScript } from "@/lib/i18n";
@@ -73,6 +74,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      // Cho Next.js tạm tắt cuộn mượt khi chuyển trang, để trang mới luôn mở ở đầu trang
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={`${nunito.variable} ${montserrat.variable}`}
     >
@@ -81,7 +84,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: langScript }} />
       </head>
       <body className="min-h-dvh font-sans antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          {/* Bảng lệnh Ctrl + K, dùng được ở mọi trang */}
+          <CommandPalette />
+        </Providers>
         {/* Thống kê lượt xem và tốc độ trang: bật trong Vercel > Project > Analytics / Speed Insights */}
         <Analytics />
         <SpeedInsights />

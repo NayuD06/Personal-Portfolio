@@ -15,7 +15,7 @@ const subscribe = () => () => {};
  * Đổi giao diện với hiệu ứng vòng tròn lan ra từ nút (View Transitions API).
  * Trình duyệt chưa hỗ trợ, hoặc người xem bật "giảm chuyển động", thì đổi ngay không hiệu ứng.
  */
-function switchTheme(next: "light" | "dark", apply: (theme: string) => void, event: MouseEvent<HTMLButtonElement>) {
+export function switchTheme(next: "light" | "dark", apply: (theme: string) => void, origin: { x: number; y: number }) {
   const root = document.documentElement;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!document.startViewTransition || reduce) {
@@ -23,10 +23,7 @@ function switchTheme(next: "light" | "dark", apply: (theme: string) => void, eve
     return;
   }
 
-  // tâm vòng tròn: chỗ bấm chuột, hoặc giữa nút khi bấm bằng bàn phím
-  const rect = event.currentTarget.getBoundingClientRect();
-  const x = event.clientX || rect.left + rect.width / 2;
-  const y = event.clientY || rect.top + rect.height / 2;
+  const { x, y } = origin;
   const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
 
   root.classList.add("theme-transition");
@@ -47,6 +44,12 @@ function switchTheme(next: "light" | "dark", apply: (theme: string) => void, eve
   transition.finished.finally(() => root.classList.remove("theme-transition"));
 }
 
+/** Tâm vòng tròn: chỗ bấm chuột, hoặc giữa nút khi bấm bằng bàn phím */
+function clickOrigin(event: MouseEvent<HTMLButtonElement>) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  return { x: event.clientX || rect.left + rect.width / 2, y: event.clientY || rect.top + rect.height / 2 };
+}
+
 /** Nút chuyển giao diện sáng / tối. */
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -58,7 +61,8 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={(event) => switchTheme(isDark ? "light" : "dark", setTheme, event)}
+      data-theme-toggle
+      onClick={(event) => switchTheme(isDark ? "light" : "dark", setTheme, clickOrigin(event))}
       aria-label={pick(isDark ? ui.nav.lightMode : ui.nav.darkMode, lang)}
       className="relative grid size-10 place-items-center overflow-hidden rounded-full border border-border bg-input text-fg transition-colors hover:border-brand-blue"
     >

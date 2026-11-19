@@ -38,7 +38,8 @@ export default function CvPage() {
   const github = profile.socials.find((social) => social.icon === "github");
 
   return (
-    <>
+    // một thẻ bao ngoài: Next.js cuộn tới thẻ này khi chuyển trang, nên trang luôn mở ở đầu
+    <div>
       <SubpageHeader />
       <main id="main" className="cv-screen px-3 py-8 sm:py-12">
         <div className="mx-auto mb-4 flex max-w-[210mm] flex-wrap items-center justify-between gap-3 print:hidden">
@@ -189,7 +190,7 @@ export default function CvPage() {
           </div>
         </article>
       </main>
-    </>
+    </div>
   );
 }
 

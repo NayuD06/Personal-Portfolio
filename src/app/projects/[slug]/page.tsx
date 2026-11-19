@@ -49,7 +49,8 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
   const address = (project.liveUrl ?? project.githubUrl ?? "").replace(/^https?:\/\//, "");
 
   return (
-    <>
+    // một thẻ bao ngoài: Next.js cuộn tới thẻ này khi chuyển trang, nên trang luôn mở ở đầu
+    <div>
       <ScrollProgress />
       <SubpageHeader />
       <main id="main" className="overflow-x-clip">
@@ -229,7 +230,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
       </main>
       <Footer base="/" />
-    </>
+    </div>
   );
 }
 

@@ -171,6 +171,39 @@ export const ui = {
     error: { en: "Couldn't send the message. Please email me directly.", vi: "Chưa gửi được. Bạn gửi email trực tiếp cho mình nhé." },
     mailSubject: { en: "Portfolio contact from", vi: "Liên hệ từ portfolio:" },
   },
+  // Bảng lệnh mở bằng Ctrl + K (hoặc ⌘ + K trên Mac)
+  palette: {
+    open: { en: "Search and quick actions", vi: "Tìm kiếm và thao tác nhanh" },
+    placeholder: { en: "Search sections, projects, actions...", vi: "Tìm mục, dự án, thao tác..." },
+    groupNavigate: { en: "Go to", vi: "Đi tới" },
+    groupProjects: { en: "Projects", vi: "Dự án" },
+    groupActions: { en: "Actions", vi: "Thao tác" },
+    groupLinks: { en: "Links", vi: "Liên kết" },
+    education: { en: "Education", vi: "Học vấn" },
+    github: { en: "GitHub activity", vi: "Hoạt động GitHub" },
+    switchLang: { en: "Switch to Vietnamese", vi: "Chuyển sang tiếng Anh" },
+    viewCv: { en: "Open the one-page CV", vi: "Xem CV một trang" },
+    copyEmail: { en: "Copy my email address", vi: "Chép địa chỉ email của mình" },
+    copied: { en: "Copied", vi: "Đã chép" },
+    writeEmail: { en: "Write me an email", vi: "Viết email cho mình" },
+    empty: { en: "Nothing matches", vi: "Không có kết quả cho" },
+    emptyHint: { en: "Try “projects”, “CV” or “dark”.", vi: "Thử gõ “dự án”, “CV” hoặc “tối”." },
+    move: { en: "move", vi: "di chuyển" },
+    run: { en: "open", vi: "mở" },
+    close: { en: "close", vi: "đóng" },
+  },
+  // Trang 404 (đường link không tồn tại)
+  notFound: {
+    title: { en: "This page drifted out of orbit", vi: "Trang này trôi khỏi quỹ đạo rồi" },
+    body: {
+      en: "The link may be old or mistyped. These pages are still right where they should be:",
+      vi: "Có thể đường link đã cũ hoặc bị gõ nhầm. Còn mấy trang này thì vẫn ở nguyên chỗ cũ:",
+    },
+    error: { en: "error 404: page not found", vi: "lỗi 404: không tìm thấy trang" },
+    home: { en: "Back to home", vi: "Về trang chủ" },
+    projects: { en: "Browse projects", vi: "Xem dự án" },
+    search: { en: "Search", vi: "Tìm nhanh" },
+  },
   footer: {
     tagline: {
       en: "I'm open to internships, freelance work and side projects.",

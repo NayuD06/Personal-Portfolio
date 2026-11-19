@@ -482,7 +482,7 @@ export const profile = {
       coverColors: ["#1e3a8a", "#3b82f6"],
       image: "/projects/spendwise.jpg",
       githubUrl: "https://github.com/NayuD06/DEVOPS-Money-Manager",
-      liveUrl: "https://devops-money-manager.vercel.app",
+      liveUrl: "https://devops-money-manager-jzgu.vercel.app",
       problem: {
         en: "Most people know roughly what they earn but not where it goes each month. SpendWise makes daily income and spending quick to record and easy to review, and doubles as practice for the full DevOps loop: tests, CI/CD, deployment and monitoring.",
         vi: "Nhiều người biết mình kiếm được bao nhiêu nhưng không rõ tiền đi đâu mỗi tháng. SpendWise giúp ghi thu chi hằng ngày thật nhanh và xem lại dễ dàng, đồng thời là bài luyện trọn vòng DevOps: test, CI/CD, triển khai và giám sát.",
