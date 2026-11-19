@@ -1221,3 +1221,17 @@ html.theme-transition::view-transition-old(root) {
 html.theme-transition::view-transition-new(root) {
   z-index: 2;
 }
+
+/* Ô xác minh Cloudflare Turnstile (src/lib/turnstile-client.ts): thường không hiện gì,
+   chỉ khi Cloudflare cần người xem bấm xác nhận mới hiện ở giữa phía dưới, nổi trên khung chat */
+.turnstile-box {
+  position: fixed;
+  left: 50%;
+  bottom: max(1.25rem, env(safe-area-inset-bottom));
+  z-index: 90;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 2rem);
+}
+.turnstile-box:has(iframe) {
+  filter: drop-shadow(0 20px 40px var(--glow-blue));
+}

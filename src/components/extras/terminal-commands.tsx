@@ -136,6 +136,7 @@ const askNotices: Partial<Record<AskOutcome, Text>> = {
   rate_limited: ui.ask.rateLimited,
   busy: ui.ask.busy,
   quota: ui.ask.quota,
+  verify: ui.ask.verify,
   error: ui.ask.error,
   refusal: ui.ask.refusal,
   cut: ui.ask.cut,
@@ -259,7 +260,10 @@ const files = [
 const secretText: Record<SecretId, { title: Text; hint: Text }> = {
   konami: {
     title: ui.secrets.konami.title,
-    hint: { en: "an old cheat code, typed on the main page (it starts with ↑ ↑)", vi: "một mã cheat game kinh điển, gõ ở trang chính (bắt đầu bằng ↑ ↑)" },
+    hint: {
+      en: "an old cheat code, typed on the main page (it starts with ↑ ↑; on a phone, swipe it)",
+      vi: "một mã cheat game kinh điển, gõ ở trang chính (bắt đầu bằng ↑ ↑; trên điện thoại thì vuốt)",
+    },
   },
   logo: {
     title: ui.secrets.logo.title,
@@ -271,7 +275,10 @@ const secretText: Record<SecretId, { title: Text; hint: Text }> = {
   },
   matrix: {
     title: ui.secrets.matrix.title,
-    hint: { en: "type my name (all lowercase, no space) anywhere on the site", vi: "gõ tên mình (viết thường, liền, không dấu) ở bất kỳ đâu trên trang" },
+    hint: {
+      en: "type my name (lowercase, no space) anywhere on the site, or right here",
+      vi: "gõ tên mình (viết thường, liền, không dấu) ở bất kỳ đâu trên trang, hoặc ngay tại đây",
+    },
   },
   console: {
     title: ui.secrets.console.title,
@@ -898,6 +905,18 @@ export const commands: Command[] = [
             <T v={{ en: "...just kidding. But you did find a secret.", vi: "...đùa thôi. Nhưng bạn vừa tìm ra một bí mật đấy." }} />
           </p>
         </Block>
+      );
+    },
+  },
+  {
+    name: "duyan",
+    aliases: ["matrix"],
+    run: () => {
+      foundSecret("matrix");
+      return (
+        <p className={c.sky}>
+          <T v={{ en: "Opening the code rain...", vi: "Đang mở màn mưa code..." }} />
+        </p>
       );
     },
   },

@@ -7,6 +7,7 @@ import { profile } from "@/data/profile";
 import { ui } from "@/data/ui";
 import { askAssistant, MAX_QUESTION, type AskOutcome, type ChatMessage } from "@/lib/ask-client";
 import { pick, T } from "@/lib/i18n";
+import { warmTurnstile } from "@/lib/turnstile-client";
 import { useLang } from "@/lib/use-lang";
 import { Avatar } from "../ui/avatar";
 import { RichText } from "./rich-text";
@@ -28,6 +29,7 @@ const notices: Partial<Record<AskOutcome, (typeof ui.ask)["error"]>> = {
   rate_limited: ui.ask.rateLimited,
   busy: ui.ask.busy,
   quota: ui.ask.quota,
+  verify: ui.ask.verify,
   error: ui.ask.error,
   refusal: ui.ask.refusal,
 };
@@ -48,6 +50,9 @@ export default function ChatPanel({ onClose, question }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const stickRef = useRef(true);
   const streaming = messages.some((message) => message.streaming);
+
+  // tải sẵn script chống bot (nếu đã bật Turnstile) để câu hỏi đầu không phải chờ
+  useEffect(warmTurnstile, []);
 
   // nhớ cuộc trò chuyện khi đóng khung; đang trả lời dở thì dừng lại
   useEffect(() => {

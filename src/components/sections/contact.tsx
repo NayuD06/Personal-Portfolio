@@ -14,6 +14,7 @@ import { profile } from "@/data/profile";
 import { linkProps } from "@/lib/site";
 import { ui } from "@/data/ui";
 import { pick, T, type Text } from "@/lib/i18n";
+import { getTurnstileToken, warmTurnstile } from "@/lib/turnstile-client";
 import { useLang } from "@/lib/use-lang";
 import { SentCard, type SentInfo } from "../contact/sent-card";
 import { Reveal } from "../ui/reveal";
@@ -23,7 +24,7 @@ import { TechIcon } from "../ui/tech-icon";
 // Form gửi tới /api/contact (src/app/api/contact/route.ts), server gửi email về cho bạn qua Resend.
 // Khi chưa đặt RESEND_API_KEY, nút gửi sẽ mở ứng dụng email của người xem với nội dung đã điền sẵn.
 
-type Status = "idle" | "sending" | "sent" | "error";
+type Status = "idle" | "sending" | "sent" | "error" | "verify";
 
 const fieldClass =
   "w-full rounded-xl border border-border bg-input px-4 py-3 text-sm text-fg placeholder:text-muted/70 outline-none transition-all focus:border-brand-blue focus:shadow-[0_0_0_4px_var(--glow-blue)]";
@@ -53,16 +54,28 @@ export function Contact() {
 
     setStatus("sending");
     try {
+      // mã chống bot của Cloudflare Turnstile (không có gì nếu chưa đặt key)
+      const turnstileToken = await getTurnstileToken("contact");
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // gửi kèm ngôn ngữ đang xem để email báo cho bạn biết nên trả lời bằng tiếng gì
-        body: JSON.stringify({ ...data, lang }),
+        body: JSON.stringify({ ...data, lang, turnstileToken }),
       });
       if (response.status === 503) {
         // server chưa cấu hình gửi email: mở ứng dụng email thay thế
         setStatus("idle");
         openMailApp(data);
+        return;
+      }
+      if (response.status === 403) {
+        // không tải được ô xác minh (vd. trình chặn quảng cáo chặn Cloudflare): mở ứng dụng email để vẫn liên hệ được
+        if (!turnstileToken) {
+          setStatus("idle");
+          openMailApp(data);
+          return;
+        }
+        setStatus("verify");
         return;
       }
       if (!response.ok) throw new Error(String(response.status));
@@ -186,6 +199,7 @@ export function Contact() {
           <Reveal from="right">
             <form
               onSubmit={handleSubmit}
+              onFocus={warmTurnstile}
               className="card relative rounded-3xl p-6 shadow-[0_30px_80px_-40px_var(--glow-blue)] sm:p-8"
             >
               {/* Khi đã gửi: form mờ đi nhưng vẫn giữ chỗ (thẻ không đổi chiều cao), thẻ cảm ơn hiện đè lên.
@@ -289,7 +303,7 @@ export function Contact() {
               </div>
 
               <AnimatePresence>
-                {status === "error" && (
+                {(status === "error" || status === "verify") && (
                   <motion.p
                     role="status"
                     initial={{ opacity: 0, y: -8, height: 0 }}
@@ -297,7 +311,7 @@ export function Contact() {
                     exit={{ opacity: 0, height: 0 }}
                     className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-amber-500"
                   >
-                    <LuCircleAlert className="size-5" aria-hidden="true" /> <T v={ui.contact.error} />
+                    <LuCircleAlert className="size-5" aria-hidden="true" /> <T v={status === "verify" ? ui.contact.verifyError : ui.contact.error} />
                   </motion.p>
                 )}
               </AnimatePresence>

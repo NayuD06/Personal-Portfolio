@@ -50,6 +50,7 @@ export function Navbar() {
   return (
     <>
       <motion.header
+        data-quake
         initial={{ y: -90, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -117,6 +118,7 @@ export function Navbar() {
       {/* Thanh menu dưới đáy màn hình trên điện thoại và máy tính bảng */}
       <motion.nav
         aria-label="Mobile"
+        data-quake
         initial={{ y: 120, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.7, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}

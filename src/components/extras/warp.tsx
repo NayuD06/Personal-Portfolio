@@ -167,8 +167,9 @@ function CodeRain({ onEnd }: { onEnd: () => void }) {
 const QUAKE = 3100;
 
 /**
- * Động đất: cả trang rung lên, rồi từng mảng đang thấy trên màn hình (tiêu đề, thẻ, đoạn chữ...) rơi xuống,
- * xoay lung tung, một lúc sau bay ngược lên đúng chỗ cũ. Chỉ dùng animation của trình duyệt, không đổi DOM.
+ * Động đất: cả trang rung lên, rồi từng mảng đang thấy trên màn hình (tiêu đề, thẻ, đoạn chữ...) cùng thanh menu
+ * và các nút nổi rơi xuống, xoay lung tung, một lúc sau bay ngược lên đúng chỗ cũ.
+ * Chỉ dùng animation của trình duyệt, không đổi DOM.
  */
 function Quake({ onEnd }: { onEnd: () => void }) {
   useEffect(() => {
@@ -192,20 +193,24 @@ function Quake({ onEnd }: { onEnd: () => void }) {
       }
     };
     visit(main);
+    // thanh menu, menu dưới đáy (điện thoại) và các nút nổi (đánh dấu data-quake) cũng rơi theo
+    for (const element of Array.from(document.querySelectorAll<HTMLElement>("[data-quake]"))) {
+      const rect = element.getBoundingClientRect();
+      if (rect.width > 0 && rect.bottom > 0 && rect.top < vh && !pieces.includes(element)) pieces.push(element);
+    }
 
-    const animations: Animation[] = [
-      main.animate(
-        [
-          { transform: "translate(0, 0)" },
-          { transform: "translate(-10px, 4px) rotate(-0.4deg)" },
-          { transform: "translate(9px, -5px) rotate(0.4deg)" },
-          { transform: "translate(-7px, -3px)" },
-          { transform: "translate(6px, 5px) rotate(0.3deg)" },
-          { transform: "translate(0, 0)" },
-        ],
-        { duration: 110, iterations: 5 },
-      ),
+    const shake: Keyframe[] = [
+      { transform: "translate(0, 0)" },
+      { transform: "translate(-10px, 4px) rotate(-0.4deg)" },
+      { transform: "translate(9px, -5px) rotate(0.4deg)" },
+      { transform: "translate(-7px, -3px)" },
+      { transform: "translate(6px, 5px) rotate(0.3deg)" },
+      { transform: "translate(0, 0)" },
     ];
+    const chrome = pieces.filter((piece) => piece.hasAttribute("data-quake"));
+    const animations: Animation[] = [main, ...chrome].map((element) =>
+      element.animate(shake, { duration: 110, iterations: 5, composite: "add" }),
+    );
     for (const piece of pieces) {
       const rect = piece.getBoundingClientRect();
       const fallen = `translate(${(Math.random() - 0.5) * 160}px, ${vh - rect.top + 80 + Math.random() * 140}px) rotate(${(Math.random() - 0.5) * 70}deg)`;

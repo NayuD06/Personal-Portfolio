@@ -19,6 +19,8 @@ export function openAsk(question?: string) {
 }
 
 export function foundSecret(id: SecretId) {
+  // lưu ngay, để hai bí mật tìm ra cùng lúc thì cái trước không bị mất
+  saveSecret(id);
   window.dispatchEvent(new CustomEvent(SECRET_FOUND, { detail: id }));
 }
 

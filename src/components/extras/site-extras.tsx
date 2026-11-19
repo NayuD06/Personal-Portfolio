@@ -12,7 +12,7 @@ import { pick, T } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
 
 // Gắn một lần trong layout: nút "Hỏi AI", phím tắt mở Terminal và các easter egg trên trang:
-// mã Konami, gõ "duyan", bấm logo 5 lần, lắc chuột hoặc điện thoại, lời chào trong Console, vào trang lúc 0h đến 4h sáng.
+// mã Konami (phím hoặc vuốt), gõ "duyan", bấm logo 5 lần, lắc chuột hoặc điện thoại, lời chào trong Console, vào trang lúc 0h đến 4h sáng.
 // Terminal, khung chat và hiệu ứng easter egg chỉ được tải về khi mở lần đầu, nên không làm chậm trang.
 
 const Terminal = dynamic(() => import("./terminal"), { ssr: false });
@@ -22,6 +22,21 @@ let warpModule: Promise<typeof import("./warp")> | undefined;
 const loadWarp = () => (warpModule ??= import("./warp"));
 
 const konami = ["arrowup", "arrowup", "arrowdown", "arrowdown", "arrowleft", "arrowright", "arrowleft", "arrowright", "b", "a"];
+
+/**
+ * Tên phím đã bấm (chữ thường). Bộ gõ tiếng Việt (Unikey, Telex của Windows...) có lúc che mất phím thật
+ * (key = "Process", đang ghép chữ), khi đó đọc vị trí phím trên bàn phím (event.code) để mã Konami và chữ "duyan" vẫn nhận.
+ * Trả về "" cho phím bổ trợ để không làm đứt dãy đang gõ.
+ */
+function keyName(event: KeyboardEvent) {
+  // Shift, Caps Lock... không tính là một phím trong dãy (gõ B A in hoa vẫn được)
+  if (["Shift", "Control", "Alt", "AltGraph", "Meta", "CapsLock", "Fn", "OS"].includes(event.key)) return "";
+  const hidden = event.isComposing || ["Process", "Unidentified", "Dead", ""].includes(event.key) || event.keyCode === 229;
+  if (!hidden) return event.key.toLowerCase();
+  if (event.code.startsWith("Key")) return event.code.slice(3).toLowerCase();
+  if (event.code.startsWith("Arrow")) return event.code.toLowerCase();
+  return "";
+}
 
 export function SiteExtras() {
   const lang = useLang();
@@ -55,7 +70,16 @@ export function SiteExtras() {
       });
     };
 
+    // mã Konami: ↑ ↑ ↓ ↓ ← → ← → B A (trên điện thoại là vuốt theo các hướng đó rồi chạm 2 lần)
     let progress = 0;
+    const advance = (key: string) => {
+      if (key === konami[progress]) progress += 1;
+      else progress = key === "arrowup" ? (progress === 2 ? 2 : 1) : 0;
+      if (progress === konami.length) {
+        progress = 0;
+        foundSecret("konami");
+      }
+    };
     let typed = "";
     const onKey = (event: KeyboardEvent) => {
       const typing = (event.target as HTMLElement | null)?.closest?.("input, textarea, select, [contenteditable='true']");
@@ -67,13 +91,9 @@ export function SiteExtras() {
         setTerminal((open) => !open);
         return;
       }
-      const key = event.key.toLowerCase();
-      if (key === konami[progress]) progress += 1;
-      else progress = key === "arrowup" ? (progress === 2 ? 2 : 1) : 0;
-      if (progress === konami.length) {
-        progress = 0;
-        foundSecret("konami");
-      }
+      const key = keyName(event);
+      if (!key) return;
+      advance(key);
       // gõ "duyan" ở bất kỳ đâu (không phải trong ô nhập): mưa code
       if (key.length === 1) {
         typed = (typed + key).slice(-5);
@@ -81,6 +101,25 @@ export function SiteExtras() {
           typed = "";
           foundSecret("matrix");
         }
+      }
+    };
+
+    // vuốt trên màn hình cảm ứng: mỗi lần vuốt tính như một phím mũi tên, chạm nhẹ là B rồi A
+    let touch: { x: number; y: number; time: number } | null = null;
+    const onTouchStart = (event: TouchEvent) => {
+      const point = event.touches.length === 1 ? event.touches[0] : null;
+      touch = point ? { x: point.clientX, y: point.clientY, time: performance.now() } : null;
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      const point = event.changedTouches[0];
+      if (!touch || !point) return;
+      const dx = point.clientX - touch.x;
+      const dy = point.clientY - touch.y;
+      const tap = Math.hypot(dx, dy) < 12 && performance.now() - touch.time < 350;
+      touch = null;
+      if (tap) advance(progress === 8 ? "b" : progress === 9 ? "a" : "tap");
+      else if (Math.max(Math.abs(dx), Math.abs(dy)) > 40) {
+        advance(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? "arrowright" : "arrowleft") : dy > 0 ? "arrowdown" : "arrowup");
       }
     };
 
@@ -181,10 +220,14 @@ export function SiteExtras() {
     document.addEventListener("click", onClick);
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("devicemotion", onMotion);
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
     return () => {
       window.clearTimeout(owl);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("devicemotion", onMotion);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener(OPEN_TERMINAL, onTerminal);
       window.removeEventListener(OPEN_ASK, onAsk);
       window.removeEventListener(SECRET_FOUND, onSecret);
@@ -202,6 +245,7 @@ export function SiteExtras() {
       {!chat.open && (
         <button
           type="button"
+          data-quake
           onClick={(event) => {
             lastFocus.current = event.currentTarget;
             setChat((state) => ({ open: true, key: state.key + 1 }));

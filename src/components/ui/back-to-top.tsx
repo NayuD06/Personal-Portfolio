@@ -18,6 +18,7 @@ export function BackToTop() {
     <AnimatePresence>
       {visible && (
         <motion.a
+          data-quake
           href="#home"
           aria-label={pick(ui.nav.toTop, lang)}
           initial={{ opacity: 0, scale: 0.5, y: 20 }}

@@ -182,6 +182,10 @@ export const ui = {
     sentAgain: { en: "Send another message", vi: "Gửi tin khác" },
     sentProjects: { en: "Browse my projects", vi: "Xem các dự án" },
     error: { en: "Couldn't send the message. Please email me directly.", vi: "Chưa gửi được. Bạn gửi email trực tiếp cho mình nhé." },
+    verifyError: {
+      en: "Couldn't confirm you're not a bot. Reload the page and try again, or email me directly.",
+      vi: "Chưa xác minh được bạn là người thật. Bạn tải lại trang rồi gửi lại, hoặc email trực tiếp cho mình nhé.",
+    },
     mailSubject: { en: "Portfolio contact from", vi: "Liên hệ từ portfolio:" },
   },
   // Bảng lệnh mở bằng Ctrl + K (hoặc ⌘ + K trên Mac)
@@ -258,6 +262,10 @@ export const ui = {
       vi: "Hôm nay trợ lý đã hết lượt hỏi miễn phí. Bạn quay lại vào ngày mai hoặc email cho An nhé:",
     },
     error: { en: "Something went wrong while answering. Please try again.", vi: "Có lỗi khi trả lời. Bạn thử lại nhé." },
+    verify: {
+      en: "Couldn't confirm you're not a bot. Reload the page and ask again (an ad blocker can cause this).",
+      vi: "Chưa xác minh được bạn là người thật. Bạn tải lại trang rồi hỏi lại nhé (trình chặn quảng cáo có thể gây ra lỗi này).",
+    },
     refusal: { en: "I can't help with that one. Try asking about An's work instead.", vi: "Câu này mình không trả lời được. Bạn thử hỏi về công việc của An nhé." },
     cut: { en: "(answer cut short)", vi: "(câu trả lời bị cắt ngắn)" },
     tooLong: { en: "Keep it under {max} characters.", vi: "Tối đa {max} ký tự thôi nhé." },

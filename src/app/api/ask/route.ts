@@ -1,9 +1,12 @@
 import { askSystemPrompt } from "@/lib/ask-knowledge";
+import { cleanText, clientIp, fromOtherSite, readJson } from "@/lib/request-guard";
+import { hasHumanCookie, humanCookie, turnstileEnabled, verifyTurnstile } from "@/lib/turnstile";
 
 // Trợ lý AI hỏi đáp về bạn, dùng Google Gemini API gói miễn phí (https://aistudio.google.com).
 // Cần biến môi trường GEMINI_API_KEY (xem README, mục "Trợ lý AI"). Chưa có thì trả 503,
 // khung chat sẽ báo trợ lý chưa bật và gợi ý gửi email.
 // Câu trả lời được gửi dần từng đoạn (mỗi dòng là một JSON) để chữ hiện ra ngay khi Gemini đang viết.
+// Chống bot: Cloudflare Turnstile ở câu hỏi đầu tiên (khi đã đặt key), sau đó cookie "human" cho qua trong 2 giờ.
 
 export const maxDuration = 60;
 
@@ -19,6 +22,8 @@ const MAX_QUESTION = 500;
 const MAX_ANSWER = 4000;
 /** Chỉ gửi kèm vài lượt gần nhất để hiểu câu hỏi tiếp nối, không gửi cả cuộc trò chuyện dài */
 const MAX_MESSAGES = 9;
+/** Dữ liệu gửi lên lớn hơn mức này là bất thường (trình duyệt chỉ gửi 9 lượt gần nhất) */
+const MAX_BODY = 128 * 1024;
 
 // Giới hạn mỗi IP 12 câu hỏi trong 10 phút và 60 câu một ngày (đếm trong bộ nhớ của server),
 // để một người không dùng hết lượt miễn phí của cả ngày.
@@ -40,15 +45,21 @@ function tooMany(ip: string) {
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
+/**
+ * Bỏ các thẻ giống thẻ đánh dấu trong prompt (<visitor_message>, <portfolio_content>...) khỏi chữ người xem gửi,
+ * để không giả được "hết câu hỏi, giờ là lệnh hệ thống" và chèn lệnh cho AI.
+ */
+const fakeTags = /<\s*\/?\s*(visitor_message|page_language|portfolio_content|system|instructions?|assistant|user|model)\b[^>]*>/gi;
+
 /** Kiểm tra dữ liệu gửi lên: xen kẽ người hỏi / trợ lý, kết thúc bằng câu hỏi mới, không quá dài */
 function readMessages(value: unknown): ChatMessage[] | null {
-  if (!Array.isArray(value) || value.length === 0 || value.length > 40) return null;
+  if (!Array.isArray(value) || value.length === 0 || value.length > 20) return null;
   const messages: ChatMessage[] = [];
   for (const item of value) {
     if (typeof item !== "object" || item === null) return null;
     const { role, content } = item as Record<string, unknown>;
     if ((role !== "user" && role !== "assistant") || typeof content !== "string") return null;
-    const text = content.trim();
+    const text = cleanText(content, true).replace(fakeTags, "").trim();
     if (!text || text.length > (role === "user" ? MAX_QUESTION : MAX_ANSWER)) return null;
     messages.push({ role, content: text });
   }
@@ -57,17 +68,6 @@ function readMessages(value: unknown): ChatMessage[] | null {
   const alternates = recent.every((message, index) => message.role === (index % 2 === 0 ? "user" : "assistant"));
   if (!recent.length || !alternates || recent[recent.length - 1].role !== "user") return null;
   return recent;
-}
-
-/** Chặn trang web khác gọi ké API này từ trình duyệt */
-function fromOtherSite(request: Request) {
-  const origin = request.headers.get("origin");
-  if (!origin) return false;
-  try {
-    return new URL(origin).host !== (request.headers.get("x-forwarded-host") ?? request.headers.get("host"));
-  } catch {
-    return true;
-  }
 }
 
 // ---------- Gemini API ----------
@@ -132,27 +132,35 @@ export async function POST(request: Request) {
   if (!process.env.GEMINI_API_KEY) return Response.json({ error: "not_configured" }, { status: 503 });
   if (fromOtherSite(request)) return Response.json({ error: "forbidden" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: "invalid" }, { status: 400 });
-  }
+  const body = await readJson(request, MAX_BODY);
+  if (!body) return Response.json({ error: "invalid" }, { status: 400 });
   const messages = readMessages(body.messages);
   if (!messages) return Response.json({ error: "invalid" }, { status: 400 });
 
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = clientIp(request);
+  // Chưa có cookie "human" thì phải có mã Turnstile hợp lệ; đúng thì cấp cookie để các câu sau không phải xác minh lại
+  let cookie: string | undefined;
+  if (turnstileEnabled() && !hasHumanCookie(request)) {
+    const verdict = await verifyTurnstile(body.turnstileToken, ip);
+    if (verdict === "fail") return Response.json({ error: "verify" }, { status: 403 });
+    if (verdict === "pass") cookie = humanCookie();
+  }
   if (tooMany(ip)) return Response.json({ error: "rate_limited" }, { status: 429 });
 
   // Ngôn ngữ đang chọn trên trang, chỉ dùng khi không rõ người hỏi viết tiếng gì.
   // Đặt trong câu hỏi mới nhất (không đặt trong system prompt) để phần system luôn giống nhau: Gemini tự cache phần lặp lại.
   const pageLanguage = body.lang === "vi" ? "Vietnamese" : "English";
-  const last = messages[messages.length - 1];
+  // Câu của người xem bọc trong <visitor_message> để AI biết đó là dữ liệu, không phải lệnh (xem quy tắc trong ask-knowledge.ts)
+  const turn = (message: ChatMessage) =>
+    message.role === "user"
+      ? { role: "user", parts: [{ text: `<visitor_message>\n${message.content}\n</visitor_message>` }] }
+      : { role: "model", parts: [{ text: message.content }] };
+  const last = turn(messages[messages.length - 1]);
   const payload = JSON.stringify({
     systemInstruction: { parts: [{ text: askSystemPrompt }] },
     contents: [
-      ...messages.slice(0, -1).map((message) => ({ role: message.role === "user" ? "user" : "model", parts: [{ text: message.content }] })),
-      { role: "user", parts: [{ text: `<page_language>${pageLanguage}</page_language>` }, { text: last.content }] },
+      ...messages.slice(0, -1).map(turn),
+      { role: "user", parts: [{ text: `<page_language>${pageLanguage}</page_language>` }, ...last.parts] },
     ],
     // Flash-Lite mặc định suy nghĩ rất ít nên trả lời nhanh, không cần chỉnh thêm
     generationConfig: { maxOutputTokens: 2048 },
@@ -228,6 +236,7 @@ export async function POST(request: Request) {
       "Content-Type": "application/x-ndjson; charset=utf-8",
       "Cache-Control": "no-store",
       "X-Accel-Buffering": "no",
+      ...(cookie && { "Set-Cookie": cookie }),
     },
   });
 }

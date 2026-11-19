@@ -1,9 +1,12 @@
 import { profile } from "@/data/profile";
 import { renderContactEmail, type ContactFields } from "@/lib/contact-email";
+import { cleanText, clientIp, fromOtherSite, readJson } from "@/lib/request-guard";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 // Nhận tin nhắn từ form liên hệ và gửi về email của bạn qua Resend (https://resend.com).
 // Cần biến môi trường RESEND_API_KEY (xem .env.example). Chưa có thì trả 503,
 // form sẽ tự chuyển sang mở ứng dụng email của người xem như trước.
+// Chống spam: ô ẩn bẫy bot, giới hạn số tin mỗi IP và Cloudflare Turnstile (khi đã đặt key, xem src/lib/turnstile.ts).
 
 type Fields = ContactFields;
 
@@ -15,7 +18,10 @@ const maxLength: Record<keyof Fields, number> = {
   message: 5000,
 };
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Chỉ nhận email dạng thường (chữ, số, . _ % + -), để không chèn được "?cc=..." vào link trả lời trong email
+const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/;
+/** Dữ liệu gửi lên lớn hơn mức này là bất thường, bỏ qua không đọc */
+const MAX_BODY = 16 * 1024;
 
 // Giới hạn mỗi địa chỉ IP 5 tin trong 10 phút (đếm trong bộ nhớ, đủ để chặn spam đơn giản)
 const WINDOW_MS = 10 * 60 * 1000;
@@ -34,34 +40,31 @@ function tooMany(ip: string) {
 export async function POST(request: Request) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return Response.json({ error: "not_configured" }, { status: 503 });
+  if (fromOtherSite(request)) return Response.json({ error: "forbidden" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: "invalid" }, { status: 400 });
-  }
-  const read = (key: string) => (typeof body[key] === "string" ? (body[key] as string).trim() : "");
+  const body = await readJson(request, MAX_BODY);
+  if (!body) return Response.json({ error: "invalid" }, { status: 400 });
 
   // Ô ẩn "website": người thật không thấy nên để trống, bot điền vào thì bỏ qua nhưng vẫn báo thành công
-  if (read("website")) return Response.json({ ok: true });
+  if (cleanText(body.website)) return Response.json({ ok: true });
 
   const fields: Fields = {
-    name: read("name"),
-    email: read("email"),
-    phone: read("phone"),
-    company: read("company"),
-    message: read("message"),
+    name: cleanText(body.name).replace(/\s+/g, " "),
+    email: cleanText(body.email),
+    phone: cleanText(body.phone),
+    company: cleanText(body.company).replace(/\s+/g, " "),
+    message: cleanText(body.message, true),
   };
   const tooLong = (Object.keys(fields) as (keyof Fields)[]).some((key) => fields[key].length > maxLength[key]);
   if (!fields.name || !fields.message || !emailPattern.test(fields.email) || tooLong) {
     return Response.json({ error: "invalid" }, { status: 400 });
   }
 
-  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const ip = clientIp(request);
+  if ((await verifyTurnstile(body.turnstileToken, ip)) === "fail") return Response.json({ error: "verify" }, { status: 403 });
   if (tooMany(ip)) return Response.json({ error: "rate_limited" }, { status: 429 });
 
-  const lang = read("lang");
+  const lang = body.lang === "vi" ? "vi" : "en";
   const { subject, html, text } = renderContactEmail(fields, { lang });
 
   const response = await fetch("https://api.resend.com/emails", {

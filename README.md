@@ -13,10 +13,10 @@ Ngoài trang chính còn có:
 - **Chế độ Terminal** (nút `>_` trên menu, phím `` ` `` cạnh số 1, hoặc Ctrl + K > Chế độ Terminal): cả trang thành cửa sổ dòng lệnh. Gõ `help` để xem lệnh: `about`, `skills`, `projects`, `projects 1`, `education`, `contact`, `cv`, `neofetch`, `open <tên>`, `theme`, `lang`, `ask <câu hỏi>`... Có Tab để gợi ý, ↑ ↓ để gọi lại lệnh cũ, nút lệnh nhanh cho điện thoại, vài lệnh ẩn (`ls`, `cat`, `whoami`, `sudo`, `secrets`, `coffee`, `hire me`, `rm -rf /`...). Nội dung lấy từ `profile.ts`, lệnh nằm ở `src/components/extras/terminal-commands.tsx`.
 - **Trợ lý AI** (nút **Hỏi AI** ở góc phải dưới): khách hỏi về bạn, ví dụ "An có biết React không?", và nhận câu trả lời dựa trên nội dung portfolio, chữ hiện ra dần như đang gõ. Dùng Google Gemini gói miễn phí, chỉ cần đặt API key, xem mục [Trợ lý AI](#trợ-lý-ai-hỏi-đáp-về-bạn).
 - **Easter egg**: 8 bí mật. Tìm được cái nào thì hiện thẻ thành tích và đếm "Đã tìm 1/8" (lưu trong trình duyệt). Gõ `secrets` trong Terminal để xem gợi ý cái nào chưa tìm.
-  1. **Mã Konami** (↑ ↑ ↓ ↓ ← → ← → B A) ở trang chính: bay siêu tốc qua các vì sao.
+  1. **Mã Konami** (↑ ↑ ↓ ↓ ← → ← → B A, chữ thường hay in hoa đều được, bật bộ gõ tiếng Việt vẫn nhận) ở trang chính: bay siêu tốc qua các vì sao. Trên điện thoại: vuốt lên, lên, xuống, xuống, trái, phải, trái, phải rồi chạm nhẹ 2 lần.
   2. **Bấm logo 5 lần liên tiếp**: mặt ma lao ra theo 3 nhịp, khoảng 2,3 giây, bấm hoặc Esc để tắt sớm. Âm thanh trầm rùng rợn (không có tiếng hét), to nhỏ chỉnh ở `VOLUME` đầu file `jumpscare.tsx`.
   3. **Gõ `sudo`** trong Terminal.
-  4. **Gõ `duyan`** ở bất kỳ đâu trên trang (miễn không gõ trong ô nhập): mưa code đổ xuống, giữa màn hình hiện tên.
+  4. **Gõ `duyan`** ở bất kỳ đâu trên trang (miễn không gõ trong ô nhập), hoặc gõ `duyan` trong Terminal (cách dùng được trên điện thoại): mưa code đổ xuống, giữa màn hình hiện tên.
   5. **Mở DevTools (F12) > Console**: chữ DUY AN vẽ bằng ký tự kèm lời mời liên hệ. Gõ `hire()` để in cách liên hệ và mở khóa (`src/lib/console-greeting.ts`).
   6. **Lắc chuột thật nhanh qua lại** (hoặc lắc mạnh điện thoại): cả trang rung, các mảng rơi xuống rồi tự bay về chỗ cũ. iPhone có thể không bắt được vì Safari cần xin quyền cảm biến.
   7. **Gõ `rm -rf /`** trong Terminal: giả vờ xóa sạch từng file, rồi thú nhận là đùa.
@@ -131,6 +131,26 @@ Giới hạn của gói miễn phí:
 - Lưu ý: ở gói Free, Google được dùng nội dung câu hỏi để cải thiện sản phẩm của họ. Nội dung portfolio vốn công khai nên không sao, chỉ là đừng đưa thông tin bí mật vào `profile.ts`.
 - Mỗi câu hỏi ghi một dòng `[ask] ...` trong **Vercel > Logs** (model và số token) để bạn theo dõi.
 
+## Bảo mật và chống bot
+
+Đã có sẵn, không cần làm gì:
+
+- **Header bảo mật** cho mọi trang (đặt trong `next.config.ts`): CSP chỉ cho chạy script, ảnh, font từ chính trang này (cộng Cloudflare Turnstile và thống kê của Vercel), HSTS bắt dùng HTTPS, không cho trang khác nhúng trang này vào iframe, tắt quyền camera / micro / vị trí. Kiểm tra điểm ở https://securityheaders.com (nhập `feb20th.click`). Sau này thêm dịch vụ ngoài mới (font Google, video YouTube, script khác...) mà bị chặn thì thêm tên miền đó vào biến `csp` trong `next.config.ts`.
+- **Kiểm tra dữ liệu gửi lên** ở `/api/contact` và `/api/ask` (`src/lib/request-guard.ts`): giới hạn độ dài và dung lượng, bỏ ký tự ẩn và ký tự điều khiển, chỉ nhận email hợp lệ, chặn trang web khác gọi ké, giới hạn số lần gửi mỗi IP.
+- **Chống chèn lệnh vào trợ lý AI**: câu hỏi được bọc riêng và lọc các thẻ giả, system prompt dặn AI coi mọi thứ người xem gửi là dữ liệu, không bao giờ làm theo lệnh trong đó hay để lộ hướng dẫn. Link trong câu trả lời chỉ mở được trang trong site, http(s) và mailto.
+
+### Chống bot (Cloudflare Turnstile, miễn phí, nên bật)
+
+Turnstile kiểm tra người gửi là người thật trước khi gửi form liên hệ và trước câu hỏi đầu tiên cho trợ lý AI (sau đó 2 giờ không hỏi lại). Đa số người xem không thấy gì, chỉ khi Cloudflare nghi ngờ mới hiện một ô nhỏ ở cuối màn hình để bấm. Chưa đặt key thì trang chạy như cũ.
+
+1. Vào https://dash.cloudflare.com (tạo tài khoản miễn phí nếu chưa có, không cần chuyển tên miền sang Cloudflare).
+2. Menu trái chọn **Turnstile** (hoặc **Application security > Turnstile**), bấm **Add widget**.
+3. Đặt tên bất kỳ (vd. `Portfolio`), mục **Hostnames** thêm `feb20th.click` (thêm `localhost` nếu muốn thử trên máy). **Widget mode** chọn **Managed**. Bấm **Create**.
+4. Chép **Site Key** và **Secret Key**.
+5. Trên Vercel: **Project Settings > Environment Variables**, thêm `NEXT_PUBLIC_TURNSTILE_SITE_KEY` = Site Key và `TURNSTILE_SECRET_KEY` = Secret Key, rồi **Redeploy** (site key được gắn vào trang lúc build nên bắt buộc deploy lại).
+
+Cần đặt cả hai key, thiếu một thì trang bỏ qua bước xác minh. Người xem dùng trình chặn quảng cáo chặn luôn Cloudflare thì form liên hệ tự mở ứng dụng email thay thế, còn khung chat báo tải lại trang. Thử trên máy có thể dùng key thử của Cloudflare (luôn qua): site `1x00000000000000000000AA`, secret `1x0000000000000000000000000000000AA`.
+
 ## Thống kê người xem (Vercel Analytics)
 
 Trang đã gắn sẵn **Vercel Analytics** (số người vào, trang nào được xem, đến từ đâu: Google, Facebook, GitHub..., quốc gia, thiết bị) và **Speed Insights** (tốc độ tải trang thực tế của người xem). Chỉ chạy khi trang ở trên Vercel, chạy trên máy thì không ghi gì.
@@ -161,7 +181,7 @@ Số liệu (số repo, số sao, ngôn ngữ, repo cập nhật gần đây, bi
 
 Gắn tên miền riêng: **Project Settings > Domains**, sau đó đặt `NEXT_PUBLIC_SITE_URL` là tên miền đó (vd. `https://feb20th.click`) để ảnh chia sẻ link và sitemap dùng đúng địa chỉ.
 
-Sau khi deploy nhớ làm thêm mấy việc ở trên: đặt `RESEND_API_KEY` (mục Form liên hệ), đặt `GEMINI_API_KEY` (mục Trợ lý AI) và bật Analytics (mục Thống kê người xem).
+Sau khi deploy nhớ làm thêm mấy việc ở trên: đặt `RESEND_API_KEY` (mục Form liên hệ), đặt `GEMINI_API_KEY` (mục Trợ lý AI), đặt hai key Turnstile (mục Chống bot) và bật Analytics (mục Thống kê người xem).
 
 ## Cấu trúc
 
@@ -196,6 +216,7 @@ src/
 │  └─ ui.ts                 ★ chữ trên giao diện
 └─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang, font cho ảnh chia sẻ (og.ts),
                             giao diện email nhận tin nhắn (contact-email.ts), kiến thức của trợ lý AI (ask-knowledge.ts),
-                            danh sách bí mật (extras.ts), lời chào trong Console (console-greeting.ts)
+                            danh sách bí mật (extras.ts), lời chào trong Console (console-greeting.ts),
+                            kiểm tra dữ liệu gửi lên API (request-guard.ts), chống bot Turnstile (turnstile.ts, turnstile-client.ts)
 assets/fonts/               font Montserrat dùng để vẽ ảnh xem trước khi chia sẻ link
 ```
