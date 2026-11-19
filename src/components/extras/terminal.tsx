@@ -3,12 +3,14 @@
 import { motion } from "motion/react";
 import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { LuX } from "react-icons/lu";
 import { profile } from "@/data/profile";
 import { ui } from "@/data/ui";
 import type { ChatMessage } from "@/lib/ask-client";
 import { pick, T, type Lang } from "@/lib/i18n";
 import { keepFocusInside } from "@/lib/focus-trap";
+import { normalize } from "@/lib/normalize";
 import { useOverlay } from "@/lib/overlay";
 import { setLang, useLang } from "@/lib/use-lang";
 import { switchTheme } from "../ui/theme-toggle";
@@ -23,7 +25,11 @@ type Line = { id: number; node: ReactNode };
 const RUN_EVENT = "terminal-run";
 const runCommand = (command: string) => window.dispatchEvent(new CustomEvent(RUN_EVENT, { detail: command }));
 
-const quick = ["help", "about", "projects", "skills", "contact", "neofetch", "ask", "clear"];
+const quick = ["help", "about", "projects", "skills", "contact", "secrets", "neofetch", "ask", "clear"];
+/** Lệnh được gợi ý khi đang gõ: các lệnh trong help + secrets (lệnh ẩn như sudo, matrix, snake không gợi ý để còn giữ bí mật) */
+const suggestable = [...visibleNames, "secrets"];
+
+type Chip = { label: string; value: string; fromInput: boolean };
 
 function Prompt() {
   return (
@@ -65,6 +71,8 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const chipsRef = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
   const lastScroll = useRef(0);
 
@@ -121,7 +129,30 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
       if (stick.current) scroller.scrollTop = scroller.scrollHeight;
     });
     observer.observe(content);
+    // khung ngắn lại (bàn phím điện thoại bật lên) thì cũng kéo xuống để thấy ô lệnh
+    observer.observe(scroller);
     return () => observer.disconnect();
+  }, []);
+
+  // Điện thoại: bàn phím ảo che nửa dưới màn hình nhưng không làm trang ngắn lại, nên co terminal theo phần còn nhìn thấy
+  // (visualViewport). Nhờ vậy ô lệnh và hàng lệnh nhanh luôn nằm ngay trên bàn phím. Máy tính thì phần nhìn thấy = cả cửa sổ, không đổi gì.
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const frame = frameRef.current;
+    if (!viewport || !frame) return;
+    const fit = () => {
+      // đang phóng to bằng hai ngón thì để nguyên kích thước bình thường
+      const zoomed = Math.abs(viewport.scale - 1) > 0.01;
+      frame.style.top = zoomed ? "" : `${viewport.offsetTop}px`;
+      frame.style.height = zoomed ? "" : `${viewport.height}px`;
+    };
+    fit();
+    viewport.addEventListener("resize", fit);
+    viewport.addEventListener("scroll", fit);
+    return () => {
+      viewport.removeEventListener("resize", fit);
+      viewport.removeEventListener("scroll", fit);
+    };
   }, []);
 
   const isDark = resolvedTheme !== "light";
@@ -235,11 +266,49 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
       return;
     }
     const command = findCommand(parts[0]);
-    const options = command?.complete?.() ?? [];
+    const options = [...new Set(command?.complete?.() ?? [])];
     const word = parts[parts.length - 1].toLowerCase();
     const matches = options.filter((option) => option.toLowerCase().startsWith(word));
     if (matches.length === 1) setInput([...parts.slice(0, -1), matches[0]].join(" ") + " ");
     else if (matches.length > 1) push(<Echo text={input} />, <p className="text-[#60a5fa]">{matches.join("   ")}</p>);
+  }
+
+  // Hàng lệnh dưới đáy: chưa gõ gì thì là lệnh nhanh; đang gõ thì gợi ý lệnh hoặc tham số khớp với chữ đã gõ
+  // (thay cho phím Tab, vì bàn phím điện thoại không có). Không có gợi ý nào thì quay về lệnh nhanh.
+  const chips = useMemo<Chip[]>(() => {
+    const fallback = quick.map((name) => ({ label: name, value: name, fromInput: false }));
+    if (!input.trim()) return fallback;
+    const parts = input.trimStart().split(/\s+/);
+    if (parts.length === 1) {
+      const word = normalize(parts[0]);
+      const names = suggestable.filter((name) => name.startsWith(word));
+      return names.length ? names.map((name) => ({ label: name, value: name, fromInput: true })) : fallback;
+    }
+    // bỏ trùng (vd. "github" vừa là mục trên trang vừa là link mạng xã hội)
+    const options = [...new Set(findCommand(parts[0])?.complete?.() ?? [])];
+    const word = normalize(parts[parts.length - 1]);
+    const matches = options.filter((option) => normalize(option).startsWith(word));
+    return matches.length
+      ? matches.map((option) => ({ label: option, value: [...parts.slice(0, -1), option].join(" "), fromInput: true }))
+      : fallback;
+  }, [input]);
+
+  // danh sách gợi ý đổi thì cuộn hàng về đầu, để thấy gợi ý đầu tiên
+  useEffect(() => {
+    chipsRef.current?.scrollTo({ left: 0 });
+  }, [chips]);
+
+  function pickChip(chip: Chip) {
+    const command = findCommand(chip.value.split(" ")[0]);
+    // lệnh cần thêm chữ phía sau (ask <câu hỏi>, open <tên>) thì điền sẵn để gõ tiếp, còn lại chạy luôn
+    if (!chip.value.includes(" ") && command?.usage?.includes("<")) {
+      setInput(`${chip.value} `);
+      historyIndex.current = null;
+      inputRef.current?.focus({ preventScroll: true });
+      return;
+    }
+    run(chip.value);
+    if (chip.fromInput) setInput("");
   }
 
   function onKeyDown(event: ReactKeyboardEvent<HTMLInputElement>) {
@@ -288,7 +357,8 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
         onClick={onClose}
         className="fixed inset-0 z-[75] bg-[#01030a]/80 backdrop-blur-md"
       />
-      <div className={`pointer-events-none fixed inset-0 z-[76] grid place-items-center ${full ? "" : "sm:p-6"}`}>
+      {/* top / height do visualViewport đặt (xem ở trên), mặc định là cả màn hình */}
+      <div ref={frameRef} className={`pointer-events-none fixed inset-x-0 top-0 z-[76] grid h-dvh place-items-center ${full ? "" : "sm:p-6"}`}>
         <motion.div
           role="dialog"
           aria-modal="true"
@@ -330,6 +400,15 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
             <span className="ml-auto hidden text-[11px] text-[#7d8db0] sm:inline">
               <T v={ui.terminal.keys} />
             </span>
+            {/* điện thoại: chấm đỏ quá nhỏ để bấm, nên có thêm nút đóng to ở góc phải */}
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={pick(ui.terminal.close, lang)}
+              className="relative -my-1.5 ml-auto grid size-9 place-items-center rounded-lg border border-[#1e3a8a] bg-[#0a1428] text-[#93c5fd] active:border-[#38bdf8] active:text-white sm:hidden"
+            >
+              <LuX className="size-[18px]" aria-hidden="true" />
+            </button>
           </div>
 
           {/* màn hình */}
@@ -358,49 +437,59 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
                   </div>
                 ))}
               </div>
-              <label className="flex items-center">
-                <Prompt />
-                <span className="sr-only">
-                  <T v={ui.terminal.inputLabel} />
-                </span>
-                <input
-                  ref={inputRef}
-                  value={input}
-                  onChange={(event) => {
-                    setInput(event.target.value);
-                    historyIndex.current = null;
-                  }}
-                  onKeyDown={onKeyDown}
-                  spellCheck={false}
-                  autoCapitalize="off"
-                  autoComplete="off"
-                  autoCorrect="off"
-                  enterKeyHint="send"
-                  className="command-input min-w-0 flex-1 bg-transparent text-base text-white caret-[#38bdf8] outline-none sm:text-sm"
-                />
-              </label>
+              {/* form: phím "Gửi" của bàn phím điện thoại (nhất là khi đang gõ tiếng Việt) luôn chạy được lệnh */}
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  run(input);
+                  setInput("");
+                }}
+              >
+                <label className="flex items-center">
+                  <Prompt />
+                  <span className="sr-only">
+                    <T v={ui.terminal.inputLabel} />
+                  </span>
+                  <input
+                    ref={inputRef}
+                    value={input}
+                    onChange={(event) => {
+                      setInput(event.target.value);
+                      historyIndex.current = null;
+                    }}
+                    onKeyDown={onKeyDown}
+                    spellCheck={false}
+                    autoCapitalize="off"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    enterKeyHint="send"
+                    placeholder={pick(ui.terminal.placeholder, lang)}
+                    className="command-input min-w-0 flex-1 bg-transparent text-base text-white caret-[#38bdf8] outline-none placeholder:text-[#7d8db0]/70 sm:text-sm sm:placeholder:text-transparent"
+                  />
+                </label>
+              </form>
             </div>
           </div>
 
           {/* lệnh nhanh: tiện khi dùng điện thoại */}
           <div
+            ref={chipsRef}
             role="group"
             aria-label={pick(ui.terminal.quick, lang)}
             className="flex gap-2 overflow-x-auto border-t border-[#1e3a8a]/60 bg-[#060c1a] px-4 pt-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))] [scrollbar-width:none]"
           >
-            {quick.map((chip) => (
+            {chips.map((chip) => (
               <button
-                key={chip}
+                key={`${chip.fromInput}-${chip.value}`}
                 type="button"
-                onClick={() => {
-                  if (chip === "ask") {
-                    setInput("ask ");
-                    inputRef.current?.focus();
-                  } else run(chip);
-                }}
-                className="shrink-0 rounded-md border border-[#1e3a8a] bg-[#0a1428] px-2.5 py-1 text-xs text-[#93c5fd] transition-colors hover:border-[#38bdf8] hover:text-white"
+                // không lấy focus khỏi ô lệnh: bàn phím điện thoại đang mở thì vẫn mở
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={() => pickChip(chip)}
+                className={`shrink-0 rounded-md border px-3 py-1.5 text-xs transition-colors hover:border-[#38bdf8] hover:text-white active:border-[#38bdf8] active:text-white sm:px-2.5 sm:py-1 ${
+                  chip.fromInput ? "border-[#38bdf8] bg-[#0a1428] text-white" : "border-[#1e3a8a] bg-[#0a1428] text-[#93c5fd]"
+                }`}
               >
-                {chip}
+                {chip.label}
               </button>
             ))}
           </div>

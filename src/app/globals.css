@@ -1535,6 +1535,9 @@ html[data-hacker] [class~="text-[#7d8db0]"] {
 html[data-hacker] [class~="caret-[#38bdf8]"] {
   caret-color: #4ade80;
 }
+html[data-hacker] .command-input::placeholder {
+  color: rgb(111 191 134 / 0.7);
+}
 html[data-hacker] [class~="border-[#38bdf8]"] {
   border-color: #4ade80;
 }

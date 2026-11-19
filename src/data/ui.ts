@@ -226,6 +226,7 @@ export const ui = {
     },
     start: { en: "Type a command and press Enter, or tap one below. Start with", vi: "Gõ lệnh rồi nhấn Enter, hoặc bấm một lệnh bên dưới. Bắt đầu với" },
     inputLabel: { en: "Type a command", vi: "Gõ lệnh" },
+    placeholder: { en: "tap to type, e.g. help", vi: "chạm để gõ lệnh, vd. help" },
     output: { en: "Terminal output", vi: "Kết quả lệnh" },
     quick: { en: "Quick commands", vi: "Lệnh nhanh" },
     keys: { en: "Tab completes, ↑ ↓ history, Esc closes", vi: "Tab gợi ý, ↑ ↓ lệnh cũ, Esc để thoát" },

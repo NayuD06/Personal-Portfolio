@@ -32,7 +32,7 @@ export async function GitHubActivity() {
   ];
 
   return (
-    <section id="github" className="section-wash relative py-24 sm:py-32">
+    <section id="github" className="section-wash relative py-20 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading tag="github" title={ui.github.title} subtitle={ui.github.subtitle} />
 

@@ -16,7 +16,7 @@ const badgeIcons: IconName[] = ["typescript", "react", "nestjs", "claude"];
 
 export function About() {
   return (
-    <section id="about" className="section-wash relative py-24 sm:py-32">
+    <section id="about" className="section-wash relative py-20 sm:py-32">
       <div className="mx-auto grid max-w-6xl items-center gap-16 px-5 sm:px-8 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
         <div>
           <Reveal>

@@ -19,7 +19,7 @@ export function Education() {
   if (schools.length === 0) return null;
 
   return (
-    <section id="education" className="section-wash relative py-24 sm:py-32">
+    <section id="education" className="section-wash relative py-20 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading tag="education" title={ui.education.title} subtitle={ui.education.subtitle} />
         <div className="space-y-24 lg:space-y-32">

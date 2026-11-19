@@ -7,7 +7,7 @@ import { TechIcon } from "../ui/tech-icon";
 
 export function Services() {
   return (
-    <section id="services" className="section-wash relative py-24 sm:py-32">
+    <section id="services" className="section-wash relative py-20 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading tag="services" title={ui.services.title} subtitle={ui.services.subtitle} />
 

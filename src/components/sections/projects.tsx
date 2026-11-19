@@ -29,7 +29,7 @@ export function Projects() {
   return (
     // "isolate": giữ đốm sáng nền (-z-10, có animation) trong mục này. Thiếu nó, trình duyệt phải tách cả phần trang
     // phía trên đốm sáng thành một lớp vẽ riêng to bằng cả trang, nên cuộn và bấm gì cũng nặng hơn.
-    <section id="projects" className="relative isolate py-24 sm:py-32">
+    <section id="projects" className="relative isolate py-20 sm:py-32">
       <div aria-hidden="true" className="blob glow absolute top-1/3 -left-40 -z-10 size-96 [--glow-a:10.8%] [--glow-blur:120px] [--glow-c:var(--brand-blue)]" />
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading tag="projects" title={ui.projects.title} subtitle={ui.projects.subtitle} />

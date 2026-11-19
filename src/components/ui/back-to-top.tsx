@@ -26,7 +26,8 @@ export function BackToTop() {
           exit={{ opacity: 0, scale: 0.5, y: 20 }}
           whileHover={{ y: -4 }}
           whileTap={{ scale: 0.9 }}
-          className="bg-brand fixed right-[4.5rem] bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-40 grid size-12 place-items-center rounded-2xl text-white shadow-[0_10px_30px_-8px_var(--glow-blue)] sm:right-[4.75rem] lg:right-5 lg:bottom-[5.25rem]"
+          // điện thoại / máy tính bảng: ẩn đi, vì nút "Trang chủ" ở thanh menu dưới đáy đã làm việc này (đỡ che nội dung)
+          className="bg-brand fixed right-5 bottom-[5.25rem] z-40 hidden size-12 place-items-center rounded-2xl text-white shadow-[0_10px_30px_-8px_var(--glow-blue)] lg:grid"
         >
           <LuArrowUp className="size-5" />
         </motion.a>

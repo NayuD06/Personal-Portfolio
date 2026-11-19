@@ -27,7 +27,7 @@ import { TechIcon } from "../ui/tech-icon";
 type Status = "idle" | "sending" | "sent" | "error" | "verify";
 
 const fieldClass =
-  "w-full rounded-xl border border-border bg-input px-4 py-3 text-sm text-fg placeholder:text-muted/90 outline-none transition-all focus:border-brand-blue focus:shadow-[0_0_0_4px_var(--glow-blue)]";
+  "w-full rounded-xl border border-border bg-input px-4 py-3 text-base text-fg placeholder:text-muted/90 sm:text-sm outline-none transition-all focus:border-brand-blue focus:shadow-[0_0_0_4px_var(--glow-blue)]";
 
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
@@ -134,7 +134,7 @@ export function Contact() {
   const optional = pick(ui.contact.optional, lang);
 
   return (
-    <section id="contact" className="relative py-24 sm:py-32">
+    <section id="contact" className="relative py-20 sm:py-32">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading
           tag="contact"

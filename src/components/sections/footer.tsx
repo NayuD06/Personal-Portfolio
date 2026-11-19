@@ -24,10 +24,11 @@ export function Footer({ base = "" }: { base?: string }) {
           </div>
 
           <nav aria-label="Footer">
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm">
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-0.5 text-sm">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <a href={`${base}${link.href}`} className="text-muted transition-colors hover:text-brand-blue">
+                  {/* py-1: vùng bấm cao 28px cho dễ chạm trên điện thoại, khoảng cách nhìn thấy vẫn như cũ */}
+                  <a href={`${base}${link.href}`} className="inline-block py-1 text-muted transition-colors hover:text-brand-blue">
                     <T v={link.label} />
                   </a>
                 </li>
@@ -35,13 +36,13 @@ export function Footer({ base = "" }: { base?: string }) {
             </ul>
           </nav>
 
-          <ul className="space-y-2.5 text-sm">
+          <ul className="space-y-0.5 text-sm">
             {profile.socials.map((social) => (
               <li key={social.href}>
                 <a
                   href={social.href}
                   {...linkProps(social.href)}
-                  className="inline-flex items-center gap-2.5 text-muted transition-colors hover:text-brand-blue"
+                  className="inline-flex items-center gap-2.5 py-1 text-muted transition-colors hover:text-brand-blue"
                 >
                   <TechIcon name={social.icon} className="size-4" />
                   {social.label}

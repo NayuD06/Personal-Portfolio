@@ -13,9 +13,10 @@ export function SubpageHeader() {
       <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-8">
         <Link href="/" data-logo className="group flex min-w-0 items-center gap-2.5 sm:gap-3">
           <LogoMark className="size-10 shadow-[0_8px_24px_-10px_var(--glow-sky)] transition-transform duration-300 group-hover:-rotate-6" />
-          <span className="truncate font-heading text-lg font-extrabold tracking-tight">{profile.name}</span>
+          {/* màn hình hẹp (dưới 390px) không đủ chỗ cho cả tên lẫn 4 nút: chỉ giữ logo, tên vẫn còn cho trình đọc màn hình */}
+          <span className="truncate font-heading text-lg font-extrabold tracking-tight max-[389px]:sr-only">{profile.name}</span>
         </Link>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <CommandTrigger />
           <TerminalTrigger />
           <LangToggle />

@@ -6,7 +6,7 @@ import { openTerminal } from "@/lib/extras";
 import { pick } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
 
-/** Nút >_ trên thanh menu: mở chế độ Terminal (ẩn trên điện thoại cho đỡ chật, vẫn mở được qua bảng lệnh) */
+/** Nút >_ trên thanh menu: mở chế độ Terminal. Hiện ở mọi cỡ màn hình, kể cả điện thoại (không có phím ` để mở). */
 export function TerminalTrigger() {
   const lang = useLang();
   return (
@@ -15,7 +15,7 @@ export function TerminalTrigger() {
       onClick={openTerminal}
       aria-label={`${pick(ui.terminal.open, lang)} (\`)`}
       title={pick(ui.terminal.open, lang)}
-      className="hidden size-10 place-items-center rounded-full border border-border bg-input text-muted transition-colors hover:border-brand-blue hover:text-fg sm:grid"
+      className="grid size-10 shrink-0 place-items-center rounded-full border border-border bg-input text-muted transition-colors hover:border-brand-blue hover:text-fg"
     >
       <LuSquareTerminal className="size-[18px]" aria-hidden="true" />
     </button>
