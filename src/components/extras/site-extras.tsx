@@ -6,11 +6,13 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentType } from "react";
 import { LuSparkles } from "react-icons/lu";
 import { ui } from "@/data/ui";
+import { greetConsole } from "@/lib/console-greeting";
 import { foundSecret, OPEN_ASK, primeAudio, OPEN_TERMINAL, SECRET_FOUND, type SecretId } from "@/lib/extras";
 import { pick, T } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
 
-// Gắn một lần trong layout: nút "Hỏi AI", phím tắt mở Terminal, mã Konami, đếm số lần bấm logo.
+// Gắn một lần trong layout: nút "Hỏi AI", phím tắt mở Terminal và các easter egg trên trang:
+// mã Konami, gõ "duyan", bấm logo 5 lần, lắc chuột hoặc điện thoại, lời chào trong Console, vào trang lúc 0h đến 4h sáng.
 // Terminal, khung chat và hiệu ứng easter egg chỉ được tải về khi mở lần đầu, nên không làm chậm trang.
 
 const Terminal = dynamic(() => import("./terminal"), { ssr: false });
@@ -54,6 +56,7 @@ export function SiteExtras() {
     };
 
     let progress = 0;
+    let typed = "";
     const onKey = (event: KeyboardEvent) => {
       const typing = (event.target as HTMLElement | null)?.closest?.("input, textarea, select, [contenteditable='true']");
       if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
@@ -71,7 +74,90 @@ export function SiteExtras() {
         progress = 0;
         foundSecret("konami");
       }
+      // gõ "duyan" ở bất kỳ đâu (không phải trong ô nhập): mưa code
+      if (key.length === 1) {
+        typed = (typed + key).slice(-5);
+        if (typed === "duyan") {
+          typed = "";
+          foundSecret("matrix");
+        }
+      }
     };
+
+    // lắc chuột thật nhanh qua lại (ít nhất 8 lần đổi hướng, mỗi lần đi được một đoạn, trong 1 giây): trang rơi rồi lắp lại
+    let lastX: number | null = null;
+    let direction = 0;
+    let segment = 0;
+    let turns: number[] = [];
+    let moves: { time: number; distance: number }[] = [];
+    let quietUntil = 0;
+    const shaken = (now: number) => {
+      if (now < quietUntil) return;
+      quietUntil = now + 15000;
+      turns = [];
+      moves = [];
+      foundSecret("shake");
+    };
+    const onMove = (event: MouseEvent) => {
+      const x = event.clientX;
+      const dx = lastX === null ? 0 : x - lastX;
+      lastX = x;
+      if (Math.abs(dx) < 1) return;
+      const now = performance.now();
+      moves = [...moves.filter((move) => now - move.time < 1000), { time: now, distance: Math.abs(dx) }];
+      const sign = Math.sign(dx);
+      if (sign !== direction) {
+        if (segment > 40) turns = [...turns.filter((time) => now - time < 1000), now];
+        direction = sign;
+        segment = 0;
+      }
+      segment += Math.abs(dx);
+      const distance = moves.reduce((sum, move) => sum + move.distance, 0);
+      if (turns.length >= 8 && distance > 1800) shaken(now);
+    };
+    // điện thoại: lắc mạnh 4 lần trong 1 giây (iPhone cần cấp quyền cảm biến nên có thể không bắt được)
+    let jolts: number[] = [];
+    const onMotion = (event: DeviceMotionEvent) => {
+      const a = event.acceleration;
+      const g = event.accelerationIncludingGravity;
+      const force =
+        a?.x != null && a.y != null && a.z != null
+          ? Math.hypot(a.x, a.y, a.z)
+          : g?.x != null && g.y != null && g.z != null
+            ? Math.abs(Math.hypot(g.x, g.y, g.z) - 9.81)
+            : 0;
+      if (force < 16) return;
+      const now = performance.now();
+      if (jolts.length && now - jolts[jolts.length - 1] < 120) return;
+      jolts = [...jolts.filter((time) => now - time < 1000), now];
+      if (jolts.length >= 4) {
+        jolts = [];
+        shaken(now);
+      }
+    };
+
+    // vào trang lúc nửa đêm đến 4 giờ sáng: nhắc đi uống nước (mỗi phiên một lần)
+    let owl: number | undefined;
+    const seenOwl = () => {
+      try {
+        return sessionStorage.getItem("night-owl") === "1";
+      } catch {
+        return false;
+      }
+    };
+    if (new Date().getHours() < 4 && !seenOwl()) {
+      owl = window.setTimeout(() => {
+        try {
+          sessionStorage.setItem("night-owl", "1");
+        } catch {
+          // trình duyệt chặn lưu trữ: vẫn hiện, chỉ là lần sau có thể hiện lại
+        }
+        foundSecret("nightowl");
+      }, 2500);
+    }
+
+    // lời chào cho ai mở DevTools
+    greetConsole();
 
     // bấm logo 5 lần liên tiếp (trong 3 giây): màn jumpscare
     let clicks: number[] = [];
@@ -93,7 +179,12 @@ export function SiteExtras() {
     window.addEventListener(SECRET_FOUND, onSecret);
     window.addEventListener("keydown", onKey);
     document.addEventListener("click", onClick);
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("devicemotion", onMotion);
     return () => {
+      window.clearTimeout(owl);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("devicemotion", onMotion);
       window.removeEventListener(OPEN_TERMINAL, onTerminal);
       window.removeEventListener(OPEN_ASK, onAsk);
       window.removeEventListener(SECRET_FOUND, onSecret);

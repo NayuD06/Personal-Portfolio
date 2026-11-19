@@ -5,8 +5,9 @@ export const OPEN_TERMINAL = "open-terminal";
 export const OPEN_ASK = "open-ask";
 export const SECRET_FOUND = "secret-found";
 
-export type SecretId = "konami" | "logo" | "sudo";
-export const secretIds: SecretId[] = ["konami", "logo", "sudo"];
+export type SecretId = "konami" | "logo" | "sudo" | "matrix" | "console" | "shake" | "rmrf" | "nightowl";
+/** Thứ tự hiện trên thẻ thành tích và trong lệnh `secrets` của Terminal */
+export const secretIds: SecretId[] = ["konami", "logo", "sudo", "matrix", "console", "shake", "rmrf", "nightowl"];
 
 export function openTerminal() {
   window.dispatchEvent(new Event(OPEN_TERMINAL));

@@ -7,7 +7,7 @@ import { getAudio } from "@/lib/extras";
 
 // Easter egg bấm logo 5 lần: BÙM ngay lập tức. Gương mặt trắng bệch lao vào màn hình theo ba nhịp
 // (mỗi nhịp một cú giật kèm chớp trắng, nhịp cuối sát tới mức hai hốc mắt chiếm cả màn hình), giữa các nhịp
-// thì co giật và nghiêng đầu từ từ, rồi tối sập lại với dòng chữ ma nhấp nháy trong tiếng nhiễu,
+// thì co giật và nghiêng đầu từ từ, rồi tối sập lại với dòng chữ ma nhấp nháy và tiếng thở sát bên tai,
 // sau khoảng 2,3 giây trả lại trang như cũ.
 // Chớp sáng giữ dưới 3 lần mỗi giây để an toàn cho người nhạy cảm với ánh sáng nhấp nháy.
 // Mặt ma vẽ bằng SVG, âm thanh tạo bằng Web Audio, không dùng ảnh hay file âm thanh bên ngoài.
@@ -19,8 +19,10 @@ const TOTAL = 2300;
 const GUARD = 450;
 /** Ba cú giật (giây): mặt hiện ra, lao gần hơn, lao sát mặt người xem */
 const HITS = [0, 0.38, 1.12];
-/** Lúc mặt ma biến mất, chỉ còn bóng tối, chữ và tiếng nhiễu */
+/** Lúc mặt ma biến mất, chỉ còn bóng tối, chữ và tiếng thở */
 const BLACKOUT = 1.32;
+/** Âm lượng tổng: tăng hoặc giảm số này để chỉnh to nhỏ (0,8 nhỏ hơn bản tiếng hét cũ khoảng 10 dB) */
+const VOLUME = 0.8;
 
 function noiseBuffer(context: AudioContext, seconds: number) {
   const buffer = context.createBuffer(1, Math.floor(context.sampleRate * seconds), context.sampleRate);
@@ -29,168 +31,206 @@ function noiseBuffer(context: AudioContext, seconds: number) {
   return buffer;
 }
 
+/** Tiếng vang của một căn phòng rộng, tạo bằng nhiễu tắt dần (cho âm thanh nghe xa xăm, lạnh lẽo) */
+function impulse(context: AudioContext, seconds: number) {
+  const length = Math.floor(context.sampleRate * seconds);
+  const buffer = context.createBuffer(2, length, context.sampleRate);
+  for (let channel = 0; channel < 2; channel++) {
+    const data = buffer.getChannelData(channel);
+    for (let i = 0; i < length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 2.5;
+  }
+  return buffer;
+}
+
 /**
- * Âm thanh: tiếng hét giống giọng người (sóng răng cưa lọc qua các dải tần của nguyên âm "a", rung giọng, méo tiếng),
- * hợp âm chói kiểu phim kinh dị, mỗi cú giật thêm một tiếng nổ trầm và tiếng xé, cuối cùng là tiếng nhiễu TV rè rè.
+ * Âm thanh (không còn tiếng hét): mỗi cú giật là một tiếng "BRÀM" trầm kiểu trailer phim kinh dị kèm tiếng chuông kim loại
+ * lệch tông rung rền, trước mỗi cú giật có tiếng gió hút lên, giữa chừng là nhịp tim. Khi màn hình tối thì có tiếng thở
+ * khò khè sát bên tai trái và vài nốt hộp nhạc lệch tông. Tất cả đi qua tiếng vang phòng rộng, âm lượng vừa phải.
  */
-function scream(context: AudioContext) {
+function haunt(context: AudioContext) {
   const now = context.currentTime;
   const sources: AudioScheduledSourceNode[] = [];
-  const gains: GainNode[] = [];
   const play = (source: AudioScheduledSourceNode, start: number, stop: number) => {
     source.start(now + start);
     source.stop(now + stop);
     sources.push(source);
   };
+  /** Bật nhanh rồi tắt dần */
+  const envelope = (gain: AudioParam, start: number, peak: number, attack: number, release: number) => {
+    gain.setValueAtTime(0.0001, now + start);
+    gain.exponentialRampToValueAtTime(peak, now + start + attack);
+    gain.exponentialRampToValueAtTime(0.0001, now + start + attack + release);
+  };
+  const oscillator = (type: OscillatorType, frequency: number) => {
+    const node = context.createOscillator();
+    node.type = type;
+    node.frequency.value = frequency;
+    return node;
+  };
+  const gain = (value = 1) => {
+    const node = context.createGain();
+    node.gain.value = value;
+    return node;
+  };
+  const filter = (type: BiquadFilterType, frequency: number, Q = 1) => {
+    const node = context.createBiquadFilter();
+    node.type = type;
+    node.frequency.value = frequency;
+    node.Q.value = Q;
+    return node;
+  };
+  const noise = (seconds: number) => {
+    const node = context.createBufferSource();
+    node.buffer = noiseBuffer(context, seconds);
+    return node;
+  };
 
-  // nén lại cho to mà không vỡ tiếng
+  // đường ra: nén nhẹ cho đều tiếng, âm lượng tổng vừa phải
   const compressor = context.createDynamicsCompressor();
-  compressor.threshold.value = -20;
-  compressor.knee.value = 6;
-  compressor.ratio.value = 10;
-  compressor.attack.value = 0.002;
-  compressor.release.value = 0.18;
-  const master = context.createGain();
-  master.gain.value = 0.85;
+  compressor.threshold.value = -18;
+  compressor.knee.value = 10;
+  compressor.ratio.value = 4;
+  compressor.attack.value = 0.005;
+  compressor.release.value = 0.25;
+  const master = gain(VOLUME);
   compressor.connect(master).connect(context.destination);
-  gains.push(master);
+  // "bus" đi thẳng ra loa và gửi thêm một phần vào tiếng vang
+  const reverb = context.createConvolver();
+  reverb.buffer = impulse(context, 2.4);
+  reverb.connect(gain(0.5)).connect(compressor);
+  const bus = gain();
+  bus.connect(compressor);
+  bus.connect(reverb);
 
-  const drive = context.createWaveShaper();
-  const curve = new Float32Array(2048);
-  for (let i = 0; i < curve.length; i++) {
-    const x = (i * 2) / curve.length - 1;
-    curve[i] = ((1 + 60) * x) / (1 + 60 * Math.abs(x));
-  }
-  drive.curve = curve;
-  drive.oversample = "2x";
-  drive.connect(compressor);
+  HITS.forEach((hit, index) => {
+    const strength = index === 1 ? 0.6 : 1;
 
-  // 1. tiếng hét: cao vọt lên rồi kéo dài, mỗi cú giật gắt hơn, tắt phụt khi màn hình tối
-  const voice = context.createGain();
-  voice.gain.setValueAtTime(0.0001, now);
-  voice.gain.exponentialRampToValueAtTime(0.9, now + 0.015);
-  for (const hit of HITS.slice(1)) {
-    voice.gain.setValueAtTime(0.55, now + hit - 0.02);
-    voice.gain.exponentialRampToValueAtTime(1.2, now + hit + 0.02);
-  }
-  voice.gain.setValueAtTime(1, now + BLACKOUT - 0.03);
-  voice.gain.exponentialRampToValueAtTime(0.0001, now + BLACKOUT + 0.04);
-  gains.push(voice);
-  for (const [frequency, gain, Q] of [
-    [820, 1, 7],
-    [1180, 0.7, 8],
-    [2900, 0.35, 10],
+    // 1. tiếng BRÀM: chùm sóng răng cưa thật trầm, lệch tông nhau, mở bộ lọc bật lên rồi đóng lại, hơi tụt cao độ
+    const braamFilter = filter("lowpass", 140, 3);
+    braamFilter.frequency.setValueAtTime(140, now + hit);
+    braamFilter.frequency.exponentialRampToValueAtTime(1800, now + hit + 0.07);
+    braamFilter.frequency.exponentialRampToValueAtTime(170, now + hit + 0.95);
+    const braam = gain(0);
+    envelope(braam.gain, hit, 0.5 * strength, 0.012, 0.95);
+    braamFilter.connect(braam).connect(bus);
+    for (const frequency of [49, 51.9, 73.4, 104]) {
+      const voice = oscillator("sawtooth", frequency);
+      voice.frequency.setValueAtTime(frequency, now + hit);
+      voice.frequency.exponentialRampToValueAtTime(frequency * 0.94, now + hit + 1);
+      voice.connect(braamFilter);
+      play(voice, hit, hit + 1.05);
+    }
+
+    // tiếng dội trầm dưới chân
+    const sub = oscillator("sine", 80);
+    sub.frequency.setValueAtTime(80, now + hit);
+    sub.frequency.exponentialRampToValueAtTime(34, now + hit + 0.5);
+    const subLevel = gain(0);
+    envelope(subLevel.gain, hit, 0.35 * strength, 0.006, 0.55);
+    sub.connect(subLevel).connect(compressor);
+    play(sub, hit, hit + 0.6);
+
+    // 2. chuông kim loại lệch tông (các họa âm không hòa hợp, hai nốt gần nhau tạo tiếng rung rền)
+    const bell = gain(0);
+    envelope(bell.gain, hit, 0.22 * strength, 0.004, 1.3);
+    bell.connect(bus);
+    for (const [ratio, amount] of [
+      [1, 1],
+      [1.012, 0.6],
+      [1.47, 0.7],
+      [2.09, 0.5],
+      [2.56, 0.35],
+      [3.39, 0.25],
+    ]) {
+      const partial = oscillator("sine", 196 * ratio);
+      partial.frequency.setValueAtTime(196 * ratio, now + hit);
+      partial.frequency.exponentialRampToValueAtTime(196 * ratio * 0.97, now + hit + 1.3);
+      partial.connect(gain(amount)).connect(bell);
+      play(partial, hit, hit + 1.35);
+    }
+  });
+
+  // 3. tiếng gió hút lên ngay trước cú giật thứ hai và thứ ba
+  for (const [from, to] of [
+    [0.14, HITS[1]],
+    [0.76, HITS[2]],
   ]) {
-    const formant = context.createBiquadFilter();
-    formant.type = "bandpass";
-    formant.frequency.value = frequency;
-    formant.Q.value = Q;
-    const level = context.createGain();
-    level.gain.value = gain * 3;
-    voice.connect(formant).connect(level).connect(drive);
+    const air = noise(to - from + 0.06);
+    const sweep = filter("bandpass", 250, 1.4);
+    sweep.frequency.setValueAtTime(250, now + from);
+    sweep.frequency.exponentialRampToValueAtTime(2800, now + to);
+    const level = gain(0);
+    level.gain.setValueAtTime(0.0001, now + from);
+    level.gain.exponentialRampToValueAtTime(0.5, now + to - 0.005);
+    level.gain.exponentialRampToValueAtTime(0.0001, now + to + 0.04);
+    air.connect(sweep).connect(level).connect(bus);
+    play(air, from, to + 0.06);
   }
-  for (const detune of [0, 14, -11]) {
-    const vocal = context.createOscillator();
-    vocal.type = "sawtooth";
-    vocal.detune.value = detune;
-    vocal.frequency.setValueAtTime(420, now);
-    vocal.frequency.exponentialRampToValueAtTime(760, now + 0.22);
-    vocal.frequency.setValueAtTime(700, now + HITS[1]);
-    vocal.frequency.exponentialRampToValueAtTime(880, now + HITS[1] + 0.1);
-    vocal.frequency.exponentialRampToValueAtTime(640, now + HITS[2] - 0.05);
-    vocal.frequency.exponentialRampToValueAtTime(980, now + HITS[2] + 0.06);
-    vocal.frequency.exponentialRampToValueAtTime(520, now + BLACKOUT);
-    // rung giọng
-    const vibrato = context.createOscillator();
-    const depth = context.createGain();
-    vibrato.frequency.value = 9 + detune / 10;
-    depth.gain.value = 38;
-    vibrato.connect(depth).connect(vocal.frequency);
-    vocal.connect(voice);
-    play(vocal, 0, BLACKOUT + 0.1);
-    play(vibrato, 0, BLACKOUT + 0.1);
-  }
-  // hơi thở khàn trong tiếng hét
-  const breath = context.createBufferSource();
-  breath.buffer = noiseBuffer(context, BLACKOUT + 0.1);
-  const breathLevel = context.createGain();
-  breathLevel.gain.value = 0.35;
-  breath.connect(breathLevel).connect(voice);
-  play(breath, 0, BLACKOUT + 0.1);
 
-  // 2. hợp âm chói: các nốt cách nhau nửa cung, vang lên ở cú giật đầu và cú cuối
-  for (const hit of [HITS[0], HITS[2]]) {
-    const stab = context.createGain();
-    stab.gain.setValueAtTime(0.0001, now + hit);
-    stab.gain.exponentialRampToValueAtTime(0.5, now + hit + 0.01);
-    stab.gain.exponentialRampToValueAtTime(0.0001, now + hit + 0.7);
-    stab.connect(drive);
-    gains.push(stab);
-    for (const frequency of [110, 116.5, 123.5, 233, 247]) {
-      const note = context.createOscillator();
-      note.type = "square";
-      note.frequency.value = frequency;
-      note.connect(stab);
-      play(note, hit, hit + 0.75);
+  // 4. nhịp tim thình thịch trong lúc mặt ma nhìn chằm chằm
+  for (const [at, amount] of [
+    [0.6, 0.55],
+    [0.74, 0.4],
+  ]) {
+    const beat = oscillator("triangle", 62);
+    beat.frequency.setValueAtTime(62, now + at);
+    beat.frequency.exponentialRampToValueAtTime(44, now + at + 0.16);
+    const level = gain(0);
+    envelope(level.gain, at, amount, 0.008, 0.16);
+    beat.connect(filter("lowpass", 600)).connect(level).connect(compressor);
+    play(beat, at, at + 0.2);
+  }
+
+  // 5. khi tối sập: tiếng thở ra khò khè sát bên tai trái
+  const breathStart = BLACKOUT + 0.04;
+  const breathEnd = 2.25;
+  const breath = noise(breathEnd - breathStart);
+  const throat = filter("bandpass", 1500, 1.1);
+  throat.frequency.setValueAtTime(1500, now + breathStart);
+  throat.frequency.exponentialRampToValueAtTime(650, now + breathEnd);
+  const breathLevel = gain(0);
+  breathLevel.gain.setValueAtTime(0.0001, now + breathStart);
+  breathLevel.gain.exponentialRampToValueAtTime(0.5, now + breathStart + 0.25);
+  breathLevel.gain.exponentialRampToValueAtTime(0.28, now + breathStart + 0.55);
+  breathLevel.gain.exponentialRampToValueAtTime(0.0001, now + breathEnd);
+  // rung nhẹ cho nghe khàn
+  const rasp = oscillator("sine", 19);
+  const raspDepth = gain(0.12);
+  rasp.connect(raspDepth).connect(breathLevel.gain);
+  const nearEar = context.createStereoPanner();
+  nearEar.pan.value = -0.6;
+  breath.connect(filter("highpass", 300)).connect(throat).connect(breathLevel).connect(nearEar).connect(compressor);
+  play(breath, breathStart, breathEnd);
+  play(rasp, breathStart, breathEnd);
+
+  // vài nốt hộp nhạc cao, lệch nhau nửa cung, vọng lại trong phòng trống
+  for (const [at, frequency] of [
+    [1.4, 1318.5],
+    [1.62, 1396.9],
+    [1.86, 1244.5],
+  ]) {
+    const note = gain(0);
+    envelope(note.gain, at, 0.12, 0.003, 0.42);
+    note.connect(bus);
+    for (const [ratio, amount] of [
+      [1, 1],
+      [2.003, 0.3],
+    ]) {
+      const tone = oscillator("sine", frequency * ratio);
+      tone.connect(gain(amount)).connect(note);
+      play(tone, at, at + 0.45);
     }
   }
 
-  // 3. mỗi cú giật: tiếng nổ trầm tụt xuống và tiếng xé ngắn
-  for (const hit of HITS) {
-    const boom = context.createOscillator();
-    const boomLevel = context.createGain();
-    boom.frequency.setValueAtTime(130, now + hit);
-    boom.frequency.exponentialRampToValueAtTime(32, now + hit + 0.45);
-    boomLevel.gain.setValueAtTime(0.0001, now + hit);
-    boomLevel.gain.exponentialRampToValueAtTime(1, now + hit + 0.008);
-    boomLevel.gain.exponentialRampToValueAtTime(0.0001, now + hit + 0.55);
-    boom.connect(boomLevel).connect(compressor);
-    play(boom, hit, hit + 0.6);
-    gains.push(boomLevel);
-
-    const tear = context.createBufferSource();
-    tear.buffer = noiseBuffer(context, 0.16);
-    const high = context.createBiquadFilter();
-    high.type = "highpass";
-    high.frequency.value = 1800;
-    const tearLevel = context.createGain();
-    tearLevel.gain.setValueAtTime(0.9, now + hit);
-    tearLevel.gain.exponentialRampToValueAtTime(0.0001, now + hit + 0.15);
-    tear.connect(high).connect(tearLevel).connect(drive);
-    play(tear, hit, hit + 0.16);
-    gains.push(tearLevel);
-  }
-
-  // 4. tiếng nhiễu TV rè rè, chập chờn trong lúc tối, nhỏ dần
-  const staticEnd = 2.05;
-  const hiss = context.createBufferSource();
-  hiss.buffer = noiseBuffer(context, staticEnd - BLACKOUT);
-  const band = context.createBiquadFilter();
-  band.type = "bandpass";
-  band.frequency.value = 3200;
-  band.Q.value = 0.6;
-  const hissLevel = context.createGain();
-  hissLevel.gain.setValueAtTime(0.0001, now + BLACKOUT);
-  hissLevel.gain.exponentialRampToValueAtTime(0.32, now + BLACKOUT + 0.03);
-  hissLevel.gain.exponentialRampToValueAtTime(0.0001, now + staticEnd);
-  const flutter = context.createOscillator();
-  const flutterDepth = context.createGain();
-  flutter.type = "square";
-  flutter.frequency.value = 13;
-  flutterDepth.gain.value = 0.16;
-  flutter.connect(flutterDepth).connect(hissLevel.gain);
-  hiss.connect(band).connect(hissLevel).connect(compressor);
-  play(hiss, BLACKOUT, staticEnd);
-  play(flutter, BLACKOUT, staticEnd);
-  gains.push(hissLevel);
-
   return () => {
+    // tắt êm trong 0,08 giây cho khỏi nghe tiếng "bụp"
     const t = context.currentTime;
     master.gain.cancelScheduledValues(t);
-    master.gain.setValueAtTime(0, t);
+    master.gain.setValueAtTime(master.gain.value, t);
+    master.gain.linearRampToValueAtTime(0, t + 0.08);
     for (const source of sources) {
       try {
-        source.stop();
+        source.stop(t + 0.1);
       } catch {
         // đã dừng
       }
@@ -341,12 +381,12 @@ export function Jumpscare({ onEnd }: { onEnd: () => void }) {
 
   useEffect(() => {
     let stop: (() => void) | undefined;
-    // hét ngay khi mặt ma hiện ra (đợi một nhịp để chế độ dev của React không phát hai lần)
+    // phát âm thanh ngay khi mặt ma hiện ra (đợi một nhịp để chế độ dev của React không phát hai lần)
     const impact = window.setTimeout(() => {
       const context = getAudio();
       if (context) {
         try {
-          stop = scream(context);
+          stop = haunt(context);
         } catch {
           // trình duyệt chặn âm thanh: vẫn có hình
         }

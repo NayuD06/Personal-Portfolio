@@ -776,6 +776,46 @@ h4 {
     transform: translate(-50%, -50%) scale(1.4);
   }
 }
+/* mưa code (gõ "duyan"): hiện lên, giữ, rồi mờ đi trả lại trang; tên hiện dần ở giữa */
+.rain {
+  animation: rain 4.2s linear both;
+}
+@keyframes rain {
+  0%,
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.rain-word {
+  opacity: 0;
+  text-shadow:
+    0 0 18px rgb(56 189 248 / 0.9),
+    0 0 48px rgb(37 99 235 / 0.7);
+  animation: rain-word 4.2s ease-out both;
+}
+@keyframes rain-word {
+  0%,
+  24% {
+    opacity: 0;
+    letter-spacing: 0.6em;
+    filter: blur(8px);
+  }
+  44%,
+  78% {
+    opacity: 1;
+    letter-spacing: 0.2em;
+    filter: blur(0);
+  }
+  92%,
+  100% {
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
 .secret-badge::after {
   content: "";
   position: absolute;

@@ -269,7 +269,90 @@ const secretText: Record<SecretId, { title: Text; hint: Text }> = {
     title: ui.secrets.sudo.title,
     hint: { en: "a command that asks for super powers, right here", vi: "một lệnh xin siêu quyền lực, ngay trong terminal này" },
   },
+  matrix: {
+    title: ui.secrets.matrix.title,
+    hint: { en: "type my name (all lowercase, no space) anywhere on the site", vi: "gõ tên mình (viết thường, liền, không dấu) ở bất kỳ đâu trên trang" },
+  },
+  console: {
+    title: ui.secrets.console.title,
+    hint: { en: "every developer knows where the console lives (F12)", vi: "dân dev ai cũng biết Console nằm ở đâu mà (F12)" },
+  },
+  shake: {
+    title: ui.secrets.shake.title,
+    hint: { en: "shake your mouse (or phone) like you mean it", vi: "lắc chuột (hoặc điện thoại) thật mạnh vào" },
+  },
+  rmrf: {
+    title: ui.secrets.rmrf.title,
+    hint: { en: "the most dangerous command in Linux, right here", vi: "câu lệnh nguy hiểm nhất của Linux, gõ ngay tại đây" },
+  },
+  nightowl: {
+    title: ui.secrets.nightowl.title,
+    hint: { en: "come back while most people are asleep", vi: "ghé lại vào lúc mọi người đã ngủ say" },
+  },
 };
+
+const coffeeArt = String.raw`    ( (
+     ) )
+  ........
+  |      |]
+  \      /
+   '----'`;
+
+/** rm -rf /: giả vờ xóa sạch từng file một, rồi thú nhận là đùa (và mở khóa bí mật) */
+const wipeTargets = [
+  "/home/guest/projects/",
+  "/home/guest/skills/",
+  "/home/guest/education/",
+  "/home/guest/about.txt",
+  "/home/guest/cv.pdf",
+  "/usr/bin/coffee",
+  "/var/lib/motivation",
+  "/etc/sleep.conf",
+  "/dev/brain",
+];
+
+function Wipe() {
+  const [step, setStep] = useState(0);
+  const total = wipeTargets.length + 2;
+  useEffect(() => {
+    if (step >= total) {
+      foundSecret("rmrf");
+      return;
+    }
+    const timer = window.setTimeout(() => setStep((value) => value + 1), step < wipeTargets.length ? 130 : 700);
+    return () => window.clearTimeout(timer);
+  }, [step, total]);
+
+  const percent = Math.min(100, Math.round((Math.min(step, wipeTargets.length) / wipeTargets.length) * 100));
+  const bar = "█".repeat(Math.round(percent / 5)).padEnd(20, "░");
+  return (
+    <Block>
+      {wipeTargets.slice(0, step).map((target) => (
+        <p key={target} className={c.muted}>
+          removed &apos;{target}&apos;
+        </p>
+      ))}
+      <p className={c.warn}>
+        [{bar}] {percent}%
+      </p>
+      {step > wipeTargets.length && (
+        <p className={`font-bold ${c.warn}`}>
+          <T v={{ en: "System destroyed. Portfolio deleted. Goodbye.", vi: "Hệ thống đã bị phá hủy. Portfolio đã bị xóa. Vĩnh biệt." }} />
+        </p>
+      )}
+      {step > wipeTargets.length + 1 && (
+        <p className={c.sky}>
+          <T
+            v={{
+              en: "...just kidding 😅 Nothing was deleted. Ctrl+Z is always on around here.",
+              vi: "...đùa thôi 😅 Chưa có gì bị xóa cả. Ở đây Ctrl+Z lúc nào cũng bật sẵn.",
+            }}
+          />
+        </p>
+      )}
+    </Block>
+  );
+}
 
 // ---------- Danh sách lệnh ----------
 
@@ -904,11 +987,17 @@ export const commands: Command[] = [
   {
     name: "rm",
     aliases: ["rmdir", "del"],
-    run: () => (
-      <p className={c.warn}>
-        rm: <T v={{ en: "permission denied. This portfolio is read-only (and precious).", vi: "không được phép. Portfolio này chỉ đọc thôi (và quý lắm)." }} />
-      </p>
-    ),
+    run: (ctx) => {
+      // rm -rf / (hoặc -fr, *, ~): màn "xóa sạch" giả
+      const flags = ctx.args.filter((arg) => arg.startsWith("-")).join("");
+      const everything = ctx.args.some((arg) => ["/", "/*", "*", "~", "."].includes(arg));
+      if (flags.includes("r") && flags.includes("f") && everything) return <Wipe />;
+      return (
+        <p className={c.warn}>
+          rm: <T v={{ en: "permission denied. This portfolio is read-only (and precious).", vi: "không được phép. Portfolio này chỉ đọc thôi (và quý lắm)." }} />
+        </p>
+      );
+    },
   },
   {
     name: "vim",
@@ -936,11 +1025,44 @@ export const commands: Command[] = [
   },
   {
     name: "coffee",
-    aliases: ["cafe", "caphe"],
+    aliases: ["cafe", "caphe", "brew"],
     run: () => (
-      <p>
-        ☕ <T v={{ en: "Brewing... An runs on coffee and TypeScript.", vi: "Đang pha... An chạy bằng cà phê và TypeScript." }} />
-      </p>
+      <Block>
+        <pre className={`${c.sky} leading-tight`}>{coffeeArt}</pre>
+        <p>
+          <T v={{ en: "Brewing coffee...", vi: "Đang pha cà phê..." }} /> <span className={c.blue}>[████████████████████] 100%</span>
+        </p>
+        <p className={c.warn}>
+          <T v={{ en: "Error 418: I'm a teapot. I refuse to brew coffee.", vi: "Lỗi 418: Tôi là ấm trà. Tôi không pha cà phê đâu." }} />
+        </p>
+        <p className={c.muted}>
+          <T
+            v={{
+              en: "(A real HTTP status code, look it up.) Have some tea instead 🍵. An still runs on coffee and TypeScript though.",
+              vi: "(Mã lỗi HTTP có thật đấy, tra thử đi.) Thôi uống trà nhé 🍵. Còn An thì vẫn chạy bằng cà phê và TypeScript.",
+            }}
+          />
+        </p>
+      </Block>
+    ),
+  },
+  {
+    name: "hire",
+    aliases: ["hireme", "thue", "tuyen", "tuyendung"],
+    run: (ctx) => (
+      <Block>
+        <p>
+          <T v={{ en: "Checking An's calendar...", vi: "Đang kiểm tra lịch của An..." }} /> <span className={c.sky}>✓ </span>
+          <T v={{ en: "available!", vi: "đang rảnh!" }} />
+        </p>
+        <p className={c.white}>
+          🤝 <T v={{ en: "Best decision you'll make today. Offer accepted in advance.", vi: "Quyết định sáng suốt nhất hôm nay. Lời mời được nhận trước luôn rồi." }} />
+        </p>
+        <p className={c.muted}>
+          <T v={{ en: "Next step:", vi: "Bước tiếp theo:" }} /> <Run ctx={ctx} command="contact" /> <T v={{ en: "or", vi: "hoặc" }} />{" "}
+          <Run ctx={ctx} command="cv" />
+        </p>
+      </Block>
     ),
   },
 ];

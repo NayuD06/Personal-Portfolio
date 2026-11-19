@@ -263,7 +263,9 @@ export const ui = {
     tooLong: { en: "Keep it under {max} characters.", vi: "Tối đa {max} ký tự thôi nhé." },
     newChat: { en: "New chat", vi: "Cuộc trò chuyện mới" },
   },
-  // Easter egg: 3 bí mật (mã Konami, bấm logo 5 lần ra màn jumpscare, lệnh sudo trong terminal)
+  // Easter egg: 8 bí mật. Mã Konami, bấm logo 5 lần (jumpscare), lệnh sudo, gõ "duyan" (mưa code),
+  // gọi hire() trong Console của DevTools, lắc chuột hoặc điện thoại (trang rơi rồi lắp lại), lệnh rm -rf /,
+  // vào trang từ 0h đến 4h sáng (cú đêm). Cách bật từng cái xem README, phần Easter egg.
   secrets: {
     unlocked: { en: "Secret found", vi: "Tìm thấy bí mật" },
     progress: { en: "{found} of {total} found", vi: "Đã tìm {found}/{total}" },
@@ -283,6 +285,34 @@ export const ui = {
       title: { en: "Root access (not really)", vi: "Quyền root (giả thôi)" },
       body: { en: "sudo in my terminal? Access denied, but nice try.", vi: "Gõ sudo trong terminal của mình? Bị từ chối, nhưng gan đấy." },
     },
+    matrix: {
+      title: { en: "Into the code", vi: "Lạc vào ma trận" },
+      body: { en: "You typed my name and the code started raining.", vi: "Gõ đúng tên mình là mưa code đổ xuống liền." },
+    },
+    console: {
+      title: { en: "Console explorer", vi: "Dân soi Console" },
+      body: { en: "You opened DevTools and actually called hire(). I like you already.", vi: "Mở DevTools rồi còn gọi hire() thật. Mình quý bạn rồi đó." },
+    },
+    shake: {
+      title: { en: "Earthquake", vi: "Động đất" },
+      body: { en: "You shook so hard the page fell apart. Don't worry, I glued it back.", vi: "Lắc mạnh quá làm trang rơi lả tả luôn. Yên tâm, mình dán lại rồi." },
+    },
+    rmrf: {
+      title: { en: "Destroyer of worlds", vi: "Kẻ hủy diệt" },
+      body: { en: "rm -rf / on my portfolio? Bold. Luckily it was all fake.", vi: "Dám rm -rf / cả portfolio của mình? Gan thật. May mà chỉ là giả thôi." },
+    },
+    nightowl: {
+      title: { en: "Night owl", vi: "Cú đêm" },
+      body: { en: "Coding this late? Go drink some water =))", vi: "Code khuya vậy, uống nước đi bạn =))" },
+    },
+  },
+  // lời chào hiện trong Console của DevTools (F12), kèm hàm hire() mở khóa một bí mật
+  devConsole: {
+    hello: { en: "Hey, a fellow developer! 👋", vi: "Ồ, đồng nghiệp dev đây rồi! 👋" },
+    pitch: { en: "Looking for a developer? Let's talk:", vi: "Đang tìm dev à? Liên hệ mình nhé:" },
+    hint: { en: "Psst: type hire() and press Enter.", vi: "Bật mí: gõ hire() rồi Enter thử xem." },
+    hired: { en: "Great choice! Here's how to reach me:", vi: "Quyết định sáng suốt! Liên hệ mình ở đây nhé:" },
+    done: { en: "Secret unlocked. Check the page 😉", vi: "Đã mở khóa một bí mật, nhìn lên trang đi 😉" },
   },
   // Trang 404 (đường link không tồn tại)
   notFound: {

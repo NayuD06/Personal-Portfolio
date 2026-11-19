@@ -10,9 +10,19 @@ Ngoài trang chính còn có:
 - **`/cv`**: CV một trang A4 dựng tự động từ nội dung portfolio, có nút In và Tải PDF.
 - **Trang 404**: hiện khi mở một đường link không tồn tại. Số 0 là một quỹ đạo có icon công nghệ bay quanh, khung terminal hiện đúng link người xem vừa mở và gợi ý các trang còn lại (`src/app/not-found.tsx`).
 - **Bảng lệnh Ctrl + K** (⌘ + K trên Mac, hoặc bấm nút kính lúp trên menu): gõ để nhảy tới một mục, mở một dự án, đổi ngôn ngữ, đổi sáng/tối, tải CV, chép email. Gõ có dấu hay không dấu đều được. Dùng được ở mọi trang (`src/components/command-palette.tsx`). Dự án mới thêm vào `profile.ts` tự có trong bảng. Gõ một câu hỏi rồi chọn dòng **Hỏi AI** để hỏi trợ lý AI.
-- **Chế độ Terminal** (nút `>_` trên menu, phím `` ` `` cạnh số 1, hoặc Ctrl + K > Chế độ Terminal): cả trang thành cửa sổ dòng lệnh. Gõ `help` để xem lệnh: `about`, `skills`, `projects`, `projects 1`, `education`, `contact`, `cv`, `neofetch`, `open <tên>`, `theme`, `lang`, `ask <câu hỏi>`... Có Tab để gợi ý, ↑ ↓ để gọi lại lệnh cũ, nút lệnh nhanh cho điện thoại, vài lệnh ẩn (`ls`, `cat`, `whoami`, `sudo`, `secrets`...). Nội dung lấy từ `profile.ts`, lệnh nằm ở `src/components/extras/terminal-commands.tsx`.
+- **Chế độ Terminal** (nút `>_` trên menu, phím `` ` `` cạnh số 1, hoặc Ctrl + K > Chế độ Terminal): cả trang thành cửa sổ dòng lệnh. Gõ `help` để xem lệnh: `about`, `skills`, `projects`, `projects 1`, `education`, `contact`, `cv`, `neofetch`, `open <tên>`, `theme`, `lang`, `ask <câu hỏi>`... Có Tab để gợi ý, ↑ ↓ để gọi lại lệnh cũ, nút lệnh nhanh cho điện thoại, vài lệnh ẩn (`ls`, `cat`, `whoami`, `sudo`, `secrets`, `coffee`, `hire me`, `rm -rf /`...). Nội dung lấy từ `profile.ts`, lệnh nằm ở `src/components/extras/terminal-commands.tsx`.
 - **Trợ lý AI** (nút **Hỏi AI** ở góc phải dưới): khách hỏi về bạn, ví dụ "An có biết React không?", và nhận câu trả lời dựa trên nội dung portfolio, chữ hiện ra dần như đang gõ. Dùng Google Gemini gói miễn phí, chỉ cần đặt API key, xem mục [Trợ lý AI](#trợ-lý-ai-hỏi-đáp-về-bạn).
-- **Easter egg**: 3 bí mật, tìm được bí mật nào thì hiện thẻ thành tích và đếm "Đã tìm 1/3": gõ mã Konami (↑ ↑ ↓ ↓ ← → ← → B A) ở trang chính, bấm logo 5 lần liên tiếp (mặt ma nhảy ra ngay kèm tiếng hét, khoảng 1,6 giây là tự tắt, bấm hoặc Esc để tắt sớm), gõ `sudo` trong Terminal. Máy bật "giảm chuyển động" thì bỏ hiệu ứng, chỉ hiện thẻ.
+- **Easter egg**: 8 bí mật. Tìm được cái nào thì hiện thẻ thành tích và đếm "Đã tìm 1/8" (lưu trong trình duyệt). Gõ `secrets` trong Terminal để xem gợi ý cái nào chưa tìm.
+  1. **Mã Konami** (↑ ↑ ↓ ↓ ← → ← → B A) ở trang chính: bay siêu tốc qua các vì sao.
+  2. **Bấm logo 5 lần liên tiếp**: mặt ma lao ra theo 3 nhịp, khoảng 2,3 giây, bấm hoặc Esc để tắt sớm. Âm thanh trầm rùng rợn (không có tiếng hét), to nhỏ chỉnh ở `VOLUME` đầu file `jumpscare.tsx`.
+  3. **Gõ `sudo`** trong Terminal.
+  4. **Gõ `duyan`** ở bất kỳ đâu trên trang (miễn không gõ trong ô nhập): mưa code đổ xuống, giữa màn hình hiện tên.
+  5. **Mở DevTools (F12) > Console**: chữ DUY AN vẽ bằng ký tự kèm lời mời liên hệ. Gõ `hire()` để in cách liên hệ và mở khóa (`src/lib/console-greeting.ts`).
+  6. **Lắc chuột thật nhanh qua lại** (hoặc lắc mạnh điện thoại): cả trang rung, các mảng rơi xuống rồi tự bay về chỗ cũ. iPhone có thể không bắt được vì Safari cần xin quyền cảm biến.
+  7. **Gõ `rm -rf /`** trong Terminal: giả vờ xóa sạch từng file, rồi thú nhận là đùa.
+  8. **Vào trang từ 0h đến 4h sáng**: nhắc "Code khuya vậy, uống nước đi bạn" (mỗi phiên một lần).
+
+  Lệnh vui trong Terminal (không tính là bí mật): `coffee` (lỗi 418 "tôi là ấm trà"), `hire me`. Máy bật "giảm chuyển động" thì bỏ hiệu ứng, chỉ hiện thẻ.
 - **Con trỏ chuột riêng**: vẫn là mũi tên như con trỏ thường nhưng màu xanh viền trắng, rê lên nút / đường link thì thành bàn tay cùng kiểu. Ở ô nhập chữ vẫn là con trỏ gõ chữ bình thường. Vẽ bằng SVG ngay trong `src/app/globals.css` (mục "Con trỏ chuột riêng"), không dùng JavaScript.
 - **Nền hạt ở đầu trang**: các chấm sáng trôi và nối nhau, rê chuột tới thì dạt ra và nối dây tới con trỏ, bấm chuột thì bắn tung ra (`src/components/ui/hero-particles.tsx`). Chạy sau khi trang tải xong và dừng khi cuộn đi, nên không làm chậm trang.
   Hai thứ này chỉ có trên máy có chuột, điện thoại và máy tính bảng vẫn như cũ. Nền hạt cũng tự tắt khi máy bật "giảm chuyển động".
@@ -177,7 +187,7 @@ src/
 │  ├─ command-palette.tsx   bảng lệnh Ctrl + K và nút kính lúp trên menu
 │  ├─ not-found-parts.tsx   khung terminal và nút tìm nhanh trên trang 404
 │  ├─ extras/               nút "Hỏi AI" + khung chat, chế độ Terminal (terminal.tsx, terminal-commands.tsx),
-│  │                        easter egg (warp.tsx: hiệu ứng sao và thẻ thành tích, jumpscare.tsx)
+│  │                        easter egg (warp.tsx: hiệu ứng sao, mưa code, động đất và thẻ thành tích; jumpscare.tsx)
 │  ├─ cv/print-button.tsx   nút In trên trang CV
 │  ├─ sections/             hero, about, skills, services, projects, education, journey, github-activity, contact, footer
 │  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI, nền hạt hero-particles...)
@@ -185,6 +195,7 @@ src/
 │  ├─ profile.ts            ★ nội dung về bạn
 │  └─ ui.ts                 ★ chữ trên giao diện
 └─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang, font cho ảnh chia sẻ (og.ts),
-                            giao diện email nhận tin nhắn (contact-email.ts), kiến thức của trợ lý AI (ask-knowledge.ts)
+                            giao diện email nhận tin nhắn (contact-email.ts), kiến thức của trợ lý AI (ask-knowledge.ts),
+                            danh sách bí mật (extras.ts), lời chào trong Console (console-greeting.ts)
 assets/fonts/               font Montserrat dùng để vẽ ảnh xem trước khi chia sẻ link
 ```
