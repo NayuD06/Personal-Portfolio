@@ -8,6 +8,7 @@ import { profile } from "@/data/profile";
 import { navLinks, ui } from "@/data/ui";
 import { T } from "@/lib/i18n";
 import { CommandTrigger } from "./command-palette";
+import { TerminalTrigger } from "./extras/triggers";
 import { LangToggle } from "./ui/lang-toggle";
 import { ThemeToggle } from "./ui/theme-toggle";
 
@@ -64,7 +65,7 @@ export function Navbar() {
             scrolled ? "py-2.5 sm:py-3" : "py-4 sm:py-5"
           }`}
         >
-          <a href="#home" className="group flex min-w-0 items-center gap-2.5 sm:gap-3">
+          <a href="#home" data-logo className="group flex min-w-0 items-center gap-2.5 sm:gap-3">
             <span aria-hidden="true" className="bg-brand grid size-10 shrink-0 place-items-center rounded-xl font-heading text-sm font-black tracking-tight text-white shadow-[0_8px_24px_-10px_var(--glow-sky)] transition-transform duration-300 group-hover:-rotate-6">
               {profile.initials}
             </span>
@@ -99,6 +100,7 @@ export function Navbar() {
 
           <div className="flex shrink-0 items-center gap-2">
             <CommandTrigger />
+            <TerminalTrigger />
             <LangToggle />
             <ThemeToggle />
             <a

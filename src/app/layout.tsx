@@ -3,6 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Nunito } from "next/font/google";
 import { CommandPalette } from "@/components/command-palette";
+import { SiteExtras } from "@/components/extras/site-extras";
 import { Providers } from "@/components/providers";
 import { profile } from "@/data/profile";
 import { pick, langScript } from "@/lib/i18n";
@@ -88,6 +89,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
           {/* Bảng lệnh Ctrl + K, dùng được ở mọi trang */}
           <CommandPalette />
+          {/* Nút "Hỏi AI", chế độ Terminal và easter egg */}
+          <SiteExtras />
         </Providers>
         {/* Thống kê lượt xem và tốc độ trang: bật trong Vercel > Project > Analytics / Speed Insights */}
         <Analytics />

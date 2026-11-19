@@ -187,10 +187,86 @@ export const ui = {
     copied: { en: "Copied", vi: "Đã chép" },
     writeEmail: { en: "Write me an email", vi: "Viết email cho mình" },
     empty: { en: "Nothing matches", vi: "Không có kết quả cho" },
-    emptyHint: { en: "Try “projects”, “CV” or “dark”.", vi: "Thử gõ “dự án”, “CV” hoặc “tối”." },
+    emptyHint: { en: "Try “projects”, “CV” or “dark”, or ask the AI below.", vi: "Thử gõ “dự án”, “CV” hoặc “tối”, hoặc hỏi AI ở dưới." },
     move: { en: "move", vi: "di chuyển" },
     run: { en: "open", vi: "mở" },
     close: { en: "close", vi: "đóng" },
+  },
+  // Chế độ Terminal: cả trang thành cửa sổ dòng lệnh (nút trên menu, Ctrl + K hoặc phím `)
+  terminal: {
+    open: { en: "Terminal mode", vi: "Chế độ Terminal" },
+    openHint: { en: "Browse the portfolio from a command line", vi: "Xem portfolio bằng dòng lệnh" },
+    close: { en: "Close terminal", vi: "Đóng terminal" },
+    maximize: { en: "Toggle full screen", vi: "Bật/tắt toàn màn hình" },
+    welcome: {
+      en: "Welcome! This is my portfolio as a command line. Everything on the site is here too.",
+      vi: "Chào bạn! Đây là portfolio của mình ở dạng dòng lệnh. Mọi thứ trên trang đều có ở đây.",
+    },
+    start: { en: "Type a command and press Enter, or tap one below. Start with", vi: "Gõ lệnh rồi nhấn Enter, hoặc bấm một lệnh bên dưới. Bắt đầu với" },
+    inputLabel: { en: "Type a command", vi: "Gõ lệnh" },
+    quick: { en: "Quick commands", vi: "Lệnh nhanh" },
+    keys: { en: "Tab completes, ↑ ↓ history, Esc closes", vi: "Tab gợi ý, ↑ ↓ lệnh cũ, Esc để thoát" },
+  },
+  // Trợ lý AI hỏi đáp về bạn (cần ANTHROPIC_API_KEY, xem README)
+  ask: {
+    launcher: { en: "Ask AI", vi: "Hỏi AI" },
+    open: { en: "Ask the AI assistant about me", vi: "Hỏi trợ lý AI về mình" },
+    title: { en: "Ask about Duy An", vi: "Hỏi về Duy An" },
+    subtitle: { en: "AI assistant for this portfolio", vi: "Trợ lý AI của portfolio" },
+    close: { en: "Close chat", vi: "Đóng khung chat" },
+    welcome: {
+      en: "Hi! I'm An's AI assistant. Ask me about An's projects, skills, studies or how to get in touch.",
+      vi: "Chào bạn! Mình là trợ lý AI của An. Bạn cứ hỏi về dự án, kỹ năng, việc học của An hoặc cách liên hệ nhé.",
+    },
+    suggestions: [
+      { en: "What has An built with AI?", vi: "An đã làm gì với AI?" },
+      { en: "Does An know React and Next.js?", vi: "An có biết React và Next.js không?" },
+      { en: "Is An open to internships?", vi: "An có đang tìm thực tập không?" },
+      { en: "What's An's strongest project?", vi: "Dự án nổi bật nhất của An là gì?" },
+    ] satisfies Text[],
+    placeholder: { en: "Ask a question...", vi: "Nhập câu hỏi..." },
+    send: { en: "Send", vi: "Gửi" },
+    stop: { en: "Stop", vi: "Dừng" },
+    thinking: { en: "Thinking", vi: "Đang nghĩ" },
+    you: { en: "You", vi: "Bạn" },
+    disclaimer: { en: "AI can make mistakes. For anything important, email", vi: "AI có thể trả lời sai. Việc quan trọng thì bạn email cho" },
+    notConfigured: {
+      en: "The assistant isn't switched on yet. You can email An directly in the meantime.",
+      vi: "Trợ lý chưa được bật. Trong lúc chờ, bạn email trực tiếp cho An nhé.",
+    },
+    rateLimited: {
+      en: "That's a lot of questions in a short time. Please try again in a few minutes.",
+      vi: "Bạn hỏi hơi nhiều trong thời gian ngắn rồi. Thử lại sau vài phút nhé.",
+    },
+    busy: { en: "The assistant is busy right now. Please try again in a moment.", vi: "Trợ lý đang bận. Bạn thử lại sau ít phút nhé." },
+    quota: {
+      en: "The assistant has used up today's free questions. Please come back tomorrow, or email An:",
+      vi: "Hôm nay trợ lý đã hết lượt hỏi miễn phí. Bạn quay lại vào ngày mai hoặc email cho An nhé:",
+    },
+    error: { en: "Something went wrong while answering. Please try again.", vi: "Có lỗi khi trả lời. Bạn thử lại nhé." },
+    refusal: { en: "I can't help with that one. Try asking about An's work instead.", vi: "Câu này mình không trả lời được. Bạn thử hỏi về công việc của An nhé." },
+    cut: { en: "(answer cut short)", vi: "(câu trả lời bị cắt ngắn)" },
+    tooLong: { en: "Keep it under {max} characters.", vi: "Tối đa {max} ký tự thôi nhé." },
+    newChat: { en: "New chat", vi: "Cuộc trò chuyện mới" },
+  },
+  // Easter egg: 3 bí mật (mã Konami, bấm logo 5 lần ra màn jumpscare, lệnh sudo trong terminal)
+  secrets: {
+    unlocked: { en: "Secret found", vi: "Tìm thấy bí mật" },
+    progress: { en: "{found} of {total} found", vi: "Đã tìm {found}/{total}" },
+    allFound: { en: "All secrets found. You're officially a power user!", vi: "Đã tìm hết bí mật. Bạn đúng là dân chơi hệ phím!" },
+    dismiss: { en: "Dismiss", vi: "Đóng" },
+    konami: {
+      title: { en: "Old-school gamer", vi: "Game thủ đời đầu" },
+      body: { en: "↑ ↑ ↓ ↓ ← → ← → B A. You still remember the Konami code.", vi: "↑ ↑ ↓ ↓ ← → ← → B A. Bạn vẫn nhớ mã Konami huyền thoại." },
+    },
+    logo: {
+      title: { en: "Curiosity scared the cat", vi: "Tò mò hại thân" },
+      body: { en: "Five clicks on the logo. Is your heart still okay?", vi: "Bấm logo tận năm lần. Tim bạn vẫn ổn chứ?" },
+    },
+    sudo: {
+      title: { en: "Root access (not really)", vi: "Quyền root (giả thôi)" },
+      body: { en: "sudo in my terminal? Access denied, but nice try.", vi: "Gõ sudo trong terminal của mình? Bị từ chối, nhưng gan đấy." },
+    },
   },
   // Trang 404 (đường link không tồn tại)
   notFound: {

@@ -25,12 +25,16 @@ import {
   LuMoon,
   LuSearch,
   LuSend,
+  LuSparkles,
+  LuSquareTerminal,
   LuSun,
   LuUserRound,
 } from "react-icons/lu";
 import { profile, type Project } from "@/data/profile";
 import { navLinks, ui } from "@/data/ui";
+import { openAsk, openTerminal } from "@/lib/extras";
 import { pick, T, type Text } from "@/lib/i18n";
+import { normalize } from "@/lib/normalize";
 import { setLang, useLang } from "@/lib/use-lang";
 import { TechIcon } from "./ui/tech-icon";
 import { switchTheme } from "./ui/theme-toggle";
@@ -107,7 +111,7 @@ export function CommandPalette() {
   );
 }
 
-type Group = "navigate" | "projects" | "actions" | "links";
+type Group = "navigate" | "projects" | "actions" | "links" | "assistant";
 
 type Command = {
   id: string;
@@ -126,7 +130,13 @@ const groups: { key: Group; label: Text }[] = [
   { key: "projects", label: ui.palette.groupProjects },
   { key: "actions", label: ui.palette.groupActions },
   { key: "links", label: ui.palette.groupLinks },
+  { key: "assistant", label: ui.ask.launcher },
 ];
+
+/** đợi bảng lệnh đóng hẳn (và trả focus xong) rồi mới mở Terminal / khung chat */
+const afterClose = (action: () => void) => {
+  window.setTimeout(action, 260);
+};
 
 const sectionIcons: Record<string, IconType> = {
   home: LuHouse,
@@ -146,15 +156,6 @@ const sections: { id: string; label: Text }[] = [
   { id: "github", label: ui.palette.github },
   ...navLinks.slice(5).map((link) => ({ id: link.href.slice(1), label: link.label })),
 ];
-
-/** chữ thường, bỏ dấu tiếng Việt để gõ "du an" cũng ra "Dự án" */
-function normalize(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d");
-}
 
 /** tách thành các từ (bỏ dấu câu) để so khớp theo đầu từ */
 function wordsOf(value: string) {
@@ -222,6 +223,24 @@ function PaletteDialog({ onClose }: { onClose: () => void }) {
 
     const resume = profile.resumeUrl ? pick(profile.resumeUrl, lang) : "";
     const actions: Command[] = [
+      {
+        id: "ask",
+        group: "actions",
+        label: ui.ask.open,
+        icon: <Icon as={LuSparkles} />,
+        hint: "AI",
+        keywords: "ai chat hoi tro ly assistant gemini question cau hoi",
+        run: () => afterClose(() => openAsk()),
+      },
+      {
+        id: "terminal",
+        group: "actions",
+        label: ui.terminal.open,
+        icon: <Icon as={LuSquareTerminal} />,
+        hint: <span className="font-mono">`</span>,
+        keywords: "terminal console cli shell command line dong lenh",
+        run: () => afterClose(openTerminal),
+      },
       {
         id: "lang",
         group: "actions",
@@ -342,12 +361,23 @@ function PaletteDialog({ onClose }: { onClose: () => void }) {
       })
       .filter((item): item is { command: Command; score: number } => item !== null);
     // giữ thứ tự nhóm, trong mỗi nhóm xếp theo độ khớp
-    return groups.flatMap(({ key }) =>
+    const matches = groups.flatMap(({ key }) =>
       scored
         .filter((item) => item.command.group === key)
         .sort((a, b) => a.score - b.score)
         .map((item) => item.command),
     );
+    // luôn có thêm dòng "Hỏi AI: <chữ vừa gõ>" ở cuối, không tìm thấy gì thì nó nằm đầu
+    const question = query.trim().slice(0, 500);
+    matches.push({
+      id: "ask-query",
+      group: "assistant",
+      label: { en: `Ask AI: “${question}”`, vi: `Hỏi AI: “${question}”` },
+      icon: <Icon as={LuSparkles} />,
+      hint: "AI",
+      run: () => afterClose(() => openAsk(question)),
+    });
+    return matches;
   }, [commands, query, lang]);
 
   const current = visible[Math.min(active, visible.length - 1)];
@@ -437,7 +467,7 @@ function PaletteDialog({ onClose }: { onClose: () => void }) {
         </div>
 
         <div ref={listRef} id="command-list" role="listbox" className="flex-1 overflow-y-auto overscroll-contain p-2">
-          {visible.length === 0 && (
+          {visible.every((command) => command.id === "ask-query") && (
             <div className="px-4 py-10 text-center">
               <p className="font-semibold">
                 <T v={ui.palette.empty} /> “{query}”

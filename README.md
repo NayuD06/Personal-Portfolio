@@ -9,7 +9,10 @@ Ngoài trang chính còn có:
 - **`/projects/<slug>`**: trang chi tiết từng dự án (vấn đề, cách làm, tính năng chính, công nghệ, ảnh chụp bấm vào để phóng to, dự án trước/sau).
 - **`/cv`**: CV một trang A4 dựng tự động từ nội dung portfolio, có nút In và Tải PDF.
 - **Trang 404**: hiện khi mở một đường link không tồn tại. Số 0 là một quỹ đạo có icon công nghệ bay quanh, khung terminal hiện đúng link người xem vừa mở và gợi ý các trang còn lại (`src/app/not-found.tsx`).
-- **Bảng lệnh Ctrl + K** (⌘ + K trên Mac, hoặc bấm nút kính lúp trên menu): gõ để nhảy tới một mục, mở một dự án, đổi ngôn ngữ, đổi sáng/tối, tải CV, chép email. Gõ có dấu hay không dấu đều được. Dùng được ở mọi trang (`src/components/command-palette.tsx`). Dự án mới thêm vào `profile.ts` tự có trong bảng.
+- **Bảng lệnh Ctrl + K** (⌘ + K trên Mac, hoặc bấm nút kính lúp trên menu): gõ để nhảy tới một mục, mở một dự án, đổi ngôn ngữ, đổi sáng/tối, tải CV, chép email. Gõ có dấu hay không dấu đều được. Dùng được ở mọi trang (`src/components/command-palette.tsx`). Dự án mới thêm vào `profile.ts` tự có trong bảng. Gõ một câu hỏi rồi chọn dòng **Hỏi AI** để hỏi trợ lý AI.
+- **Chế độ Terminal** (nút `>_` trên menu, phím `` ` `` cạnh số 1, hoặc Ctrl + K > Chế độ Terminal): cả trang thành cửa sổ dòng lệnh. Gõ `help` để xem lệnh: `about`, `skills`, `projects`, `projects 1`, `education`, `contact`, `cv`, `neofetch`, `open <tên>`, `theme`, `lang`, `ask <câu hỏi>`... Có Tab để gợi ý, ↑ ↓ để gọi lại lệnh cũ, nút lệnh nhanh cho điện thoại, vài lệnh ẩn (`ls`, `cat`, `whoami`, `sudo`, `secrets`...). Nội dung lấy từ `profile.ts`, lệnh nằm ở `src/components/extras/terminal-commands.tsx`.
+- **Trợ lý AI** (nút **Hỏi AI** ở góc phải dưới): khách hỏi về bạn, ví dụ "An có biết React không?", và nhận câu trả lời dựa trên nội dung portfolio, chữ hiện ra dần như đang gõ. Dùng Google Gemini gói miễn phí, chỉ cần đặt API key, xem mục [Trợ lý AI](#trợ-lý-ai-hỏi-đáp-về-bạn).
+- **Easter egg**: 3 bí mật, tìm được bí mật nào thì hiện thẻ thành tích và đếm "Đã tìm 1/3": gõ mã Konami (↑ ↑ ↓ ↓ ← → ← → B A) ở trang chính, bấm logo 5 lần liên tiếp (màn jumpscare có tiếng, bấm hoặc Esc để thoát), gõ `sudo` trong Terminal. Máy bật "giảm chuyển động" thì bỏ hiệu ứng, chỉ hiện thẻ.
 
 ## Chạy trên máy
 
@@ -93,6 +96,27 @@ Cách sửa lâu dài: gửi từ chính tên miền `feb20th.click`, có chữ 
 5. Trên Vercel thêm biến `CONTACT_FROM_EMAIL` = `Duy An Portfolio <contact@feb20th.click>` rồi **Redeploy**. Địa chỉ `contact@` không cần có hộp thư thật, vì khi bạn bấm Trả lời thư sẽ gửi tới email của người gửi.
 6. Gửi thử từ form. Một hai thư đầu nếu vẫn vào Spam thì bấm **Báo cáo không phải spam**, Gmail sẽ học dần. Muốn chắc chắn luôn vào Hộp thư đến thì tạo bộ lọc như cách tạm ở trên nhưng với Từ: `contact@feb20th.click`.
 
+## Trợ lý AI (hỏi đáp về bạn)
+
+Nút **Hỏi AI** và lệnh `ask` trong Terminal gửi câu hỏi tới **Google Gemini** (gói miễn phí, model Flash-Lite) qua `src/app/api/ask/route.ts`. Trợ lý chỉ trả lời dựa trên nội dung trong `profile.ts` (file `src/lib/ask-knowledge.ts` tự dựng phần kiến thức này), nên sửa `profile.ts` là trợ lý tự biết nội dung mới. Câu hỏi ngoài lề hoặc thông tin không có trong portfolio thì trợ lý từ chối và gợi ý email cho bạn.
+
+Cách bật (miễn phí, không cần thẻ):
+
+1. Vào https://aistudio.google.com/apikey, đăng nhập bằng tài khoản Google.
+2. Bấm **Create API key** (chọn hoặc tạo một project bất kỳ), chép key (bắt đầu bằng `AIza`). **Không** bấm bật thanh toán (Billing): để nguyên gói Free thì không bao giờ bị trừ tiền.
+3. Trên Vercel: **Project Settings > Environment Variables**, thêm `GEMINI_API_KEY` = key vừa chép, rồi **Redeploy**. Chạy trên máy thì ghi vào `.env.local` (xem `.env.example`).
+
+Chưa đặt key thì khung chat vẫn hiện, chỉ báo "trợ lý chưa được bật" kèm email của bạn. Không cần cài thêm gói nào, code gọi thẳng API của Google.
+
+Giới hạn của gói miễn phí:
+
+- Dùng model `gemini-3.5-flash-lite` (nhanh, tiếng Việt tốt). Gói Free của Google cho khoảng **500 câu hỏi một ngày** và 15 câu một phút cho mỗi model. Model này hết lượt thì code tự chuyển sang `gemini-3.1-flash-lite` (thêm khoảng 500 câu nữa). Lượt được làm mới lúc 0 giờ giờ Mỹ (khoảng 14 đến 15 giờ chiều giờ Việt Nam). Google có thể đổi các con số này, xem lượt còn lại ở https://aistudio.google.com (mục Usage / Rate limit).
+- Hết sạch lượt trong ngày thì khung chat báo "hôm nay trợ lý đã hết lượt hỏi miễn phí" kèm email của bạn, không lỗi gì cả.
+- Muốn đổi model chính thì thêm biến `GEMINI_MODEL`, ví dụ `gemini-3.8-flash` (thông minh hơn nhưng gói Free chỉ khoảng 20 câu một ngày).
+- Mỗi người hỏi tối đa 12 câu trong 10 phút và 60 câu một ngày, câu hỏi tối đa 500 ký tự, để một người không dùng hết lượt của cả ngày. Trang web khác không gọi ké được API này.
+- Lưu ý: ở gói Free, Google được dùng nội dung câu hỏi để cải thiện sản phẩm của họ. Nội dung portfolio vốn công khai nên không sao, chỉ là đừng đưa thông tin bí mật vào `profile.ts`.
+- Mỗi câu hỏi ghi một dòng `[ask] ...` trong **Vercel > Logs** (model và số token) để bạn theo dõi.
+
 ## Thống kê người xem (Vercel Analytics)
 
 Trang đã gắn sẵn **Vercel Analytics** (số người vào, trang nào được xem, đến từ đâu: Google, Facebook, GitHub..., quốc gia, thiết bị) và **Speed Insights** (tốc độ tải trang thực tế của người xem). Chỉ chạy khi trang ở trên Vercel, chạy trên máy thì không ghi gì.
@@ -123,7 +147,7 @@ Số liệu (số repo, số sao, ngôn ngữ, repo cập nhật gần đây, bi
 
 Gắn tên miền riêng: **Project Settings > Domains**, sau đó đặt `NEXT_PUBLIC_SITE_URL` là tên miền đó (vd. `https://feb20th.click`) để ảnh chia sẻ link và sitemap dùng đúng địa chỉ.
 
-Sau khi deploy nhớ làm thêm hai việc ở trên: đặt `RESEND_API_KEY` (mục Form liên hệ) và bật Analytics (mục Thống kê người xem).
+Sau khi deploy nhớ làm thêm mấy việc ở trên: đặt `RESEND_API_KEY` (mục Form liên hệ), đặt `GEMINI_API_KEY` (mục Trợ lý AI) và bật Analytics (mục Thống kê người xem).
 
 ## Cấu trúc
 
@@ -135,6 +159,7 @@ src/
 │  ├─ globals.css           màu sáng/tối, hiệu ứng, animation
 │  ├─ opengraph-image.tsx   ảnh xem trước khi chia sẻ link (mỗi dự án cũng có một file riêng)
 │  ├─ api/contact/route.ts  nhận tin nhắn từ form liên hệ và gửi về email qua Resend
+│  ├─ api/ask/route.ts      trợ lý AI: gửi câu hỏi tới Gemini, trả lời dần từng đoạn
 │  ├─ icon.svg              favicon
 │  ├─ sitemap.ts, robots.ts
 │  ├─ not-found.tsx         trang 404
@@ -147,6 +172,8 @@ src/
 │  ├─ contact/sent-card.tsx thẻ cảm ơn hiện ra sau khi gửi form liên hệ
 │  ├─ command-palette.tsx   bảng lệnh Ctrl + K và nút kính lúp trên menu
 │  ├─ not-found-parts.tsx   khung terminal và nút tìm nhanh trên trang 404
+│  ├─ extras/               nút "Hỏi AI" + khung chat, chế độ Terminal (terminal.tsx, terminal-commands.tsx),
+│  │                        easter egg (warp.tsx: hiệu ứng sao và thẻ thành tích, jumpscare.tsx)
 │  ├─ cv/print-button.tsx   nút In trên trang CV
 │  ├─ sections/             hero, about, skills, services, projects, education, github-activity, contact, footer
 │  └─ ui/                   các thành phần nhỏ dùng lại (reveal, thẻ, nút sáng/tối, nút EN/VI...)
@@ -154,6 +181,6 @@ src/
 │  ├─ profile.ts            ★ nội dung về bạn
 │  └─ ui.ts                 ★ chữ trên giao diện
 └─ lib/                     icon, đa ngôn ngữ (i18n.tsx, use-lang.ts), địa chỉ trang, font cho ảnh chia sẻ (og.ts),
-                            giao diện email nhận tin nhắn (contact-email.ts)
+                            giao diện email nhận tin nhắn (contact-email.ts), kiến thức của trợ lý AI (ask-knowledge.ts)
 assets/fonts/               font Montserrat dùng để vẽ ảnh xem trước khi chia sẻ link
 ```
