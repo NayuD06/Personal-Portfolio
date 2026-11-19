@@ -112,10 +112,13 @@ export const profile = {
   /** Đang làm gì: hiện trên thẻ nhỏ cạnh ảnh đại diện */
   currentlyBuilding: "EduForge AI",
 
-  /** Ảnh đại diện (vuông), đặt trong public. Để trống "" sẽ hiện chữ viết tắt. */
-  avatar: "/avatar.jpg",
+  /**
+   * Ảnh đại diện (vuông), đặt trong public. Để trống "" sẽ hiện chữ viết tắt.
+   * Thay ảnh thì đặt tên file mới (vd. avatar-v3.jpg): Next.js và Vercel giữ bản ảnh đã thu nhỏ theo tên file, trùng tên sẽ còn hiện ảnh cũ.
+   */
+  avatar: "/avatar-v2.jpg",
   /** Ảnh dọc ở phần About (tỉ lệ 4:5). Để trống "" sẽ dùng khung code thay ảnh. */
-  aboutPhoto: "/about.jpg",
+  aboutPhoto: "/about-v2.jpg",
   /**
    * File CV cho nút "Tải CV" (đầu trang và mục Về mình), mỗi ngôn ngữ một file trong public/cv/.
    * Hai file hiện có được xuất từ trang /cv (dựng tự động từ nội dung file này).

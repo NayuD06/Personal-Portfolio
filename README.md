@@ -48,7 +48,7 @@ Ngôn ngữ mặc định lấy theo trình duyệt của người xem (trình d
 
 Những chỗ nên thay ngay:
 
-- **`avatar`**: đặt ảnh vào `public/avatar.jpg` rồi ghi `avatar: "/avatar.jpg"`. Để trống thì hiện chữ viết tắt.
+- **`avatar`** và **`aboutPhoto`**: ảnh đại diện (vuông) và ảnh ở mục About (dọc 4:5), đặt trong `public/` rồi ghi đường dẫn, vd. `avatar: "/avatar-v2.jpg"`. Khi thay ảnh thì đặt tên file mới (vd. `avatar-v3.jpg`) thay vì chép đè, vì Next.js và Vercel giữ bản ảnh đã thu nhỏ theo tên file nên chép đè có thể vẫn hiện ảnh cũ. Để trống thì hiện chữ viết tắt (ảnh đại diện) hoặc khung code (ảnh About).
 - **`resumeUrl`**: file CV cho nút "Tải CV" ở đầu trang và mục About. Hiện trỏ tới hai file `public/cv/Duy-An-CV-VI.pdf` và `public/cv/Duy-An-CV-EN.pdf` (tải đúng file theo ngôn ngữ đang chọn). Hai file này được xuất từ trang `/cv`. Khi sửa nội dung trong `profile.ts`, xuất lại PDF như sau: chạy `npm run dev`, mở http://localhost:3000/cv, chọn ngôn ngữ, bấm **In**, chọn máy in "Lưu dưới dạng PDF" (Save as PDF), khổ A4, lề "Không" (None), rồi lưu đè file trong `public/cv/`. Muốn dùng CV tự làm thì chép file vào `public/cv/` và sửa đường dẫn; chỉ có một file thì ghi một chuỗi, vd. `resumeUrl: "/cv/Duy-An-CV.pdf"`. Để trống `""` để ẩn nút.
 - **`website`**: tên miền của trang, hiện trên CV.
 - **`socials`**: GitHub, Facebook và Email đã có link thật. Link Discord đang là link mẫu nên nút Discord đang ẩn; thay link thật vào là nút tự hiện (cách lấy link ghi ngay trên mục `socials`). Link `mailto:` mở ứng dụng email, các link khác mở tab mới.
