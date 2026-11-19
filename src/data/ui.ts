@@ -276,6 +276,8 @@ export const ui = {
     logo: {
       title: { en: "Curiosity scared the cat", vi: "Tò mò hại thân" },
       body: { en: "Five clicks on the logo. Is your heart still okay?", vi: "Bấm logo tận năm lần. Tim bạn vẫn ổn chứ?" },
+      // dòng chữ hiện thoáng qua trong bóng tối ở cuối màn hù
+      whisper: { en: "I SEE YOU", vi: "TA THẤY NGƯƠI RỒI" },
     },
     sudo: {
       title: { en: "Root access (not really)", vi: "Quyền root (giả thôi)" },

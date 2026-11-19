@@ -795,102 +795,228 @@ h4 {
   }
 }
 
-/* màn jumpscare (bấm logo 5 lần): mặt ma lao ra ngay lập tức đè lên trang, tổng 1,6 giây rồi trả lại trang */
+/* màn jumpscare (bấm logo 5 lần), tổng 2,3 giây. Mốc thời gian khớp HITS/BLACKOUT trong jumpscare.tsx:
+   0s mặt ma hiện ra, 0,38s lao gần hơn, 1,12s lao sát tới hốc mắt, 1,32s tối sập, chữ ma, 2,05s trả lại trang.
+   (phần trăm = giây / 2,3) */
 .js-root {
-  animation: js-root 1.6s linear both;
+  cursor: none;
+  animation: js-root 2.3s linear both;
 }
 @keyframes js-root {
   0%,
-  85% {
+  89% {
     opacity: 1;
   }
   100% {
     opacity: 0;
   }
 }
-/* nền tối sập xuống cùng lúc với mặt ma, trang phía sau còn thấp thoáng ở mép */
-.js-dim {
-  animation: js-dim 1.6s ease-out both;
+/* mặt ma lao vào theo từng nhịp, giữa các nhịp thì nhích lại gần và nghiêng đầu từ từ */
+.js-lunge {
+  /* nhịp cuối phóng to tới hốc mắt; màn hình điện thoại hẹp nên phóng ít hơn để vẫn thấy cả hai mắt */
+  --js-near: 1;
+  will-change: transform;
+  animation: js-lunge 2.3s linear both;
 }
-@keyframes js-dim {
+@media (max-width: 640px) {
+  .js-lunge {
+    --js-near: 0.7;
+  }
+}
+@keyframes js-lunge {
   0% {
-    opacity: 0;
+    transform: scale(0.72) translateY(0);
+    rotate: -6deg;
   }
-  4%,
-  100% {
-    opacity: 0.88;
+  2% {
+    transform: scale(1.2) translateY(0);
+    rotate: 2deg;
+    animation-timing-function: ease-out;
   }
-}
-.js-face {
-  animation: js-face 1.6s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
-}
-@keyframes js-face {
-  0% {
-    opacity: 0;
-    transform: scale(0.3) rotate(-8deg);
-    filter: blur(10px);
+  6% {
+    transform: scale(1.06) translateY(0);
+    rotate: 0deg;
   }
-  3% {
+  16% {
+    transform: scale(1.12) translateY(0);
+    rotate: -2deg;
+  }
+  /* 0,38s: giật tới */
+  16.6% {
+    transform: scale(1.62) translateY(5%);
+    rotate: 0deg;
+    animation-timing-function: ease-out;
+  }
+  20% {
+    transform: scale(1.5) translateY(4%);
+  }
+  /* nghiêng đầu chầm chậm như đang nhìn chằm chằm */
+  48.2% {
+    transform: scale(1.66) translateY(5%);
+    rotate: 9deg;
+  }
+  /* 1,12s: lao sát mặt, hai hốc mắt chiếm cả màn hình */
+  48.8% {
+    transform: scale(calc(2.7 * var(--js-near))) translateY(10%);
+    rotate: -2deg;
+    animation-timing-function: ease-out;
+  }
+  52% {
+    transform: scale(calc(2.45 * var(--js-near))) translateY(9%);
+    rotate: 0deg;
+  }
+  57.3% {
     opacity: 1;
+    transform: scale(calc(2.8 * var(--js-near))) translateY(10%);
   }
-  9% {
-    transform: scale(1.24) rotate(3deg);
-    filter: blur(0);
-  }
-  17%,
-  82% {
-    opacity: 1;
-    transform: scale(1.1) rotate(0);
-  }
+  /* 1,32s: tắt phụt */
+  57.4%,
   100% {
     opacity: 0;
-    transform: scale(1.5);
+    transform: scale(calc(2.8 * var(--js-near))) translateY(10%);
   }
 }
-.js-shake {
-  animation: js-shake 0.09s linear 0.12s 10 both;
-  filter: drop-shadow(5px 0 0 rgb(56 189 248 / 0.45)) drop-shadow(-5px 0 0 rgb(37 99 235 / 0.5));
+/* co giật: nhảy cóc từng khung hình, thỉnh thoảng giật đầu, viền tách màu xanh như tín hiệu hỏng */
+.js-twitch {
+  will-change: translate, rotate;
+  animation: js-twitch 0.42s steps(1, end) infinite;
+  filter: drop-shadow(9px 0 0 rgb(56 189 248 / 0.5)) drop-shadow(-9px 0 0 rgb(29 78 216 / 0.6));
 }
-@keyframes js-shake {
+@keyframes js-twitch {
   0% {
     translate: 0 0;
+    rotate: 0deg;
   }
-  25% {
-    translate: -14px 9px;
+  12% {
+    translate: -14px 7px;
+    rotate: -2deg;
   }
-  50% {
-    translate: 12px -11px;
+  24% {
+    translate: 10px -9px;
+    rotate: 1.5deg;
   }
-  75% {
-    translate: -9px -7px;
+  36% {
+    translate: -4px 3px;
+    rotate: 7deg;
   }
-  100% {
-    translate: 0 0;
+  48% {
+    translate: 15px 11px;
+    rotate: -1deg;
+  }
+  60% {
+    translate: -11px -5px;
+    rotate: 0deg;
+  }
+  72% {
+    translate: 6px 9px;
+    rotate: -8deg;
+  }
+  84% {
+    translate: -15px -11px;
+    rotate: 1deg;
   }
 }
+/* chớp trắng ở mỗi cú giật (chỉ 3 lần, dưới 3 lần mỗi giây) */
 .js-flash {
   opacity: 0;
   pointer-events: none;
-  animation: js-flash 1.6s ease-out both;
+  animation: js-flash 2.3s linear both;
 }
 @keyframes js-flash {
   0% {
+    opacity: 0.9;
+  }
+  5%,
+  16.5% {
     opacity: 0;
   }
-  2% {
+  16.6% {
+    opacity: 0.75;
+  }
+  21%,
+  48.7% {
+    opacity: 0;
+  }
+  48.8% {
     opacity: 0.85;
   }
-  14%,
+  54%,
   100% {
     opacity: 0;
   }
 }
-/* nhiễu sóng như TV cũ */
+/* chữ ma hiện trong bóng tối, rung và tách màu, mờ đi một lần rồi tan */
+.js-words {
+  pointer-events: none;
+  opacity: 0;
+  text-shadow:
+    -5px 0 rgb(56 189 248 / 0.75),
+    5px 0 rgb(29 78 216 / 0.8),
+    0 0 40px rgb(125 211 252 / 0.35);
+  animation:
+    js-words 2.3s steps(1, end) both,
+    js-words-jitter 0.18s steps(1, end) infinite;
+}
+/* chữ có chân, kéo dài theo chiều dọc cho giống tựa phim kinh dị cũ */
+.js-words-text {
+  display: inline-block;
+  max-width: 14ch;
+  scale: 1 1.35;
+  color: #e5e7eb;
+  font-family: "Times New Roman", Times, "Noto Serif", serif;
+  font-size: clamp(2.75rem, 13vw, 7.5rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-wrap: balance;
+}
+@keyframes js-words {
+  0% {
+    opacity: 0;
+  }
+  59% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.3;
+  }
+  73% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  88%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes js-words-jitter {
+  0% {
+    translate: 0 0;
+    scale: 1;
+  }
+  25% {
+    translate: -6px 2px;
+    scale: 1.02 0.98;
+  }
+  50% {
+    translate: 4px -3px;
+    scale: 1;
+  }
+  75% {
+    translate: -2px 4px;
+    scale: 0.99 1.03;
+  }
+}
+/* nhiễu sóng như TV cũ, dày hơn lúc màn hình tối */
 .js-noise {
   pointer-events: none;
-  opacity: 0.14;
+  opacity: 0.16;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  animation: js-noise 0.2s steps(4) infinite;
+  animation:
+    js-noise 0.2s steps(4) infinite,
+    js-noise-level 2.3s linear both;
 }
 @keyframes js-noise {
   0% {
@@ -899,6 +1025,25 @@ h4 {
   100% {
     background-position: 180px 90px;
   }
+}
+@keyframes js-noise-level {
+  0%,
+  57% {
+    opacity: 0.16;
+  }
+  58%,
+  85% {
+    opacity: 0.22;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+/* vạch quét ngang như màn hình CRT */
+.js-scan {
+  pointer-events: none;
+  opacity: 0.5;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgb(0 0 0 / 0.45) 2px 4px);
 }
 
 @media (prefers-reduced-motion: reduce) {
