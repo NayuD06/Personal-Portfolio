@@ -10,9 +10,12 @@ import { greetConsole } from "@/lib/console-greeting";
 import { foundSecret, OPEN_ASK, primeAudio, OPEN_TERMINAL, SECRET_FOUND, type SecretId } from "@/lib/extras";
 import { pick, T } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
+import { HackerMode } from "./hacker-mode";
+import { TopPeek } from "./top-peek";
 
 // Gắn một lần trong layout: nút "Hỏi AI", phím tắt mở Terminal và các easter egg trên trang:
-// mã Konami (phím hoặc vuốt), gõ "duyan", bấm logo 5 lần, lắc chuột hoặc điện thoại, lời chào trong Console, vào trang lúc 0h đến 4h sáng.
+// mã Konami (phím hoặc vuốt), gõ "duyan", bấm logo 5 lần, lắc chuột hoặc điện thoại, lời chào trong Console, vào trang lúc 0h đến 4h sáng,
+// kéo quá đầu trang (top-peek.tsx) và nhãn của chế độ hacker (hacker-mode.tsx, bật bằng lệnh matrix trong Terminal).
 // Terminal, khung chat và hiệu ứng easter egg chỉ được tải về khi mở lần đầu, nên không làm chậm trang.
 
 const Terminal = dynamic(() => import("./terminal"), { ssr: false });
@@ -277,6 +280,8 @@ export function SiteExtras() {
 
       {secret && Warp && <Warp key={secret.key} id={secret.id} onClose={() => setSecret(null)} />}
 
+      <HackerMode home={home} />
+      <TopPeek />
     </>
   );
 }

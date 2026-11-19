@@ -3,6 +3,7 @@ import { linkProps } from "@/lib/site";
 import { navLinks, ui } from "@/data/ui";
 import { T } from "@/lib/i18n";
 import { CurrentYear } from "../ui/current-year";
+import { LogoMark } from "../ui/logo-mark";
 import { TechIcon } from "../ui/tech-icon";
 
 /** base: "/" khi dùng ở trang con, để các link #mục quay về trang chủ */
@@ -14,9 +15,7 @@ export function Footer({ base = "" }: { base?: string }) {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <a href={`${base}#home`} className="inline-flex items-center gap-3">
-              <span className="bg-brand grid size-10 place-items-center rounded-xl font-heading text-sm font-black text-white">
-                {profile.initials}
-              </span>
+              <LogoMark className="size-10" />
               <span className="font-heading text-xl font-extrabold">{profile.name}</span>
             </a>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">

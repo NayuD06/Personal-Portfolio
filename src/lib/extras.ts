@@ -5,9 +5,21 @@ export const OPEN_TERMINAL = "open-terminal";
 export const OPEN_ASK = "open-ask";
 export const SECRET_FOUND = "secret-found";
 
-export type SecretId = "konami" | "logo" | "sudo" | "matrix" | "console" | "shake" | "rmrf" | "nightowl" | "pixel" | "snake";
+export type SecretId =
+  | "konami"
+  | "logo"
+  | "sudo"
+  | "matrix"
+  | "console"
+  | "shake"
+  | "rmrf"
+  | "nightowl"
+  | "pixel"
+  | "snake"
+  | "hacker"
+  | "ceiling";
 /** Thứ tự hiện trên thẻ thành tích và trong lệnh `secrets` của Terminal */
-export const secretIds: SecretId[] = ["konami", "logo", "sudo", "matrix", "console", "shake", "rmrf", "nightowl", "pixel", "snake"];
+export const secretIds: SecretId[] = ["konami", "logo", "sudo", "matrix", "console", "shake", "rmrf", "nightowl", "pixel", "snake", "hacker", "ceiling"];
 
 export function openTerminal() {
   window.dispatchEvent(new Event(OPEN_TERMINAL));
@@ -22,6 +34,24 @@ export function foundSecret(id: SecretId) {
   // lưu ngay, để hai bí mật tìm ra cùng lúc thì cái trước không bị mất
   saveSecret(id);
   window.dispatchEvent(new CustomEvent(SECRET_FOUND, { detail: id }));
+}
+
+// Chế độ hacker (lệnh `matrix` trong Terminal): thẻ <html> có data-hacker, globals.css đổi cả trang sang đen + xanh lá.
+// Phần nút thoát, phím Esc và ép nền tối nằm ở src/components/extras/hacker-mode.tsx.
+export const HACKER_EVENT = "hacker-mode";
+
+export function isHacker() {
+  return document.documentElement.hasAttribute("data-hacker");
+}
+
+/** Bật / tắt chế độ hacker. Bật lên thì tính là tìm thấy bí mật. */
+export function setHacker(on: boolean) {
+  const root = document.documentElement;
+  if (on === root.hasAttribute("data-hacker")) return;
+  if (on) root.setAttribute("data-hacker", "");
+  else root.removeAttribute("data-hacker");
+  window.dispatchEvent(new CustomEvent(HACKER_EVENT, { detail: on }));
+  if (on) foundSecret("hacker");
 }
 
 let audio: AudioContext | undefined;

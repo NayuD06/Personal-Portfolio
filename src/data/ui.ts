@@ -326,6 +326,33 @@ export const ui = {
       title: { en: "Snake charmer", vi: "Thánh rắn săn mồi" },
       body: { en: "You played Snake inside my terminal. Nokia would be proud.", vi: "Chơi rắn săn mồi ngay trong terminal của mình. Nokia chắc tự hào lắm." },
     },
+    hacker: {
+      title: { en: "Welcome to the Matrix", vi: "Chào mừng tới Ma Trận" },
+      body: {
+        en: "The whole site is in hacker mode now. Run matrix again or press Esc to come back.",
+        vi: "Cả trang đã sang chế độ hacker. Gõ lại matrix hoặc nhấn Esc để quay về.",
+      },
+    },
+    ceiling: {
+      title: { en: "Nothing up here", vi: "Trên này trống trơn" },
+      body: {
+        en: "You kept scrolling past the top. Nothing up here... except this card.",
+        vi: "Bạn cứ kéo quá đầu trang. Trên này chẳng có gì... ngoài tấm thẻ này.",
+      },
+    },
+  },
+  // chế độ hacker (lệnh matrix): nhãn nhỏ ở góc dưới bên trái kèm nút thoát
+  hacker: {
+    badge: { en: "HACKER MODE", vi: "CHẾ ĐỘ HACKER" },
+    hint: { en: "Esc to exit", vi: "Esc để thoát" },
+    exit: { en: "Exit hacker mode", vi: "Thoát chế độ hacker" },
+    on: { en: "Hacker mode on.", vi: "Đã bật chế độ hacker." },
+    off: { en: "Hacker mode off.", vi: "Đã tắt chế độ hacker." },
+  },
+  // kéo quá đầu trang: dòng chữ thò xuống từ mép trên màn hình
+  topPeek: {
+    first: { en: "There's nothing up here...", vi: "Không có gì ở trên này đâu..." },
+    second: { en: "or is there?", vi: "hay có?" },
   },
   // lời chào hiện trong Console của DevTools (F12), kèm hàm hire() mở khóa một bí mật
   devConsole: {

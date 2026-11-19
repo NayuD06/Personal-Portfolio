@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { profile } from "@/data/profile";
 import { ui } from "@/data/ui";
 import { askAssistant, MAX_QUESTION, type AskOutcome, type ChatMessage } from "@/lib/ask-client";
-import { foundSecret, readSecrets, secretIds, type SecretId } from "@/lib/extras";
+import { foundSecret, readSecrets, secretIds, type SecretId, isHacker, setHacker } from "@/lib/extras";
 import { pick, T, type Lang, type Text } from "@/lib/i18n";
 import { normalize } from "@/lib/normalize";
 import { RichText } from "./rich-text";
@@ -309,6 +309,17 @@ const secretText: Record<SecretId, { title: Text; hint: Text }> = {
   snake: {
     title: ui.secrets.snake.title,
     hint: { en: "the most famous Nokia phone game, typed as a command right here", vi: "trò chơi huyền thoại trên điện thoại Nokia, gõ tên nó thành lệnh ngay tại đây" },
+  },
+  hacker: {
+    title: ui.secrets.hacker.title,
+    hint: {
+      en: "the classic movie about a red pill and a blue pill, typed as a command right here",
+      vi: "tên bộ phim kinh điển về viên thuốc đỏ và viên thuốc xanh, gõ thành lệnh ngay tại đây",
+    },
+  },
+  ceiling: {
+    title: ui.secrets.ceiling.title,
+    hint: { en: "already at the top of the page? keep scrolling up anyway", vi: "đã ở đầu trang rồi? cứ kéo lên tiếp xem" },
   },
 };
 
@@ -924,13 +935,39 @@ export const commands: Command[] = [
   },
   {
     name: "duyan",
-    aliases: ["matrix"],
     run: () => {
       foundSecret("matrix");
       return (
         <p className={c.sky}>
           <T v={{ en: "Opening the code rain...", vi: "Đang mở màn mưa code..." }} />
         </p>
+      );
+    },
+  },
+  {
+    // bật / tắt chế độ hacker cho cả trang (globals.css, mục "Chế độ hacker")
+    name: "matrix",
+    aliases: ["hacker", "hack", "neo", "redpill"],
+    run: (ctx) => {
+      const on = !isHacker();
+      setHacker(on);
+      if (!on) {
+        return (
+          <p className={c.muted}>
+            <T v={{ en: "Back to the real world. Hacker mode off.", vi: "Đã về lại thế giới thật. Tắt chế độ hacker." }} />
+          </p>
+        );
+      }
+      // đóng Terminal sau một nhịp để thấy cả trang đổi màu (màn mưa code xanh lá đang phủ lên trên)
+      window.setTimeout(ctx.close, 900);
+      return (
+        <Block>
+          <p className={c.white}>Wake up, Neo...</p>
+          <p className={c.muted}>The Matrix has you.</p>
+          <p className={c.sky}>
+            <T v={{ en: "Hacker mode on. Run matrix again or press Esc to leave.", vi: "Đã bật chế độ hacker. Gõ lại matrix hoặc nhấn Esc để thoát." }} />
+          </p>
+        </Block>
       );
     },
   },

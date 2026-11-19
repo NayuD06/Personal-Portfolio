@@ -11,6 +11,7 @@ import { CommandTrigger } from "./command-palette";
 import { TerminalTrigger } from "./extras/triggers";
 import { LangToggle } from "./ui/lang-toggle";
 import { ThemeToggle } from "./ui/theme-toggle";
+import { LogoMark } from "./ui/logo-mark";
 
 /** Icon cho thanh menu dưới đáy trên điện thoại */
 const tabIcons: Record<string, IconType> = {
@@ -67,9 +68,7 @@ export function Navbar() {
           }`}
         >
           <a href="#home" data-logo className="group flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <span aria-hidden="true" className="bg-brand grid size-10 shrink-0 place-items-center rounded-xl font-heading text-sm font-black tracking-tight text-white shadow-[0_8px_24px_-10px_var(--glow-sky)] transition-transform duration-300 group-hover:-rotate-6">
-              {profile.initials}
-            </span>
+            <LogoMark className="size-10 shadow-[0_8px_24px_-10px_var(--glow-sky)] transition-transform duration-300 group-hover:-rotate-6" />
             <span className="truncate font-heading text-lg font-extrabold tracking-tight">{profile.name}</span>
           </a>
 

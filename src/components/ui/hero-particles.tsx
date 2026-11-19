@@ -66,9 +66,10 @@ export function HeroParticles() {
       last = now;
       // hạt di chuyển theo thời gian thật (k = 1 ở 60 hình/giây), tối đa 3 khung khi máy bị khựng
       const k = Math.min(gap / 16.7, 3);
-      const dark = document.documentElement.classList.contains("dark");
-      // xanh sáng trên nền tối, xanh đậm trên nền sáng
-      const rgb = dark ? "125, 196, 255" : "37, 99, 235";
+      const root = document.documentElement;
+      const dark = root.classList.contains("dark");
+      // xanh sáng trên nền tối, xanh đậm trên nền sáng; chế độ hacker (lệnh matrix) thì xanh lá
+      const rgb = root.hasAttribute("data-hacker") ? "74, 222, 128" : dark ? "125, 196, 255" : "37, 99, 235";
       const dotAlpha = dark ? 0.8 : 0.5;
       const lineAlpha = dark ? 0.24 : 0.16;
       context.clearRect(0, 0, width, height);

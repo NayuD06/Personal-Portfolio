@@ -14,6 +14,26 @@ const ROWS = 15;
 const START_SPEED = 150; // mili giây cho mỗi bước
 const MIN_SPEED = 70;
 const BEST_KEY = "snake-best";
+
+/** Màu vẽ trên canvas: nền, chấm lưới, mồi, thân rắn (đầu, khúc sau đầu, đuôi) */
+const blueLook = {
+  bg: "#040814",
+  grid: "rgba(96, 165, 250, 0.12)",
+  glow: "#38bdf8",
+  food: "#7dd3fc",
+  head: [224, 242, 254],
+  neck: [96, 165, 250],
+  tail: [29, 78, 216],
+};
+const greenLook = {
+  bg: "#010803",
+  grid: "rgba(74, 222, 128, 0.12)",
+  glow: "#4ade80",
+  food: "#86efac",
+  head: [220, 252, 231],
+  neck: [74, 222, 128],
+  tail: [21, 128, 61],
+};
 /** Mở ván mới thì ván cũ (nếu còn) tự kết thúc, để mỗi lúc chỉ có một ván */
 const START_EVENT = "snake-start";
 
@@ -154,18 +174,20 @@ export function SnakeGame({ lang, onExit }: { lang: Lang; onExit: () => void }) 
       canvas.height = height * ratio;
     }
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
-    context.fillStyle = "#040814";
+    // bảng màu: xanh dương, hoặc xanh lá khi đang bật chế độ hacker (lệnh matrix)
+    const look = document.documentElement.hasAttribute("data-hacker") ? greenLook : blueLook;
+    context.fillStyle = look.bg;
     context.fillRect(0, 0, width, height);
     // chấm lưới mờ
-    context.fillStyle = "rgba(96, 165, 250, 0.12)";
+    context.fillStyle = look.grid;
     for (let y = 0; y < ROWS; y++) for (let x = 0; x < COLS; x++) context.fillRect(x * cell + cell / 2 - 1, y * cell + cell / 2 - 1, 2, 2);
 
     const { snake, food, dir } = game.current;
     // mồi: viên kim cương xanh trời phát sáng
     context.save();
-    context.shadowColor = "#38bdf8";
+    context.shadowColor = look.glow;
     context.shadowBlur = cell * 0.8;
-    context.fillStyle = "#7dd3fc";
+    context.fillStyle = look.food;
     const fx = food.x * cell + cell / 2;
     const fy = food.y * cell + cell / 2;
     const r = cell * 0.36;
@@ -179,18 +201,17 @@ export function SnakeGame({ lang, onExit }: { lang: Lang; onExit: () => void }) 
     context.restore();
 
     // thân rắn: đầu sáng nhất, nhạt dần về đuôi
-    const head = [224, 242, 254];
-    const tail = [29, 78, 216];
+    const { head, neck, tail } = look;
     snake.forEach((part, index) => {
       const t = snake.length > 1 ? index / (snake.length - 1) : 0;
-      const color = index === 0 ? head : [96, 165, 250].map((c, i) => Math.round(c + (tail[i] - c) * t));
+      const color = index === 0 ? head : neck.map((c, i) => Math.round(c + (tail[i] - c) * t));
       context.fillStyle = `rgb(${color.join(",")})`;
       const inset = index === 0 ? 1 : 2;
       context.fillRect(part.x * cell + inset, part.y * cell + inset, cell - inset * 2, cell - inset * 2);
     });
     // mắt
     const h = snake[0];
-    context.fillStyle = "#040814";
+    context.fillStyle = look.bg;
     const eye = Math.max(2, Math.round(cell / 7));
     const cx = h.x * cell + cell / 2;
     const cy = h.y * cell + cell / 2;

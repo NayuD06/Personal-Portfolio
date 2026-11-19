@@ -1422,6 +1422,205 @@ html.theme-transition::view-transition-new(root) {
    Lưới an toàn cho mọi animation CSS còn sót: chạy xong ngay lập tức, không lặp, không cuộn mượt.
    Hiệu ứng JavaScript (motion) đã tự tôn trọng cài đặt này qua MotionConfig trong providers.tsx;
    canvas (hạt sáng, mưa code...) và easter egg tự kiểm tra prefers-reduced-motion. */
+/* ---------- Easter egg: chế độ hacker (gõ matrix trong Terminal) ---------- */
+/* Cả trang thành đen + xanh lá kiểu màn hình phim hacker, chữ đơn cách, ảnh nhuộm xanh, vạch quét mờ.
+   Bật / tắt bằng thuộc tính data-hacker trên <html> (src/lib/extras.ts). Đang ở giao diện sáng thì
+   hacker-mode.tsx tạm gắn class "dark" để các màu riêng của chế độ tối cũng đổi theo. */
+html[data-hacker] {
+  --bg: #010603;
+  --bg-alt: #020c05;
+  --fg: #d1fae5;
+  --muted: #74c48d;
+  --border: rgb(34 197 94 / 0.2);
+  --card-from: #03120a;
+  --card-to: #010804;
+  --card-border-from: rgb(34 197 94 / 0.6);
+  --card-border-to: rgb(74 222 128 / 0.35);
+  --chip: rgb(34 197 94 / 0.14);
+  --chip-fg: #86efac;
+  --input: rgb(3 18 10 / 0.8);
+  --nav: rgb(1 6 3 / 0.8);
+  --glow-blue: rgb(34 197 94 / 0.3);
+  --glow-sky: rgb(74 222 128 / 0.2);
+  --grid-line: rgb(74 222 128 / 0.07);
+  --brand-blue: #22c55e;
+  --brand-sky: #4ade80;
+  --heat-0: rgb(134 239 172 / 0.08);
+  --heat-1: #14532d;
+  --heat-2: #15803d;
+  --heat-3: #22c55e;
+  --heat-4: #86efac;
+  --text-grad: linear-gradient(90deg, #22c55e, #4ade80 50%, #bbf7d0);
+  /* chữ đơn cách cho cả trang (thay cho font của next/font) */
+  --font-montserrat: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --font-nunito: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  color-scheme: dark;
+}
+html[data-hacker] ::selection {
+  background: rgb(74 222 128 / 0.3);
+}
+html[data-hacker] .bg-brand {
+  background-image: linear-gradient(90deg, #15803d, #22c55e 45%, #4ade80);
+}
+/* nút chữ trắng: xanh lá đủ đậm để chữ trắng vẫn đạt tương phản 4,5:1 */
+html[data-hacker] .bg-brand-strong {
+  background-image: linear-gradient(90deg, #14532d, #166534 45%, #15803d);
+}
+html[data-hacker] .spotlight::before {
+  background: radial-gradient(380px circle at var(--x, 50%) var(--y, 50%), rgb(34 197 94 / 0.16), rgb(74 222 128 / 0.08) 40%, transparent 70%);
+}
+html[data-hacker] .journey-head {
+  box-shadow:
+    0 0 0 4px rgb(74 222 128 / 0.25),
+    0 0 18px 4px var(--brand-sky);
+}
+/* ảnh: đen trắng rồi nhuộm xanh lá như màn hình cũ */
+html[data-hacker] :is(main, footer) img {
+  filter: grayscale(1) sepia(1) hue-rotate(68deg) saturate(2.2) brightness(0.9);
+}
+/* vạch quét mờ phủ cả màn hình (không bắt chuột, không chạy animation nên không tốn máy) */
+html[data-hacker] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: repeating-linear-gradient(180deg, rgb(0 0 0 / 0.14) 0 1px, transparent 1px 3px);
+}
+@media print {
+  html[data-hacker] body::after {
+    display: none;
+  }
+}
+/* chữ đơn cách rộng hơn: khép chữ menu lại một chút để tên không bị cắt, và nới dòng chữ của menu dưới đáy cho khỏi mất dấu */
+html[data-hacker] nav[aria-label="Main"] ul a {
+  letter-spacing: -0.05em;
+}
+html[data-hacker] li > a > span.truncate {
+  line-height: 1.3;
+}
+/* Terminal và game snake dùng mã màu cố định: đổi từng mã sang tông xanh lá tương ứng */
+html[data-hacker] .term {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(34 197 94 / 0.14), transparent 60%),
+    linear-gradient(180deg, #020b05, #010402);
+  box-shadow:
+    0 0 0 1px rgb(34 197 94 / 0.35),
+    0 40px 140px -30px rgb(22 163 74 / 0.5);
+}
+html[data-hacker] .term .text-gradient {
+  background-image: linear-gradient(90deg, #22c55e, #4ade80 50%, #86efac);
+}
+html[data-hacker] .term-banner {
+  filter: drop-shadow(0 0 10px rgb(74 222 128 / 0.35));
+}
+html[data-hacker] .term :focus-visible {
+  outline-color: #4ade80;
+}
+html[data-hacker] [class~="text-[#38bdf8]"] {
+  color: #4ade80;
+}
+html[data-hacker] [class~="text-[#60a5fa]"] {
+  color: #22c55e;
+}
+html[data-hacker] [class~="text-[#93c5fd]"] {
+  color: #86efac;
+}
+html[data-hacker] [class~="text-[#d7e3ff]"] {
+  color: #d1fae5;
+}
+html[data-hacker] [class~="text-[#7d8db0]"] {
+  color: #6fbf86;
+}
+html[data-hacker] [class~="caret-[#38bdf8]"] {
+  caret-color: #4ade80;
+}
+html[data-hacker] [class~="border-[#38bdf8]"] {
+  border-color: #4ade80;
+}
+html[data-hacker] [class~="border-[#1e3a8a]"] {
+  border-color: #166534;
+}
+html[data-hacker] [class~="border-[#1e3a8a]/60"] {
+  border-color: rgb(22 101 52 / 0.6);
+}
+html[data-hacker] [class~="bg-[#060c1a]"] {
+  background-color: #03100a;
+}
+html[data-hacker] [class~="bg-[#0a1428]"] {
+  background-color: #052012;
+}
+html[data-hacker] [class~="bg-[#01030a]/80"] {
+  background-color: rgb(0 4 1 / 0.8);
+}
+html[data-hacker] [class~="bg-[#040814]/70"] {
+  background-color: rgb(1 8 3 / 0.7);
+}
+html[data-hacker] [class~="bg-[#38bdf8]"] {
+  background-color: #4ade80;
+}
+html[data-hacker] [class~="bg-[#1d4ed8]/30"] {
+  background-color: rgb(21 128 61 / 0.3);
+}
+html[data-hacker] [class~="decoration-[#38bdf8]/40"] {
+  text-decoration-color: rgb(74 222 128 / 0.4);
+}
+.rain-word-green {
+  text-shadow:
+    0 0 18px rgb(74 222 128 / 0.9),
+    0 0 48px rgb(22 163 74 / 0.7);
+}
+/* nhãn "CHẾ ĐỘ HACKER" ở góc dưới bên trái, kèm nút thoát */
+.hacker-badge {
+  border-color: rgb(74 222 128 / 0.45);
+  background: rgb(1 8 3 / 0.88);
+  color: #86efac;
+  box-shadow: 0 0 24px -6px rgb(74 222 128 / 0.55);
+}
+.hacker-badge-hint {
+  color: #74c48d;
+}
+.hacker-badge-exit {
+  color: #bbf7d0;
+  transition: background-color 0.2s ease;
+}
+.hacker-badge-exit:hover {
+  background: rgb(74 222 128 / 0.16);
+}
+@media (hover: hover) and (pointer: fine) {
+  html[data-hacker] {
+    --cursor-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2386efac'/%3E%3Cstop offset='.5' stop-color='%2322c55e'/%3E%3Cstop offset='1' stop-color='%2315803d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M4 2.5V21.5L8.6 17.3L11.6 24.2L14.7 22.9L11.8 16.1H17.8Z' transform='translate(1.2 1.6)' fill='%23000' fill-opacity='.35'/%3E%3Cpath d='M4 2.5V21.5L8.6 17.3L11.6 24.2L14.7 22.9L11.8 16.1H17.8Z' fill='url(%23g)' stroke='%23fff' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 4 3, auto;
+    --cursor-hand: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2386efac'/%3E%3Cstop offset='.5' stop-color='%2322c55e'/%3E%3Cstop offset='1' stop-color='%2315803d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg transform='translate(1.5 1) scale(.86)'%3E%3Cpath d='M9 4.5a2 2 0 0 1 4 0V12a2 2 0 0 1 4 0v1a2 2 0 0 1 4 0v1a1.75 1.75 0 0 1 3.5 0V21c0 4-2.8 7-7 7h-2.5c-2.2 0-3.6-.8-4.9-2.3L4.6 20.4a1.9 1.9 0 0 1 2.8-2.6L9 19.4Z' transform='translate(1.2 1.6)' fill='%23000' fill-opacity='.35'/%3E%3Cpath d='M9 4.5a2 2 0 0 1 4 0V12a2 2 0 0 1 4 0v1a2 2 0 0 1 4 0v1a1.75 1.75 0 0 1 3.5 0V21c0 4-2.8 7-7 7h-2.5c-2.2 0-3.6-.8-4.9-2.3L4.6 20.4a1.9 1.9 0 0 1 2.8-2.6L9 19.4Z' fill='url(%23g)' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M13 14.6v2.6M17 15.4v2.2M21 16v1.8' stroke='%2314532d' stroke-opacity='.6' stroke-width='1.2' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E") 11 3, pointer;
+  }
+}
+
+/* ---------- Easter egg: kéo quá đầu trang (top-peek.tsx) ---------- */
+/* --pull từ 0 (ẩn hẳn phía trên màn hình) tới 1 (hiện hẳn, cách mép trên một chút). Đang kéo thì đi theo tay, thả ra thì trượt mượt. */
+.top-peek {
+  --pull: 0;
+  transform: translate(-50%, calc((var(--pull) - 1) * (100% + 1.75rem) + var(--pull) * (0.75rem + env(safe-area-inset-top))));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.top-peek[data-follow="true"] {
+  transition: none;
+}
+.top-peek[data-stage="open"] .top-peek-arrow {
+  animation: top-peek-bob 0.9s ease-in-out infinite alternate;
+}
+@keyframes top-peek-bob {
+  to {
+    transform: translateY(-2px);
+  }
+}
+.top-peek-second {
+  animation: top-peek-in 0.45s ease-out both;
+}
+@keyframes top-peek-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

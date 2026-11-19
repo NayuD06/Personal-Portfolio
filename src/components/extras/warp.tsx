@@ -12,7 +12,7 @@ import { Jumpscare } from "./jumpscare";
 
 // Easter egg: hiệu ứng rồi hiện thẻ thành tích.
 // Mã Konami và lệnh sudo: "nhảy siêu tốc" (các vì sao kéo vệt từ giữa màn hình ra). Bấm logo 5 lần: màn jumpscare.
-// Gõ "duyan": mưa code. Lắc chuột hoặc điện thoại: cả trang rung, các mảng rơi xuống rồi tự lắp lại.
+// Gõ "duyan": mưa code. Lệnh matrix: mưa code xanh lá rồi cả trang sang chế độ hacker. Lắc chuột hoặc điện thoại: cả trang rung, các mảng rơi xuống rồi tự lắp lại.
 // Console, rm -rf / và cú đêm thì chỉ hiện thẻ (hiệu ứng nằm ở Console và Terminal).
 // Máy bật giảm chuyển động thì bỏ qua hiệu ứng, chỉ hiện thẻ.
 
@@ -91,11 +91,42 @@ function Starfield({ onEnd }: { onEnd: () => void }) {
   );
 }
 
-const RAIN = 4200;
-const glyphs = "01{}[]<>/\\=+*#$%&;:ĐƯƠĂÂÊÔDUYAN".split("");
+type RainLook = {
+  duration: number;
+  glyphs: string[];
+  /** màu ký tự ở đầu cột và ngay phía sau */
+  head: string;
+  trail: string;
+  /** lớp phủ mỗi khung hình (càng đậm thì vệt càng ngắn) */
+  fade: string;
+  word: string;
+  wordClass: string;
+};
 
-/** Mưa code: từng cột ký tự rơi xuống, đầu cột sáng trắng, đuôi xanh mờ dần, giữa màn hình hiện tên */
-function CodeRain({ onEnd }: { onEnd: () => void }) {
+/** Gõ "duyan": mưa code xanh dương, giữa màn hình hiện tên */
+const blueRain: RainLook = {
+  duration: 4200,
+  glyphs: "01{}[]<>/\\=+*#$%&;:ĐƯƠĂÂÊÔDUYAN".split(""),
+  head: "#e0f2fe",
+  trail: "#38bdf8",
+  fade: "rgba(2, 6, 23, 0.14)",
+  word: profile.name.toUpperCase(),
+  wordClass: "text-[clamp(2.5rem,10vw,7rem)] text-[#e0f2fe]",
+};
+
+/** Lệnh matrix: mưa ngắn hơn, xanh lá, chữ katakana nửa độ rộng, rồi hiện ACCESS GRANTED */
+const greenRain: RainLook = {
+  duration: 2600,
+  glyphs: "01ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎ<>/=+*".split(""),
+  head: "#dcfce7",
+  trail: "#22c55e",
+  fade: "rgba(0, 6, 2, 0.16)",
+  word: "ACCESS GRANTED",
+  wordClass: "rain-word-green text-[clamp(1.5rem,7vw,5.5rem)] text-[#dcfce7]",
+};
+
+/** Mưa code: từng cột ký tự rơi xuống, đầu cột sáng trắng, đuôi mờ dần, giữa màn hình hiện một dòng chữ */
+function CodeRain({ onEnd, look = blueRain }: { onEnd: () => void; look?: RainLook }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -115,6 +146,7 @@ function CodeRain({ onEnd }: { onEnd: () => void }) {
     // mỗi cột bắt đầu ở một độ cao khác nhau phía trên màn hình, rơi với tốc độ riêng
     const drops = Array.from({ length: columns }, () => -Math.random() * (height / size));
     const speeds = Array.from({ length: columns }, () => 0.35 + Math.random() * 0.55);
+    const { glyphs, duration } = look;
     const glyph = () => glyphs[Math.floor(Math.random() * glyphs.length)];
     context.font = `${size}px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
     context.textBaseline = "top";
@@ -123,19 +155,19 @@ function CodeRain({ onEnd }: { onEnd: () => void }) {
     let last = start;
     let frame = 0;
     const draw = (now: number) => {
-      const t = (now - start) / RAIN;
+      const t = (now - start) / duration;
       const step = Math.min(3, (now - last) / 16.7);
       last = now;
       // phủ một lớp tối mỏng mỗi khung hình: chữ cũ mờ dần thành vệt, trang phía sau tối dần
-      context.fillStyle = "rgba(2, 6, 23, 0.14)";
+      context.fillStyle = look.fade;
       context.fillRect(0, 0, width, height);
       for (let column = 0; column < columns; column++) {
         const y = Math.floor(drops[column]) * size;
         const x = column * size;
         if (y >= 0) {
-          context.fillStyle = "#38bdf8";
+          context.fillStyle = look.trail;
           context.fillText(glyph(), x, y - size);
-          context.fillStyle = "#e0f2fe";
+          context.fillStyle = look.head;
           context.fillText(glyph(), x, y);
         }
         drops[column] += speeds[column] * step;
@@ -152,17 +184,25 @@ function CodeRain({ onEnd }: { onEnd: () => void }) {
       cancelAnimationFrame(frame);
       window.removeEventListener("keydown", skip);
     };
-  }, [onEnd]);
+  }, [onEnd, look]);
 
+  // thời gian hiện / mờ của lớp mưa và dòng chữ (keyframes rain, rain-word trong globals.css) theo độ dài màn mưa
+  const timing = { animationDuration: `${look.duration}ms` };
   return (
-    <div role="presentation" onClick={onEnd} className="rain fixed inset-0 z-[90] cursor-pointer print:hidden">
+    <div role="presentation" onClick={onEnd} style={timing} className="rain fixed inset-0 z-[90] cursor-pointer print:hidden">
       <canvas ref={canvasRef} aria-hidden="true" className="size-full" />
-      <p aria-hidden="true" className="rain-word pointer-events-none absolute inset-0 grid place-items-center font-mono text-[clamp(2.5rem,10vw,7rem)] font-bold tracking-[0.2em] text-[#e0f2fe]">
-        {profile.name.toUpperCase()}
+      <p
+        aria-hidden="true"
+        style={timing}
+        className={`rain-word pointer-events-none absolute inset-0 grid place-items-center px-4 text-center font-mono font-bold tracking-[0.2em] ${look.wordClass}`}
+      >
+        {look.word}
       </p>
     </div>
   );
 }
+
+const HackerRain = ({ onEnd }: { onEnd: () => void }) => <CodeRain onEnd={onEnd} look={greenRain} />;
 
 const QUAKE = 3100;
 
@@ -251,6 +291,7 @@ const effects: Partial<Record<SecretId, ComponentType<{ onEnd: () => void }>>> =
   logo: Jumpscare,
   matrix: CodeRain,
   shake: Quake,
+  hacker: HackerRain,
 };
 
 export default function Warp({ id, onClose }: { id: SecretId; onClose: () => void }) {
@@ -303,12 +344,12 @@ export default function Warp({ id, onClose }: { id: SecretId; onClose: () => voi
               <p className="mt-0.5 text-sm text-muted">
                 <T v={secret.body} />
               </p>
-              <div className="mt-2.5 flex items-center gap-2">
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="flex gap-1" aria-hidden="true">
                   {secretIds.map((secretId) => (
                     <span
                       key={secretId}
-                      className={`h-1.5 w-4 rounded-full ${found.includes(secretId) ? "bg-brand" : "bg-[var(--border)]"}`}
+                      className={`h-1.5 w-3 rounded-full ${found.includes(secretId) ? "bg-brand" : "bg-[var(--border)]"}`}
                     />
                   ))}
                 </span>
