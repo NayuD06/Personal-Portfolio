@@ -9,7 +9,9 @@ import { linkProps } from "@/lib/site";
 import { SectionHeading } from "../ui/section-heading";
 
 // Dòng thời gian "Hành trình": đọc từ profile.journey.
-// Khi cuộn, đường dọc sáng dần từ trên xuống, mốc nào đã đi qua thì sáng lên, số năm bên trái tô màu dần.
+// Màn hình rộng (từ 1024px): đường dọc nằm giữa, các mốc xen kẽ hai bên: UTH bên trái, VTC Academy bên phải,
+// cột mốc nằm ngay trên đường, dự án lấp vào bên còn trống. Điện thoại và máy tính bảng: một cột, đường bên trái.
+// Khi cuộn, đường dọc sáng dần từ trên xuống, mốc nào đã đi qua thì sáng lên, số năm tô màu dần.
 // Hiệu ứng chạy hoàn toàn bằng CSS (animation-timeline, nhóm .journey-* trong globals.css), không tốn JavaScript
 // nên không làm chậm lúc tải trang. Trình duyệt chưa hỗ trợ thì hiện sẵn trạng thái đã sáng.
 
@@ -33,6 +35,41 @@ const kindLabel = {
 
 const projects = new Map<string, Project>(profile.projects.map((project) => [project.slug, project]));
 const items: JourneyItem[] = profile.journey.filter((item) => item.kind !== "project" || projects.has(item.project));
+
+type Side = "left" | "right" | "center";
+type Placed = { item: JourneyItem; side: Side; row: number };
+
+/** Bên của mỗi mốc khi đường nằm giữa: UTH trái, VTC phải, cột mốc ở giữa, dự án sang bên đối diện mốc trước đó */
+function sideOf(item: JourneyItem, last: "left" | "right" | undefined): Side {
+  if (item.kind === "university") return "left";
+  if (item.kind === "academy") return "right";
+  if (item.kind === "milestone") return "center";
+  return last === "left" ? "right" : "left";
+}
+
+/**
+ * Xếp các mốc của một năm vào lưới 2 cột. Mỗi mốc hai bên chiếm 2 hàng, mốc sau bắt đầu sau mốc trước ít nhất 1 hàng,
+ * nên hai bên so le nhau mà thứ tự từ trên xuống vẫn đúng thời gian. Cột mốc ở giữa chiếm trọn 1 hàng.
+ */
+function place(list: JourneyItem[]): Placed[] {
+  const free = { left: 1, right: 1 };
+  let prevRow = 0;
+  let last: "left" | "right" | undefined;
+  return list.map((item) => {
+    const side = sideOf(item, last);
+    let row: number;
+    if (side === "center") {
+      row = Math.max(prevRow + 1, free.left, free.right);
+      free.left = free.right = row + 1;
+    } else {
+      row = Math.max(prevRow + 1, free[side]);
+      free[side] = row + 2;
+      last = side;
+    }
+    prevRow = row;
+    return { item, side, row };
+  });
+}
 
 /** Gom các mốc theo năm, giữ đúng thứ tự trong profile.journey */
 function byYear(list: JourneyItem[]) {
@@ -96,39 +133,41 @@ function YearGroup({ year, items }: { year: number; items: JourneyItem[] }) {
   // mỗi năm một mốc cuộn riêng để số năm tô màu dần khi đi qua các mốc của năm đó
   const timeline = `--journey-${year}`;
   return (
-    <div
-      style={{ viewTimelineName: timeline } as CSSProperties}
-      className="relative pb-6 md:grid md:grid-cols-[10rem_1fr] md:pb-10"
-    >
-      <div className="mb-6 pl-11 md:sticky md:top-28 md:mb-0 md:self-start md:pl-0">
-        <h3 className="relative inline-block font-heading text-5xl leading-none font-black tracking-tight md:text-6xl">
-          <span className="year-outline">{year}</span>
-          <span aria-hidden="true" style={{ animationTimeline: timeline } as CSSProperties} className="year-fill text-gradient absolute inset-0">
-            {year}
-          </span>
-        </h3>
+    <div style={{ viewTimelineName: timeline } as CSSProperties} className="relative pb-6 lg:pb-12">
+      <div className="mb-6 pl-11 lg:mb-10 lg:flex lg:justify-center lg:pl-0">
+        {/* nền che đường dọc để số năm nằm ngay trên đường */}
+        <div className="lg:bg-bg lg:px-6 lg:py-2">
+          <h3 className="relative inline-block font-heading text-5xl leading-none font-black tracking-tight md:text-6xl">
+            <span className="year-outline">{year}</span>
+            <span aria-hidden="true" style={{ animationTimeline: timeline } as CSSProperties} className="year-fill text-gradient absolute inset-0">
+              {year}
+            </span>
+          </h3>
+        </div>
       </div>
 
-      <ol className="space-y-5 md:space-y-6">
-        {items.map((item, index) => (
-          <Stop key={`${item.year}-${index}`} item={item} />
+      <ol className="journey-grid flex flex-col gap-5 lg:grid lg:grid-cols-2 lg:gap-x-20 lg:gap-y-6">
+        {place(items).map(({ item, side, row }, index) => (
+          <Stop key={`${item.year}-${index}`} item={item} side={side} row={row} />
         ))}
       </ol>
     </div>
   );
 }
 
-function Stop({ item }: { item: JourneyItem }) {
+function Stop({ item, side, row }: { item: JourneyItem; side: Side; row: number }) {
   return (
-    <li className="journey-stop relative pl-11 md:pl-14">
+    <li data-side={side} style={{ "--row": row } as CSSProperties} className="journey-stop relative pl-11">
       <Node kind={item.kind} />
-      {item.kind === "project" ? (
-        <ProjectStop item={item} />
-      ) : item.kind === "milestone" ? (
-        <MilestoneStop item={item} />
-      ) : (
-        <StudyStop item={item} />
-      )}
+      <div className="journey-body">
+        {item.kind === "project" ? (
+          <ProjectStop item={item} />
+        ) : item.kind === "milestone" ? (
+          <MilestoneStop item={item} />
+        ) : (
+          <StudyStop item={item} />
+        )}
+      </div>
     </li>
   );
 }
@@ -138,8 +177,10 @@ function Node({ kind }: { kind: Kind }) {
   return (
     <span
       aria-hidden="true"
-      className={`journey-dot journey-node journey-dot-${kind} absolute top-3 left-0 grid size-6 place-items-center rounded-full`}
+      className={`journey-dot journey-node journey-dot-${kind} absolute top-3 left-0 z-10 grid size-6 place-items-center rounded-full`}
     >
+      {/* gạch ngang nối thẻ với đường giữa (chỉ hiện khi đường nằm giữa) */}
+      <span className="journey-tick absolute top-1/2 hidden h-px -translate-y-1/2" />
       <Icon className="size-3.5" />
       {/* lớp sáng phủ lên khi đã đi qua */}
       <span className="journey-dot-lit absolute -inset-px grid place-items-center rounded-full">
@@ -149,9 +190,9 @@ function Node({ kind }: { kind: Kind }) {
   );
 }
 
-function DateLine({ item, label }: { item: JourneyItem; label?: ReactNode }) {
+function DateLine({ item, label, className = "" }: { item: JourneyItem; label?: ReactNode; className?: string }) {
   return (
-    <p className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs font-semibold text-brand-blue">
+    <p className={`flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs font-semibold text-brand-blue ${className}`}>
       <T v={item.date} />
       {label}
     </p>
@@ -204,13 +245,14 @@ function StudyStop({ item }: { item: StudyItem }) {
 }
 
 function MilestoneStop({ item }: { item: StudyItem }) {
+  // màn hình rộng: khung nhỏ nằm giữa đường, nền đặc để che đường phía sau
   return (
-    <div className="py-2">
-      <DateLine item={item} />
+    <div className="py-2 lg:rounded-2xl lg:border lg:border-dashed lg:border-border lg:bg-bg lg:px-6 lg:pt-6 lg:pb-4 lg:text-center">
+      <DateLine item={item} className="lg:justify-center" />
       <h4 className="mt-1.5 text-base font-bold sm:text-lg">
         <T v={item.title} />
       </h4>
-      <p className="mt-1 max-w-[60ch] text-sm leading-relaxed text-muted">
+      <p className="mt-1 max-w-[60ch] text-sm leading-relaxed text-muted lg:mx-auto">
         <T v={item.description} />
       </p>
     </div>

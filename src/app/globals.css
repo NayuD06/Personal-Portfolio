@@ -148,10 +148,70 @@ h4 {
 .journey-rail {
   left: 11px;
 }
-@media (min-width: 768px) {
+/* Màn hình rộng: đường nằm giữa, mốc xen kẽ hai bên (hàng của từng mốc tính sẵn trong journey.tsx, biến --row).
+   Khoảng cách giữa hai cột là 5rem nên tâm đường cách mép mỗi thẻ 2.5rem. */
+@media (min-width: 1024px) {
   .journey-rail {
-    left: calc(10rem + 11px);
+    left: calc(50% - 1px);
   }
+  .journey-stop {
+    grid-row: var(--row) / span 2;
+    align-self: start;
+    padding-left: 0;
+  }
+  .journey-stop[data-side="left"] {
+    grid-column: 1;
+    --journey-x: -28px;
+  }
+  .journey-stop[data-side="right"] {
+    grid-column: 2;
+  }
+  .journey-stop[data-side="center"] {
+    grid-column: 1 / -1;
+    grid-row: var(--row);
+    justify-self: center;
+    width: min(100%, 32rem);
+    --journey-x: 0px;
+    --journey-y: 16px;
+  }
+  .journey-stop[data-side="left"] .journey-node {
+    top: 1.25rem;
+    left: auto;
+    right: calc(-2.5rem - 12px);
+  }
+  .journey-stop[data-side="right"] .journey-node {
+    top: 1.25rem;
+    left: calc(-2.5rem - 12px);
+  }
+  .journey-stop[data-side="center"] .journey-node {
+    top: 0;
+    left: calc(50% - 12px);
+    translate: 0 -50%;
+  }
+  .journey-tick {
+    display: block;
+    width: calc(2.5rem - 12px);
+    background: var(--border);
+  }
+  .journey-stop[data-side="left"] .journey-tick {
+    right: 100%;
+  }
+  .journey-stop[data-side="right"] .journey-tick {
+    left: 100%;
+  }
+  .journey-stop[data-side="center"] .journey-tick {
+    display: none;
+  }
+}
+/* lớp sáng của gạch ngang, sáng cùng lúc với mốc */
+.journey-tick::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--brand-blue), var(--brand-sky));
+}
+.journey-stop[data-side="left"] .journey-tick::after {
+  background: linear-gradient(to left, var(--brand-blue), var(--brand-sky));
 }
 .journey-fill {
   background: linear-gradient(to bottom, var(--brand-sky), var(--brand-blue) 55%, #1d4ed8);
@@ -231,7 +291,8 @@ h4 {
   .journey-node {
     view-timeline-name: --node;
   }
-  .journey-dot-lit {
+  .journey-dot-lit,
+  .journey-tick::after {
     animation: journey-lit linear both;
     animation-timeline: --node;
     animation-range: cover 32vh cover 50vh;
@@ -247,7 +308,7 @@ h4 {
     animation-range: cover 30vh cover calc(100% - 45vh);
   }
   @media (prefers-reduced-motion: no-preference) {
-    .journey-stop {
+    .journey-body {
       animation: journey-in linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 55%;
@@ -300,10 +361,11 @@ h4 {
     clip-path: inset(0 0 0 0);
   }
 }
+/* thẻ trượt vào từ phía ngoài: bên phải trượt sang trái, bên trái trượt sang phải, cột mốc giữa đi lên */
 @keyframes journey-in {
   from {
     opacity: 0;
-    translate: 28px 0;
+    translate: var(--journey-x, 28px) var(--journey-y, 0px);
   }
   to {
     opacity: 1;
