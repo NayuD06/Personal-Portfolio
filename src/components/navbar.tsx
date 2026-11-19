@@ -72,7 +72,7 @@ export function Navbar() {
             <span className="truncate font-heading text-lg font-extrabold tracking-tight">{profile.name}</span>
           </a>
 
-          <ul className="hidden items-center gap-1 lg:flex">
+          <ul className="hidden shrink-0 items-center gap-0.5 lg:flex xl:gap-1">
             {navLinks.map((link) => {
               const isActive = active === link.href;
               return (
@@ -80,7 +80,7 @@ export function Navbar() {
                   <a
                     href={link.href}
                     aria-current={isActive ? "true" : undefined}
-                    className={`relative z-10 block px-3.5 py-2 text-sm font-semibold transition-colors ${
+                    className={`relative z-10 block px-3 py-2 text-sm font-semibold whitespace-nowrap transition-colors xl:px-3.5 ${
                       isActive ? "text-fg" : "text-muted hover:text-fg"
                     }`}
                   >
@@ -89,7 +89,7 @@ export function Navbar() {
                   {isActive && (
                     <motion.span
                       layoutId="nav-pill"
-                      className="bg-brand absolute inset-x-3.5 -bottom-0.5 h-0.5 rounded-full"
+                      className="bg-brand absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full xl:inset-x-3.5"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -99,13 +99,13 @@ export function Navbar() {
           </ul>
 
           <div className="flex shrink-0 items-center gap-2">
-            <CommandTrigger />
+            <CommandTrigger hint={false} />
             <TerminalTrigger />
             <LangToggle />
             <ThemeToggle />
             <a
               href="#contact"
-              className="bg-brand shine ml-1 hidden items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold text-white shadow-[0_10px_28px_-12px_var(--glow-sky)] transition-transform hover:scale-[1.03] md:inline-flex"
+              className="bg-brand shine ml-1 hidden items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-white shadow-[0_10px_28px_-12px_var(--glow-sky)] transition-transform hover:scale-[1.03] md:inline-flex lg:hidden xl:inline-flex"
             >
               <LuMessageCircle className="size-4" aria-hidden="true" />
               <T v={ui.nav.cta} />

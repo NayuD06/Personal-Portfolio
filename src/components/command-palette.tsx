@@ -55,20 +55,23 @@ export function useIsMac() {
 }
 
 /** Nút mở bảng lệnh trên thanh menu: kính lúp, màn hình rộng có thêm phím tắt */
-export function CommandTrigger() {
+/** hint: hiện chữ "Ctrl K" cạnh kính lúp trên màn hình rộng. Thanh menu trang chủ tắt đi để đủ chỗ cho menu tiếng Việt. */
+export function CommandTrigger({ hint = true }: { hint?: boolean }) {
   const lang = useLang();
   const isMac = useIsMac();
   const shortcut = isMac ? "⌘K" : "Ctrl K";
+  const label = `${pick(ui.palette.open, lang)} (${shortcut})`;
   return (
     <button
       type="button"
       onClick={openCommandPalette}
-      aria-label={`${pick(ui.palette.open, lang)} (${shortcut})`}
+      aria-label={label}
+      title={label}
       aria-keyshortcuts="Control+K Meta+K"
       className="flex h-10 min-w-10 items-center justify-center gap-2 rounded-full border border-border bg-input px-2.5 text-muted transition-colors hover:border-brand-blue hover:text-fg"
     >
       <LuSearch className="size-[18px]" aria-hidden="true" />
-      <kbd className="hidden rounded-md border border-border px-1.5 py-0.5 font-mono text-[11px] leading-none xl:inline">{shortcut}</kbd>
+      {hint && <kbd className="hidden rounded-md border border-border px-1.5 py-0.5 font-mono text-[11px] leading-none xl:inline">{shortcut}</kbd>}
     </button>
   );
 }
