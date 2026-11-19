@@ -9,7 +9,6 @@ import { ui } from "@/data/ui";
 import { foundSecret, OPEN_ASK, primeAudio, OPEN_TERMINAL, SECRET_FOUND, type SecretId } from "@/lib/extras";
 import { pick, T } from "@/lib/i18n";
 import { useLang } from "@/lib/use-lang";
-import { CustomCursor } from "./cursor";
 
 // Gắn một lần trong layout: nút "Hỏi AI", phím tắt mở Terminal, mã Konami, đếm số lần bấm logo.
 // Terminal, khung chat và hiệu ứng easter egg chỉ được tải về khi mở lần đầu, nên không làm chậm trang.
@@ -136,7 +135,6 @@ export function SiteExtras() {
 
       {secret && Warp && <Warp key={secret.key} id={secret.id} onClose={() => setSecret(null)} />}
 
-      <CustomCursor />
     </>
   );
 }
