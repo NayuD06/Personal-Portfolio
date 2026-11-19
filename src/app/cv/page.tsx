@@ -55,7 +55,7 @@ export default function CvPage() {
               <LuPrinter className="size-4" aria-hidden="true" />
               <T v={ui.cv.print} />
             </PrintButton>
-            <ResumeLink className="bg-brand shine inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white">
+            <ResumeLink className="bg-brand-strong shine inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white">
               <LuDownload className="size-4" aria-hidden="true" />
               <T v={ui.cv.download} />
             </ResumeLink>
@@ -97,7 +97,7 @@ export default function CvPage() {
             {/* Cột trái: liên hệ, học vấn, kỹ năng */}
             <aside className="space-y-[6.5mm] bg-[#eef3fc] px-[8mm] py-[8mm]">
               <CvSection title={ui.cv.contact}>
-                <ul className="space-y-[1.8mm] text-[8.5pt]">
+                <ul className="space-y-[2.1mm] text-[8.5pt]">
                   <ContactRow icon={<LuMail />} href={`mailto:${profile.email}`}>
                     {profile.email}
                   </ContactRow>

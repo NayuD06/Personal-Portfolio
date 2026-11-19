@@ -20,7 +20,7 @@ export function LangToggle() {
       aria-label={pick(ui.nav.language, lang)}
       className="relative flex h-10 items-center rounded-full border border-border bg-input p-1 text-xs font-bold"
     >
-      <span aria-hidden="true" className="lang-pill bg-brand absolute inset-y-1 left-1 w-10 rounded-full" />
+      <span aria-hidden="true" className="lang-pill bg-brand-strong absolute inset-y-1 left-1 w-10 rounded-full" />
       {options.map((option) => (
         <button
           key={option}

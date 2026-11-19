@@ -117,7 +117,7 @@ function SchoolVisual({
             <a
               href={school.imageCreditUrl}
               {...(school.imageCreditUrl ? linkProps(school.imageCreditUrl) : {})}
-              className={`absolute top-3 max-w-[70%] truncate rounded-md bg-black/45 px-2 py-0.5 text-[10px] leading-4 text-white/85 backdrop-blur-sm transition-colors hover:text-white ${
+              className={`absolute top-3 max-w-[70%] truncate rounded-md bg-black/60 px-2 py-0.5 text-[10px] leading-4 text-white/90 backdrop-blur-sm transition-colors hover:text-white ${
                 flip ? "right-3" : "left-3"
               }`}
             >

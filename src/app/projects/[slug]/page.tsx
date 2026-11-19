@@ -60,7 +60,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
             aria-hidden="true"
             className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_50%_0%,#000_20%,transparent_70%)]"
           />
-          <div aria-hidden="true" className="blob absolute -top-32 right-0 -z-10 size-[26rem] rounded-full bg-brand-blue/20 blur-[120px]" />
+          <div aria-hidden="true" className="blob glow absolute -top-32 right-0 -z-10 size-[26rem] [--glow-a:15.5%] [--glow-blur:120px] [--glow-c:var(--brand-blue)]" />
 
           {/* Chiều cao phần chữ cố định trên máy tính (tên một dòng, chỗ cho mô tả 4 dòng) để khung ảnh
               luôn nằm cùng một chỗ khi chuyển giữa các dự án. Trên điện thoại ảnh lên trước chữ vì cùng lý do. */}
@@ -266,7 +266,7 @@ function ProjectLinks({ project, stacked = false }: { project: Project; stacked?
           href={project.liveUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className={`bg-brand shine inline-flex items-center gap-2 rounded-xl text-sm font-semibold text-white shadow-[0_12px_30px_-12px_var(--glow-sky)] transition-transform hover:scale-[1.03] ${size}`}
+          className={`bg-brand-strong shine inline-flex items-center gap-2 rounded-xl text-sm font-semibold text-white shadow-[0_12px_30px_-12px_var(--glow-sky)] transition-transform hover:scale-[1.03] ${size}`}
         >
           <T v={ui.projects.live} />
           <LuArrowUpRight className="size-4" aria-hidden="true" />

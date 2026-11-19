@@ -8,6 +8,7 @@ import { foundSecret, readSecrets, secretIds, type SecretId } from "@/lib/extras
 import { pick, T, type Lang, type Text } from "@/lib/i18n";
 import { normalize } from "@/lib/normalize";
 import { RichText } from "./rich-text";
+import { SnakeGame } from "./snake";
 
 // Các lệnh của chế độ Terminal. Chữ hiện ra dùng <T> nên đổi ngôn ngữ là cả màn hình đổi theo.
 // Thêm lệnh mới: thêm một mục vào mảng `commands` bên dưới.
@@ -25,6 +26,8 @@ export type CommandContext = {
   close: () => void;
   /** đóng terminal rồi mở trang trong site */
   navigate: (href: string) => void;
+  /** đặt con trỏ lại vào ô lệnh (vd. sau khi thoát game) */
+  focusInput: () => void;
   setTheme: (theme: "light" | "dark") => void;
   setLang: (lang: Lang) => void;
   /** các lượt hỏi AI trước đó, để hỏi tiếp nối được */
@@ -295,6 +298,17 @@ const secretText: Record<SecretId, { title: Text; hint: Text }> = {
   nightowl: {
     title: ui.secrets.nightowl.title,
     hint: { en: "come back while most people are asleep", vi: "ghé lại vào lúc mọi người đã ngủ say" },
+  },
+  pixel: {
+    title: ui.secrets.pixel.title,
+    hint: {
+      en: "the photo at the top of the page loves a double-click (keyboard: Tab to it, press Enter)",
+      vi: "tấm ảnh ở đầu trang thích được nhấp đúp (bàn phím: Tab tới rồi nhấn Enter)",
+    },
+  },
+  snake: {
+    title: ui.secrets.snake.title,
+    hint: { en: "the most famous Nokia phone game, typed as a command right here", vi: "trò chơi huyền thoại trên điện thoại Nokia, gõ tên nó thành lệnh ngay tại đây" },
   },
 };
 
@@ -919,6 +933,11 @@ export const commands: Command[] = [
         </p>
       );
     },
+  },
+  {
+    name: "snake",
+    aliases: ["ran", "ransanmoi", "nokia", "game", "play"],
+    run: (ctx) => <SnakeGame lang={ctx.lang} onExit={ctx.focusInput} />,
   },
   {
     name: "whoami",

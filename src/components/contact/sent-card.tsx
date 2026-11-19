@@ -140,7 +140,7 @@ export function SentCard({ info, onReset }: { info: SentInfo; onReset: () => voi
         </button>
         <a
           href="#projects"
-          className="bg-brand shine inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_var(--glow-sky)]"
+          className="bg-brand-strong shine inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_var(--glow-sky)]"
         >
           <T v={ui.contact.sentProjects} />
           <LuArrowDownRight className="size-4" aria-hidden="true" />

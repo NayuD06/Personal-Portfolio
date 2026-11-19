@@ -5,7 +5,9 @@ import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
 import { ui } from "@/data/ui";
+import { keepFocusInside } from "@/lib/focus-trap";
 import { pick, T, type Text } from "@/lib/i18n";
+import { useOverlay } from "@/lib/overlay";
 import { useLang } from "@/lib/use-lang";
 
 type Shot = { src: string; caption: Text };
@@ -34,6 +36,8 @@ export function Gallery({ shots, title }: { shots: Shot[]; title: string }) {
   }, [open]);
 
   const isOpen = open !== null;
+  // tạm dừng hiệu ứng phía sau lớp nền mờ khi đang xem ảnh lớn (lib/overlay.ts)
+  useOverlay(isOpen);
   useEffect(() => {
     if (!isOpen) return;
     closeButton.current?.focus();
@@ -97,6 +101,7 @@ export function Gallery({ shots, title }: { shots: Shot[]; title: string }) {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[100] flex flex-col bg-[#02050b]/90 backdrop-blur-md"
             onClick={close}
+            onKeyDown={keepFocusInside}
           >
             <div className="flex items-center justify-between gap-4 px-4 py-3 text-white sm:px-6">
               <p className="min-w-0 truncate text-sm font-semibold">

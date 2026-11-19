@@ -12,7 +12,7 @@ Ngoài trang chính còn có:
 - **Bảng lệnh Ctrl + K** (⌘ + K trên Mac, hoặc bấm nút kính lúp trên menu): gõ để nhảy tới một mục, mở một dự án, đổi ngôn ngữ, đổi sáng/tối, tải CV, chép email. Gõ có dấu hay không dấu đều được. Dùng được ở mọi trang (`src/components/command-palette.tsx`). Dự án mới thêm vào `profile.ts` tự có trong bảng. Gõ một câu hỏi rồi chọn dòng **Hỏi AI** để hỏi trợ lý AI.
 - **Chế độ Terminal** (nút `>_` trên menu, phím `` ` `` cạnh số 1, hoặc Ctrl + K > Chế độ Terminal): cả trang thành cửa sổ dòng lệnh. Gõ `help` để xem lệnh: `about`, `skills`, `projects`, `projects 1`, `education`, `contact`, `cv`, `neofetch`, `open <tên>`, `theme`, `lang`, `ask <câu hỏi>`... Có Tab để gợi ý, ↑ ↓ để gọi lại lệnh cũ, nút lệnh nhanh cho điện thoại, vài lệnh ẩn (`ls`, `cat`, `whoami`, `sudo`, `secrets`, `coffee`, `hire me`, `rm -rf /`...). Nội dung lấy từ `profile.ts`, lệnh nằm ở `src/components/extras/terminal-commands.tsx`.
 - **Trợ lý AI** (nút **Hỏi AI** ở góc phải dưới): khách hỏi về bạn, ví dụ "An có biết React không?", và nhận câu trả lời dựa trên nội dung portfolio, chữ hiện ra dần như đang gõ. Dùng Google Gemini gói miễn phí, chỉ cần đặt API key, xem mục [Trợ lý AI](#trợ-lý-ai-hỏi-đáp-về-bạn).
-- **Easter egg**: 8 bí mật. Tìm được cái nào thì hiện thẻ thành tích và đếm "Đã tìm 1/8" (lưu trong trình duyệt). Gõ `secrets` trong Terminal để xem gợi ý cái nào chưa tìm.
+- **Easter egg**: 10 bí mật. Tìm được cái nào thì hiện thẻ thành tích và đếm "Đã tìm 1/10" (lưu trong trình duyệt). Gõ `secrets` trong Terminal để xem gợi ý cái nào chưa tìm.
   1. **Mã Konami** (↑ ↑ ↓ ↓ ← → ← → B A, chữ thường hay in hoa đều được, bật bộ gõ tiếng Việt vẫn nhận) ở trang chính: bay siêu tốc qua các vì sao. Trên điện thoại: vuốt lên, lên, xuống, xuống, trái, phải, trái, phải rồi chạm nhẹ 2 lần.
   2. **Bấm logo 5 lần liên tiếp**: mặt ma lao ra theo 3 nhịp, khoảng 2,3 giây, bấm hoặc Esc để tắt sớm. Âm thanh trầm rùng rợn (không có tiếng hét), to nhỏ chỉnh ở `VOLUME` đầu file `jumpscare.tsx`.
   3. **Gõ `sudo`** trong Terminal.
@@ -21,11 +21,22 @@ Ngoài trang chính còn có:
   6. **Lắc chuột thật nhanh qua lại** (hoặc lắc mạnh điện thoại): cả trang rung, các mảng rơi xuống rồi tự bay về chỗ cũ. iPhone có thể không bắt được vì Safari cần xin quyền cảm biến.
   7. **Gõ `rm -rf /`** trong Terminal: giả vờ xóa sạch từng file, rồi thú nhận là đùa.
   8. **Vào trang từ 0h đến 4h sáng**: nhắc "Code khuya vậy, uống nước đi bạn" (mỗi phiên một lần).
+  9. **Nhấp đúp vào ảnh đại diện** (chạm hai lần trên điện thoại, hoặc Tab tới ảnh rồi nhấn Enter): ảnh lật như lá bài, mặt sau là bạn phiên bản pixel 8-bit có vạch quét như màn hình máy chơi game cũ. Làm lại thì lật về. Ảnh pixel là `public/avatar-8bit.png` (64 x 64 điểm ảnh, tạo từ `avatar-v2.jpg`), code ở `src/components/ui/avatar-flip.tsx`.
+  10. **Gõ `snake`** trong Terminal (hoặc `ran`, `nokia`, `game`): chơi rắn săn mồi ngay trong cửa sổ lệnh. Điều khiển bằng phím mũi tên / WASD, vuốt trên điện thoại (có thêm nút bấm 4 hướng), Space để tạm dừng, Esc để thoát. Đi xuyên tường được, chỉ thua khi tự cắn đuôi. Điểm cao nhất lưu trong trình duyệt (`src/components/extras/snake.tsx`).
 
   Lệnh vui trong Terminal (không tính là bí mật): `coffee` (lỗi 418 "tôi là ấm trà"), `hire me`. Máy bật "giảm chuyển động" thì bỏ hiệu ứng, chỉ hiện thẻ.
 - **Con trỏ chuột riêng**: vẫn là mũi tên như con trỏ thường nhưng màu xanh viền trắng, rê lên nút / đường link thì thành bàn tay cùng kiểu. Ở ô nhập chữ vẫn là con trỏ gõ chữ bình thường. Vẽ bằng SVG ngay trong `src/app/globals.css` (mục "Con trỏ chuột riêng"), không dùng JavaScript.
 - **Nền hạt ở đầu trang**: các chấm sáng trôi và nối nhau, rê chuột tới thì dạt ra và nối dây tới con trỏ, bấm chuột thì bắn tung ra (`src/components/ui/hero-particles.tsx`). Chạy sau khi trang tải xong và dừng khi cuộn đi, nên không làm chậm trang.
   Hai thứ này chỉ có trên máy có chuột, điện thoại và máy tính bảng vẫn như cũ. Nền hạt cũng tự tắt khi máy bật "giảm chuyển động".
+
+## Trợ năng (accessibility)
+
+Trang nhắm chuẩn WCAG 2.2 mức AA, Lighthouse Accessibility 100 ở mọi trang:
+
+- Dùng được hoàn toàn bằng bàn phím: Tab tới đâu cũng có viền xanh rõ ràng (quy tắc `:focus-visible` trong `globals.css`), có link "Bỏ qua tới nội dung" ở đầu trang. Terminal, khung chat trên điện thoại và ảnh phóng to giữ phím Tab chạy vòng bên trong (`src/lib/focus-trap.ts`). Trên điện thoại, trang chừa chỗ để mục đang focus không bị thanh menu dưới đáy che.
+- Độ tương phản chữ đạt 4,5:1 ở cả nền sáng và tối. Nút chữ trắng dùng nền `bg-brand-strong` (xanh đậm hơn `bg-brand` một chút); chữ nhiều màu ở nền sáng dùng dải xanh đậm hơn (`--text-grad`).
+- Nút chỉ có icon đều có tên cho trình đọc màn hình, ảnh có mô tả, kết quả lệnh trong Terminal được đọc lên khi hiện ra.
+- Máy bật "giảm chuyển động" thì tắt hết hiệu ứng chạy (chữ tự gõ, số đếm, nền hạt, lật ảnh...), chỉ đổi trạng thái ngay.
 
 ## Chạy trên máy
 

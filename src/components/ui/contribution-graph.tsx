@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { memo, useEffect, useRef, useState, type PointerEvent } from "react";
 import { ui } from "@/data/ui";
 import type { ContributionDay } from "@/lib/github";
 import { pick } from "@/lib/i18n";
@@ -97,23 +97,7 @@ export function ContributionGraph({ weeks }: Props) {
               ))}
             </div>
             <div className="flex" style={{ gap: GAP }} onPointerMove={handleMove} onPointerLeave={() => setTip(null)}>
-              {weeks.map((week, w) => (
-                <div key={w} className="grid" style={{ gridTemplateRows: `repeat(7, ${CELL})`, rowGap: GAP }}>
-                  {week.map((day, d) =>
-                    day ? (
-                      <span
-                        key={day.date}
-                        data-date={day.date}
-                        data-count={day.count}
-                        className="rounded-[3px] transition-transform duration-150 hover:scale-125"
-                        style={{ width: CELL, height: CELL, background: levelColor[day.level] }}
-                      />
-                    ) : (
-                      <span key={`empty-${d}`} style={{ width: CELL, height: CELL }} />
-                    ),
-                  )}
-                </div>
-              ))}
+              <Cells weeks={weeks} />
             </div>
           </div>
         </motion.div>
@@ -139,3 +123,24 @@ export function ContributionGraph({ weeks }: Props) {
     </motion.div>
   );
 }
+
+/** Các ô ngày (khoảng 370 ô). Tách riêng và memo để khi đổi ngôn ngữ hay hiện chú thích, React không phải vẽ lại cả lưới. */
+const Cells = memo(function Cells({ weeks }: Props) {
+  return weeks.map((week, w) => (
+    <div key={w} className="grid" style={{ gridTemplateRows: `repeat(7, ${CELL})`, rowGap: GAP }}>
+      {week.map((day, d) =>
+        day ? (
+          <span
+            key={day.date}
+            data-date={day.date}
+            data-count={day.count}
+            className="rounded-[3px] transition-transform duration-150 hover:scale-125"
+            style={{ width: CELL, height: CELL, background: levelColor[day.level] }}
+          />
+        ) : (
+          <span key={`empty-${d}`} style={{ width: CELL, height: CELL }} />
+        ),
+      )}
+    </div>
+  ));
+});

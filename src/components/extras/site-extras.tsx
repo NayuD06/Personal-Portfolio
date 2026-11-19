@@ -83,7 +83,8 @@ export function SiteExtras() {
     let typed = "";
     const onKey = (event: KeyboardEvent) => {
       const typing = (event.target as HTMLElement | null)?.closest?.("input, textarea, select, [contenteditable='true']");
-      if (typing || event.ctrlKey || event.metaKey || event.altKey) return;
+      // phím đã được dùng việc khác (vd. điều khiển rắn trong game snake) thì không tính vào mã Konami / chữ "duyan"
+      if (typing || event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
       // phím ` (cạnh số 1) mở / đóng Terminal
       if (event.key === "`") {
         event.preventDefault();
@@ -107,6 +108,11 @@ export function SiteExtras() {
     // vuốt trên màn hình cảm ứng: mỗi lần vuốt tính như một phím mũi tên, chạm nhẹ là B rồi A
     let touch: { x: number; y: number; time: number } | null = null;
     const onTouchStart = (event: TouchEvent) => {
+      // vuốt trong game snake là để điều khiển rắn, không tính
+      if ((event.target as HTMLElement | null)?.closest?.("[data-no-gestures]")) {
+        touch = null;
+        return;
+      }
       const point = event.touches.length === 1 ? event.touches[0] : null;
       touch = point ? { x: point.clientX, y: point.clientY, time: performance.now() } : null;
     };
@@ -250,8 +256,9 @@ export function SiteExtras() {
             lastFocus.current = event.currentTarget;
             setChat((state) => ({ open: true, key: state.key + 1 }));
           }}
-          aria-label={pick(ui.ask.open, lang)}
-          className={`ask-launcher bg-brand fixed right-4 z-40 flex h-12 items-center gap-2 rounded-full px-3.5 text-white shadow-[0_12px_32px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.04] sm:right-5 lg:bottom-5 lg:px-5 print:hidden ${
+          aria-label={pick(ui.ask.launcher, lang)}
+          title={pick(ui.ask.open, lang)}
+          className={`ask-launcher bg-brand-strong fixed right-4 z-40 flex h-12 items-center gap-2 rounded-full px-3.5 text-white shadow-[0_12px_32px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.04] sm:right-5 lg:bottom-5 lg:px-5 print:hidden ${
             home ? "bottom-[calc(5.5rem+env(safe-area-inset-bottom))]" : "bottom-[max(1.25rem,env(safe-area-inset-bottom))]"
           }`}
         >

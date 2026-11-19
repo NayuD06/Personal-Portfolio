@@ -27,7 +27,7 @@ import { TechIcon } from "../ui/tech-icon";
 type Status = "idle" | "sending" | "sent" | "error" | "verify";
 
 const fieldClass =
-  "w-full rounded-xl border border-border bg-input px-4 py-3 text-sm text-fg placeholder:text-muted/70 outline-none transition-all focus:border-brand-blue focus:shadow-[0_0_0_4px_var(--glow-blue)]";
+  "w-full rounded-xl border border-border bg-input px-4 py-3 text-sm text-fg placeholder:text-muted/90 outline-none transition-all focus:border-brand-blue focus:shadow-[0_0_0_4px_var(--glow-blue)]";
 
 export function Contact() {
   const [status, setStatus] = useState<Status>("idle");
@@ -283,7 +283,7 @@ export function Contact() {
                 disabled={status === "sending"}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-brand shine mt-7 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white shadow-[0_14px_34px_-12px_var(--glow-sky)] disabled:opacity-70"
+                className="bg-brand-strong shine mt-7 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white shadow-[0_14px_34px_-12px_var(--glow-sky)] disabled:opacity-70"
               >
                 {status === "sending" ? (
                   <>
@@ -309,7 +309,7 @@ export function Contact() {
                     initial={{ opacity: 0, y: -8, height: 0 }}
                     animate={{ opacity: 1, y: 0, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-amber-500"
+                    className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-500"
                   >
                     <LuCircleAlert className="size-5" aria-hidden="true" /> <T v={status === "verify" ? ui.contact.verifyError : ui.contact.error} />
                   </motion.p>

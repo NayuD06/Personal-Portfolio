@@ -106,7 +106,7 @@ export function Navbar() {
             <ThemeToggle />
             <a
               href="#contact"
-              className="bg-brand shine ml-1 hidden items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-white shadow-[0_10px_28px_-12px_var(--glow-sky)] transition-transform hover:scale-[1.03] md:inline-flex lg:hidden xl:inline-flex"
+              className="bg-brand-strong shine ml-1 hidden items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-white shadow-[0_10px_28px_-12px_var(--glow-sky)] transition-transform hover:scale-[1.03] md:inline-flex lg:hidden xl:inline-flex"
             >
               <LuMessageCircle className="size-4" aria-hidden="true" />
               <T v={ui.nav.cta} />

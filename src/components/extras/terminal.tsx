@@ -8,6 +8,8 @@ import { profile } from "@/data/profile";
 import { ui } from "@/data/ui";
 import type { ChatMessage } from "@/lib/ask-client";
 import { pick, T, type Lang } from "@/lib/i18n";
+import { keepFocusInside } from "@/lib/focus-trap";
+import { useOverlay } from "@/lib/overlay";
 import { setLang, useLang } from "@/lib/use-lang";
 import { switchTheme } from "../ui/theme-toggle";
 import { Banner, findCommand, looksLikeQuestion, suggest, visibleNames, type CommandContext } from "./terminal-commands";
@@ -46,6 +48,8 @@ function Echo({ text }: { text: string }) {
 }
 
 export default function Terminal({ onClose }: { onClose: () => void }) {
+  // tạm dừng hiệu ứng phía sau lớp nền mờ khi Terminal đang mở (lib/overlay.ts)
+  useOverlay();
   const lang = useLang();
   const router = useRouter();
   const pathname = usePathname();
@@ -62,6 +66,7 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const stick = useRef(true);
+  const lastScroll = useRef(0);
 
   const push = useCallback((...nodes: ReactNode[]) => {
     setLines((list) => [...list, ...nodes.map((node) => ({ id: nextId.current++, node }))]);
@@ -163,6 +168,7 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
         clear: () => setLines([]),
         close: onClose,
         navigate,
+        focusInput: () => inputRef.current?.focus({ preventScroll: true }),
         setTheme: (theme) => {
           const rect = inputRef.current?.getBoundingClientRect();
           switchTheme(theme, setTheme, rect ? { x: rect.left, y: rect.top } : { x: innerWidth / 2, y: innerHeight / 2 });
@@ -287,6 +293,8 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
           role="dialog"
           aria-modal="true"
           aria-label={pick(ui.terminal.open, lang)}
+          // Tab chạy vòng trong terminal (ô lệnh dùng Tab để gợi ý nên sẽ không bị ảnh hưởng)
+          onKeyDown={keepFocusInside}
           initial={{ opacity: 0, scaleX: 0.7, scaleY: 0.006 }}
           animate={{ opacity: [0, 1, 1], scaleX: [0.7, 1, 1], scaleY: [0.006, 0.006, 1] }}
           exit={{ opacity: [1, 1, 0], scaleX: [1, 1, 0.4], scaleY: [1, 0.006, 0.006] }}
@@ -329,21 +337,27 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
             ref={scrollRef}
             onScroll={(event) => {
               const el = event.currentTarget;
-              stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+              // chỉ thôi bám đáy khi người xem tự cuộn lên; nội dung dài ra (vd. bàn chơi snake vừa hiện) thì vẫn bám
+              if (el.scrollHeight - el.scrollTop - el.clientHeight < 48) stick.current = true;
+              else if (el.scrollTop < lastScroll.current - 2) stick.current = false;
+              lastScroll.current = el.scrollTop;
             }}
             onMouseUp={(event) => {
               // bấm vào chỗ trống thì đặt con trỏ lại vào ô lệnh (trừ khi đang bôi đen chữ để chép)
               const target = event.target as HTMLElement;
-              if (!target.closest("a, button") && !window.getSelection()?.toString()) inputRef.current?.focus({ preventScroll: true });
+              if (!target.closest("a, button, [data-keep-focus]") && !window.getSelection()?.toString()) inputRef.current?.focus({ preventScroll: true });
             }}
             className="relative flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6"
           >
             <div ref={contentRef} className="space-y-2.5">
-              {lines.map((line) => (
-                <div key={line.id} className="term-line break-words">
-                  {line.node}
-                </div>
-              ))}
+              {/* kết quả lệnh: trình đọc màn hình tự đọc dòng mới */}
+              <div role="log" aria-live="polite" aria-relevant="additions" aria-label={pick(ui.terminal.output, lang)} className="space-y-2.5">
+                {lines.map((line) => (
+                  <div key={line.id} className="term-line break-words">
+                    {line.node}
+                  </div>
+                ))}
+              </div>
               <label className="flex items-center">
                 <Prompt />
                 <span className="sr-only">

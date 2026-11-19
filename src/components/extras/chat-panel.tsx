@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
 import { LuArrowUp, LuCircleAlert, LuRotateCcw, LuSparkles, LuSquare, LuX } from "react-icons/lu";
 import { profile } from "@/data/profile";
 import { ui } from "@/data/ui";
 import { askAssistant, MAX_QUESTION, type AskOutcome, type ChatMessage } from "@/lib/ask-client";
+import { keepFocusInside } from "@/lib/focus-trap";
 import { pick, T } from "@/lib/i18n";
 import { warmTurnstile } from "@/lib/turnstile-client";
 import { useLang } from "@/lib/use-lang";
@@ -22,6 +23,15 @@ type Message = ChatMessage & {
 };
 
 let saved: Message[] = [];
+
+/** Màn hình hẹp: khung chat phủ kín màn hình nên hoạt động như hộp thoại (giữ focus bên trong) */
+const PHONE = "(max-width: 639px)";
+const subscribePhone = (callback: () => void) => {
+  const query = window.matchMedia(PHONE);
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+};
+const isPhone = () => window.matchMedia(PHONE).matches;
 let nextId = 1;
 
 const notices: Partial<Record<AskOutcome, (typeof ui.ask)["error"]>> = {
@@ -50,6 +60,7 @@ export default function ChatPanel({ onClose, question }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const stickRef = useRef(true);
   const streaming = messages.some((message) => message.streaming);
+  const fullScreen = useSyncExternalStore(subscribePhone, isPhone, () => false);
 
   // tải sẵn script chống bot (nếu đã bật Turnstile) để câu hỏi đầu không phải chờ
   useEffect(warmTurnstile, []);
@@ -167,11 +178,14 @@ export default function ChatPanel({ onClose, question }: Props) {
       ref={dialogRef}
       role="dialog"
       aria-label={pick(ui.ask.title, lang)}
+      aria-modal={fullScreen || undefined}
       tabIndex={-1}
       onKeyDown={(event) => {
         if (event.key === "Escape") {
           event.stopPropagation();
           onClose();
+        } else if (fullScreen) {
+          keepFocusInside(event);
         }
       }}
       initial={{ opacity: 0, y: 24, scale: 0.96 }}
@@ -317,7 +331,7 @@ export default function ChatPanel({ onClose, question }: Props) {
             aria-label={pick(ui.ask.placeholder, lang)}
             aria-invalid={tooLong || undefined}
             placeholder={pick(ui.ask.placeholder, lang)}
-            className="command-input max-h-32 min-h-9 flex-1 resize-none bg-transparent py-1.5 text-base leading-6 outline-none placeholder:text-muted/70 sm:text-sm"
+            className="command-input max-h-32 min-h-9 flex-1 resize-none bg-transparent py-1.5 text-base leading-6 outline-none placeholder:text-muted/90 sm:text-sm"
           />
           {streaming ? (
             <button
@@ -333,7 +347,7 @@ export default function ChatPanel({ onClose, question }: Props) {
               type="submit"
               disabled={!input.trim() || tooLong}
               aria-label={pick(ui.ask.send, lang)}
-              className="bg-brand grid size-9 shrink-0 place-items-center rounded-xl text-white transition-opacity disabled:opacity-40"
+              className="bg-brand-strong grid size-9 shrink-0 place-items-center rounded-xl text-white transition-opacity disabled:opacity-40"
             >
               <LuArrowUp className="size-4" aria-hidden="true" />
             </button>
@@ -348,7 +362,7 @@ export default function ChatPanel({ onClose, question }: Props) {
             .
           </span>
           {input.length > MAX_QUESTION - 100 && (
-            <span className={`shrink-0 tabular-nums ${tooLong ? "font-bold text-amber-500" : ""}`}>
+            <span className={`shrink-0 tabular-nums ${tooLong ? "font-bold text-amber-700 dark:text-amber-500" : ""}`}>
               {input.length}/{MAX_QUESTION}
             </span>
           )}
@@ -362,7 +376,7 @@ function Bubble({ role, children }: { role: "user" | "assistant"; children: Reac
   if (role === "user") {
     return (
       <div className="flex justify-end">
-        <div className="bg-brand max-w-[85%] rounded-2xl rounded-tr-md px-3.5 py-2.5 text-sm leading-relaxed text-white">{children}</div>
+        <div className="bg-brand-strong max-w-[85%] rounded-2xl rounded-tr-md px-3.5 py-2.5 text-sm leading-relaxed text-white">{children}</div>
       </div>
     );
   }

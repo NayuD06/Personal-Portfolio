@@ -315,7 +315,7 @@ export default function Warp({ id, onClose }: { id: SecretId; onClose: () => voi
                 <span className="text-xs font-semibold text-muted">{progress}</span>
               </div>
               {all && (
-                <p className="mt-2 text-sm font-semibold text-brand-sky">
+                <p className="mt-2 text-sm font-semibold text-brand-blue dark:text-brand-sky">
                   <T v={ui.secrets.allFound} />
                 </p>
               )}

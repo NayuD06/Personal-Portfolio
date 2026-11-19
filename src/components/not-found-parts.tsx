@@ -42,7 +42,7 @@ export function NotFoundTerminal() {
         <p className="break-all">
           <span className="text-brand-blue">$</span> open <span className="text-fg">{path || "..."}</span>
         </p>
-        <p className="text-amber-500">
+        <p className="text-amber-700 dark:text-amber-500">
           <T v={ui.notFound.error} />
         </p>
         <p className="mt-2">
@@ -50,7 +50,7 @@ export function NotFoundTerminal() {
         </p>
         <p className="flex flex-wrap gap-x-5">
           {places.map((place) => (
-            <Link key={place.href} href={place.href} className="text-brand-sky underline-offset-4 hover:underline">
+            <Link key={place.href} href={place.href} className="text-brand-blue underline-offset-4 hover:underline dark:text-brand-sky">
               {place.label}
             </Link>
           ))}

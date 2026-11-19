@@ -45,7 +45,7 @@ export default function Home() {
       />
       <a
         href="#main"
-        className="sr-only rounded-full bg-brand px-5 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100]"
+        className="sr-only rounded-full bg-brand-strong px-5 py-2 font-semibold text-white focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100]"
       >
         <T v={ui.skipToContent} />
       </a>

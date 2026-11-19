@@ -30,6 +30,10 @@ export const ui = {
     building: { en: "Currently building", vi: "Đang xây dựng" },
     basedIn: { en: "Based in", vi: "Sống tại" },
     scroll: { en: "Scroll to About", vi: "Cuộn xuống phần Giới thiệu" },
+    // ảnh đại diện lật được (easter egg): nhãn cho trình đọc màn hình, mặt sau là ảnh pixel 8-bit
+    photo: { en: "Photo of {name}. Double-click (or press Enter) for a surprise", vi: "Ảnh của {name}. Nhấp đúp (hoặc nhấn Enter) để xem bất ngờ" },
+    pixelAlt: { en: "{name} as 8-bit pixel art", vi: "{name} phiên bản pixel 8-bit" },
+    pixelBadge: { en: "8-BIT MODE", vi: "CHẾ ĐỘ 8-BIT" },
   },
   about: {
     title: { en: "About me", vi: "Về mình" },
@@ -222,6 +226,7 @@ export const ui = {
     },
     start: { en: "Type a command and press Enter, or tap one below. Start with", vi: "Gõ lệnh rồi nhấn Enter, hoặc bấm một lệnh bên dưới. Bắt đầu với" },
     inputLabel: { en: "Type a command", vi: "Gõ lệnh" },
+    output: { en: "Terminal output", vi: "Kết quả lệnh" },
     quick: { en: "Quick commands", vi: "Lệnh nhanh" },
     keys: { en: "Tab completes, ↑ ↓ history, Esc closes", vi: "Tab gợi ý, ↑ ↓ lệnh cũ, Esc để thoát" },
   },
@@ -312,6 +317,14 @@ export const ui = {
     nightowl: {
       title: { en: "Night owl", vi: "Cú đêm" },
       body: { en: "Coding this late? Go drink some water =))", vi: "Code khuya vậy, uống nước đi bạn =))" },
+    },
+    pixel: {
+      title: { en: "Retro mode", vi: "Hoài cổ 8-bit" },
+      body: { en: "You flipped my photo and found the 8-bit me. Insert coin to continue.", vi: "Lật ảnh ra gặp ngay mình phiên bản 8-bit. Bỏ xu để chơi tiếp nhé." },
+    },
+    snake: {
+      title: { en: "Snake charmer", vi: "Thánh rắn săn mồi" },
+      body: { en: "You played Snake inside my terminal. Nokia would be proud.", vi: "Chơi rắn săn mồi ngay trong terminal của mình. Nokia chắc tự hào lắm." },
     },
   },
   // lời chào hiện trong Console của DevTools (F12), kèm hàm hire() mở khóa một bí mật

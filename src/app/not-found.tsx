@@ -90,7 +90,7 @@ export default function NotFound() {
           <div style={{ "--i": 6 } as CSSProperties} className="enter mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/"
-              className="bg-brand shine group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
+              className="bg-brand-strong shine group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
             >
               <LuArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" aria-hidden="true" />
               <T v={ui.notFound.home} />

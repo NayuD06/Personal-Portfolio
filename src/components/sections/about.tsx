@@ -56,7 +56,7 @@ export function About() {
               <a
                 href={github.href}
                 {...linkProps(github.href)}
-                className="bg-brand shine inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
+                className="bg-brand-strong shine inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)] transition-transform hover:scale-[1.03]"
               >
                 <FaGithub className="size-4" aria-hidden="true" />
                 <T v={ui.about.github} />

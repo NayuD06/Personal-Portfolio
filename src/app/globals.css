@@ -29,6 +29,8 @@
   --heat-2: #60a5fa;
   --heat-3: #2563eb;
   --heat-4: #1e3a8a;
+  /* chữ gradient (tên ở đầu trang, số liệu): ở nền sáng dùng tông xanh đậm hơn để đọc rõ (tương phản WCAG AA) */
+  --text-grad: linear-gradient(90deg, #1d4ed8, var(--brand-blue) 50%, #0270ad);
 }
 
 /* ---------- Màu sắc: chế độ tối (đen + xanh dương) ---------- */
@@ -56,6 +58,7 @@
   --heat-2: #1d4ed8;
   --heat-3: #3b82f6;
   --heat-4: #93c5fd;
+  --text-grad: linear-gradient(90deg, var(--brand-blue), #60a5fa 50%, var(--brand-sky));
 }
 
 @theme inline {
@@ -78,6 +81,13 @@ html {
   scroll-padding-top: 5rem;
   /* bỏ ô sáng xanh khi chạm vào nút trên điện thoại */
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Màn hình nhỏ có thanh menu cố định ở đáy: chừa chỗ để mục đang được Tab tới không bị thanh đó che */
+@media (max-width: 1023px) {
+  html {
+    scroll-padding-bottom: 6.5rem;
+  }
 }
 
 body {
@@ -103,15 +113,25 @@ h4 {
 .command-input:focus-visible {
   outline: none;
 }
-:focus-visible {
-  outline: 2px solid var(--brand-blue);
-  outline-offset: 3px;
-  border-radius: 6px;
+/* Viền focus khi dùng bàn phím. Để trong @layer base để nút bo tròn (rounded-full...) giữ nguyên hình dạng khi focus;
+   link chữ thường không có bo góc thì bo nhẹ 4px. */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--brand-blue);
+    outline-offset: 3px;
+  }
+  :where(a, summary):focus-visible {
+    border-radius: 4px;
+  }
+}
+/* Terminal luôn nền tối: viền focus dùng xanh sáng để nhìn rõ */
+.term :focus-visible {
+  outline-color: #38bdf8;
 }
 
 /* ---------- Tiện ích dùng chung ---------- */
 @utility text-gradient {
-  background-image: linear-gradient(90deg, var(--brand-blue), #60a5fa 50%, var(--brand-sky));
+  background-image: var(--text-grad);
   background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
@@ -120,6 +140,12 @@ h4 {
 
 @utility bg-brand {
   background-image: linear-gradient(90deg, #1d4ed8, var(--brand-blue) 45%, var(--brand-sky));
+}
+
+/* Nền gradient cho nút / ô có chữ trắng: cùng kiểu xanh đậm sang xanh trời nhưng đầu sáng dịu lại một chút,
+   để chữ trắng đọc rõ ở mọi điểm (tương phản >= 4.5:1, chuẩn WCAG AA). Viền sáng, thanh tiến độ... vẫn dùng bg-brand. */
+@utility bg-brand-strong {
+  background-image: linear-gradient(90deg, #1d4ed8, #2563eb 45%, #0279bb);
 }
 
 /* Thẻ có viền gradient xanh */
@@ -414,7 +440,9 @@ h4 {
    Bắt đầu từ opacity 0.01 thay vì 0: mắt không thấy khác, nhưng trình duyệt vẫn tính là
    nội dung đã hiện (phần tử opacity 0 bị bỏ qua khi đo LCP). */
 .enter {
-  animation: enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* "backwards": chỉ giữ trạng thái đầu trong lúc chờ đến lượt; chạy xong thì bỏ hẳn hiệu ứng
+     (để "both" thì trình duyệt giữ mỗi phần tử một lớp vẽ riêng mãi mãi dù đã đứng yên) */
+  animation: enter 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   animation-delay: calc(0.05s + var(--i, 0) * 0.08s);
 }
 .enter-scale {
@@ -428,7 +456,7 @@ h4 {
 }
 /* ảnh đại diện: phóng to từ nhỏ và xoay nhẹ về góc -3 độ */
 .enter-avatar {
-  animation: enter-avatar 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
+  animation: enter-avatar 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s backwards;
 }
 @keyframes enter-avatar {
   from {
@@ -470,6 +498,55 @@ h4 {
   100% {
     transform: translate(-30px, 20px) scale(0.95);
   }
+}
+
+/* Đốm sáng mờ ở nền. Vẽ bằng gradient tròn mô phỏng đúng một hình tròn bị làm mờ, thay cho filter: blur(120px):
+   blur bán kính lớn bắt card đồ họa tính lại mỗi khung hình (nhất là khi chòm sao bên dưới đang chạy), gradient chỉ vẽ một lần.
+   --glow-c: màu, --glow-a: độ đậm ở tâm, --glow-blur: độ mờ tương ứng (quầng sáng lan ra ngoài phần tử gấp 3 lần số này) */
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--glow-blur, 120px) * -3);
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--glow-c) var(--glow-a), transparent),
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.953), transparent) 10%,
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.82), transparent) 20%,
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.628), transparent) 30%,
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.419), transparent) 40%,
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.24), transparent) 50%,
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.116), transparent) 60%,
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.047), transparent) 70%,
+    color-mix(in oklab, var(--glow-c) calc(var(--glow-a) * 0.015), transparent) 80%,
+    transparent 92%
+  );
+}
+
+/* Thẻ nổi cạnh ảnh đại diện trôi lên xuống và mũi tên cuộn nhấp nhô: chạy bằng CSS để card đồ họa lo, không tốn JavaScript mỗi khung hình */
+.drift {
+  animation: drift 5s ease-in-out var(--drift-delay, 0s) infinite;
+}
+@keyframes drift {
+  50% {
+    translate: 0 var(--drift, 8px);
+  }
+}
+.bob {
+  animation: bob 2s ease-in-out infinite;
+}
+@keyframes bob {
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+/* Tạm dừng các hiệu ứng lặp cho đỡ tốn khi không ai nhìn thấy:
+   đầu trang đã cuộn khỏi màn hình (hero.tsx đặt data-offscreen), hoặc đang mở lớp phủ có nền mờ (lib/overlay.ts đặt data-overlay) */
+#home[data-offscreen] :is(.animate-gradient, .orbit, .orbit-item, .blob, .animate-ping, .caret, .drift, .bob),
+html[data-overlay] #home :is(.animate-gradient, .orbit, .orbit-item, .animate-ping, .caret, .drift, .bob),
+html[data-overlay] :is(.blob, .marquee-track) {
+  animation-play-state: paused;
 }
 
 /* Dải logo chạy ngang */
@@ -532,7 +609,9 @@ h4 {
   .orbit-item,
   .blob,
   .marquee-track,
-  .caret {
+  .caret,
+  .drift,
+  .bob {
     animation: none;
   }
 }
@@ -733,7 +812,7 @@ h4 {
 
 /* ---------- Nút "Hỏi AI" và khung chat (src/components/extras) ---------- */
 .ask-launcher {
-  animation: ask-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both;
+  animation: ask-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 1.2s backwards;
 }
 @keyframes ask-in {
   from {
@@ -799,6 +878,9 @@ h4 {
 }
 .term-banner {
   filter: drop-shadow(0 0 10px rgb(56 189 248 / 0.35));
+}
+.term .text-gradient {
+  background-image: linear-gradient(90deg, #3b82f6, #60a5fa 50%, #38bdf8);
 }
 
 /* ---------- Easter egg: nhảy siêu tốc + thẻ thành tích ---------- */
@@ -1272,6 +1354,13 @@ html:not([data-lang="vi"]) .l-vi {
 }
 
 /* ---------- Đổi sáng/tối: vòng tròn lan ra từ nút (xem theme-toggle.tsx) ---------- */
+/* Trong lúc đổi: tắt mọi transition để màu đổi một lượt, không chạy lẻ tẻ từng phần tử
+   (thay cho disableTransitionOnChange của next-themes, vốn bắt trình duyệt tính lại style cả trang thêm mấy lần) */
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition: none !important;
+}
 html.theme-transition::view-transition-old(root),
 html.theme-transition::view-transition-new(root) {
   animation: none;
@@ -1282,6 +1371,37 @@ html.theme-transition::view-transition-old(root) {
 }
 html.theme-transition::view-transition-new(root) {
   z-index: 2;
+}
+
+/* ---------- Ảnh đại diện lật ra bản pixel 8-bit (avatar-flip.tsx) ---------- */
+.avatar-flip {
+  perspective: 1400px;
+}
+.avatar-flip-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.85s cubic-bezier(0.34, 1.3, 0.5, 1);
+}
+.avatar-flip[aria-pressed="true"] .avatar-flip-inner {
+  transform: rotateY(180deg);
+}
+.avatar-face {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: rotateY(0deg);
+}
+.avatar-back {
+  transform: rotateY(180deg);
+}
+.css-text::before {
+  content: attr(data-text);
+}
+
+.pixelated {
+  image-rendering: pixelated;
+}
+.avatar-scan {
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, transparent 0 3px, rgb(2 6 23 / 0.18) 3px 4px);
 }
 
 /* Ô xác minh Cloudflare Turnstile (src/lib/turnstile-client.ts): thường không hiện gì,
@@ -1296,4 +1416,19 @@ html.theme-transition::view-transition-new(root) {
 }
 .turnstile-box:has(iframe) {
   filter: drop-shadow(0 20px 40px var(--glow-blue));
+}
+
+/* ---------- Giảm chuyển động (cài đặt "Reduce motion" của hệ điều hành) ----------
+   Lưới an toàn cho mọi animation CSS còn sót: chạy xong ngay lập tức, không lặp, không cuộn mượt.
+   Hiệu ứng JavaScript (motion) đã tự tôn trọng cài đặt này qua MotionConfig trong providers.tsx;
+   canvas (hạt sáng, mưa code...) và easter egg tự kiểm tra prefers-reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

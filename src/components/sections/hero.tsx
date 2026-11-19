@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useMemo, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, type CSSProperties } from "react";
 import { LuArrowDownRight, LuDownload, LuHammer, LuMail, LuMapPin, LuMouse } from "react-icons/lu";
 import { profile } from "@/data/profile";
 import { linkProps } from "@/lib/site";
@@ -9,7 +9,7 @@ import { ui } from "@/data/ui";
 import { pick, T } from "@/lib/i18n";
 import type { IconName } from "@/lib/icons";
 import { useLang } from "@/lib/use-lang";
-import { Avatar } from "../ui/avatar";
+import { AvatarFlip } from "../ui/avatar-flip";
 import { HeroParticles } from "../ui/hero-particles";
 import { ResumeLink } from "../ui/resume-link";
 import { TechIcon } from "../ui/tech-icon";
@@ -22,20 +22,29 @@ const at = (i: number) => ({ "--i": i }) as CSSProperties;
 const orbitIcons: IconName[] = ["react", "nextjs", "nestjs", "typescript", "claude", "docker", "postgresql", "nodejs"];
 
 export function Hero() {
-  const lang = useLang();
-  const roles = useMemo(() => profile.roles.map((role) => pick(role, lang)), [lang]);
+  const ref = useRef<HTMLElement>(null);
+
+  // Cuộn khỏi đầu trang thì tạm dừng các hiệu ứng lặp ở đây (xem #home[data-offscreen] trong globals.css).
+  // Đặt thẳng thuộc tính lên thẻ, không dùng state, để không phải vẽ lại cả phần đầu trang.
+  useEffect(() => {
+    const section = ref.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(([entry]) => section.toggleAttribute("data-offscreen", !entry.isIntersecting));
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section id="home" className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-20">
+    <section ref={ref} id="home" className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-24 pb-16 sm:pt-28 sm:pb-20">
       {/* Nền: lưới mờ và hai đốm sáng trôi */}
       <div
         aria-hidden="true"
         className="bg-grid absolute inset-0 -z-10 [mask-image:radial-gradient(ellipse_at_70%_40%,#000_25%,transparent_70%)]"
       />
-      <div aria-hidden="true" className="blob absolute -top-40 right-0 -z-10 size-[30rem] rounded-full bg-brand-blue/25 blur-[120px]" />
+      <div aria-hidden="true" className="blob glow absolute -top-40 right-0 -z-10 size-[30rem] [--glow-a:21.6%] [--glow-blur:120px] [--glow-c:var(--brand-blue)]" />
       <div
         aria-hidden="true"
-        className="blob absolute bottom-0 -left-40 -z-10 size-[24rem] rounded-full bg-brand-sky/15 blur-[110px] [animation-delay:-7s]"
+        className="blob glow absolute bottom-0 -left-40 -z-10 size-[24rem] [--glow-a:11.7%] [--glow-blur:110px] [--glow-c:var(--brand-sky)] [animation-delay:-7s]"
       />
       {/* hạt sáng chuyển động theo chuột (chỉ máy có chuột) */}
       <HeroParticles />
@@ -74,7 +83,7 @@ export function Hero() {
               $
             </span>
             <span className="min-h-[1.5em] truncate">
-              <Typewriter words={roles} />
+              <HeroRoles />
             </span>
           </p>
 
@@ -87,7 +96,7 @@ export function Hero() {
               href="#projects"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="bg-brand shine group inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)]"
+              className="bg-brand-strong shine group inline-flex items-center gap-2 rounded-xl px-7 py-3.5 font-semibold text-white shadow-[0_12px_30px_-10px_var(--glow-sky)]"
             >
               <T v={ui.hero.viewProjects} />
               <LuArrowDownRight className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" aria-hidden="true" />
@@ -135,11 +144,8 @@ export function Hero() {
 
           <div className="enter-avatar relative size-[64%] -rotate-3">
             <div aria-hidden="true" className="bg-brand absolute -inset-6 rounded-[3rem] opacity-35 blur-3xl" />
-            <div className="bg-brand relative size-full rounded-[2.5rem] p-[3px] shadow-[0_0_80px_-10px_var(--glow-blue)]">
-              <div className="relative size-full overflow-hidden rounded-[calc(2.5rem-3px)] bg-bg">
-                <Avatar sizes="(min-width: 640px) 290px, 230px" priority />
-              </div>
-            </div>
+            {/* nhấp đúp để lật ảnh (easter egg 8-bit), xem avatar-flip.tsx */}
+            <AvatarFlip sizes="(min-width: 640px) 290px, 230px" />
           </div>
 
           <div aria-hidden="true" className="orbit pointer-events-none absolute inset-0">
@@ -197,17 +203,32 @@ export function Hero() {
         </div>
       </div>
 
-      <motion.a
-        href="#about"
-        aria-label={pick(ui.hero.scroll, lang)}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1, y: [0, 8, 0] }}
-        transition={{ opacity: { delay: 1.6 }, y: { duration: 2, repeat: Infinity, ease: "easeInOut" } }}
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-muted hover:text-brand-blue md:block"
-      >
-        <LuMouse className="size-7" />
-      </motion.a>
+      <ScrollHint />
     </section>
+  );
+}
+
+/** Dòng chức danh gõ chữ. Tách riêng để khi đổi ngôn ngữ chỉ phần nhỏ này vẽ lại, không phải cả đầu trang. */
+function HeroRoles() {
+  const lang = useLang();
+  const roles = useMemo(() => profile.roles.map((role) => pick(role, lang)), [lang]);
+  return <Typewriter words={roles} />;
+}
+
+/** Mũi tên "cuộn xuống": hiện dần bằng motion, nhấp nhô bằng CSS (class "bob"). */
+function ScrollHint() {
+  const lang = useLang();
+  return (
+    <motion.a
+      href="#about"
+      aria-label={pick(ui.hero.scroll, lang)}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.6 }}
+      className="bob absolute bottom-6 left-1/2 hidden -translate-x-1/2 text-muted hover:text-brand-blue md:block"
+    >
+      <LuMouse className="size-7" aria-hidden="true" />
+    </motion.a>
   );
 }
 
@@ -223,15 +244,17 @@ function FloatingCard({
   drift: number;
 }) {
   return (
+    // Nền thẻ ("card") là màu đục nên không cần backdrop-blur: blur phía sau không nhìn thấy mà card đồ họa vẫn phải tính mỗi khung hình.
+    // Hiện ra bằng motion, trôi lên xuống bằng CSS (class "drift").
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1, y: [0, drift, 0] }}
+      animate={{ opacity: 1, scale: 1 }}
       transition={{
         opacity: { delay, duration: 0.5 },
         scale: { delay, type: "spring", stiffness: 260, damping: 20 },
-        y: { delay, duration: 5, repeat: Infinity, ease: "easeInOut" },
       }}
-      className={`card absolute z-10 flex items-center gap-2.5 rounded-2xl py-2 pr-3 pl-2 sm:gap-3 sm:py-2.5 sm:pr-4 sm:pl-2.5 shadow-[0_20px_50px_-20px_var(--glow-blue)] backdrop-blur-md ${className}`}
+      style={{ "--drift": `${drift}px`, "--drift-delay": `${delay}s` } as CSSProperties}
+      className={`card drift absolute z-10 flex items-center gap-2.5 rounded-2xl py-2 pr-3 pl-2 sm:gap-3 sm:py-2.5 sm:pr-4 sm:pl-2.5 shadow-[0_20px_50px_-20px_var(--glow-blue)] ${className}`}
     >
       {children}
     </motion.div>

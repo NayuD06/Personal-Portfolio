@@ -23,41 +23,18 @@ const featured = projects.filter((p) => p.featured);
 
 export function Projects() {
   const [filter, setFilter] = useState<Filter>("All");
-  const lang = useLang();
   const showFeatured = filter === "All";
   const grid = showFeatured ? projects.filter((p) => !p.featured) : projects.filter((p) => p.categories.includes(filter));
 
   return (
-    <section id="projects" className="relative py-24 sm:py-32">
-      <div aria-hidden="true" className="blob absolute top-1/3 -left-40 -z-10 size-96 rounded-full bg-brand-blue/15 blur-[120px]" />
+    // "isolate": giữ đốm sáng nền (-z-10, có animation) trong mục này. Thiếu nó, trình duyệt phải tách cả phần trang
+    // phía trên đốm sáng thành một lớp vẽ riêng to bằng cả trang, nên cuộn và bấm gì cũng nặng hơn.
+    <section id="projects" className="relative isolate py-24 sm:py-32">
+      <div aria-hidden="true" className="blob glow absolute top-1/3 -left-40 -z-10 size-96 [--glow-a:10.8%] [--glow-blur:120px] [--glow-c:var(--brand-blue)]" />
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading tag="projects" title={ui.projects.title} subtitle={ui.projects.subtitle} />
 
-        <div role="group" aria-label={pick(ui.projects.filter, lang)} className="mb-14 flex flex-wrap gap-2">
-          {filters.map((item) => {
-            const active = item === filter;
-            return (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setFilter(item)}
-                aria-pressed={active}
-                className={`relative rounded-xl px-5 py-2 text-sm font-semibold transition-colors ${
-                  active ? "text-white" : "border border-border text-muted hover:text-fg"
-                }`}
-              >
-                {active && (
-                  <motion.span
-                    layoutId="project-filter"
-                    className="bg-brand absolute inset-0 rounded-xl"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <span className="relative">{item === "All" ? <T v={ui.projects.all} /> : item}</span>
-              </button>
-            );
-          })}
-        </div>
+        <FilterBar filter={filter} onChange={setFilter} />
 
         <AnimatePresence initial={false}>
           {showFeatured && (
@@ -67,7 +44,8 @@ export function Projects() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0, transition: { duration: 0.3 } }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden"
+              // chừa 0,5rem hai bên để viền focus của nút sát mép không bị cắt
+              className="-mx-2 overflow-hidden px-2"
             >
               <ul className="grid gap-20 pb-20 sm:gap-24 sm:pb-24">
                 {featured.map((project, i) => (
@@ -113,6 +91,39 @@ export function Projects() {
 }
 
 /** Dự án nổi bật: ảnh lớn trong khung trình duyệt, chữ ở bên cạnh, đổi bên xen kẽ. */
+
+/** Các nút lọc dự án. Tách riêng để khi đổi ngôn ngữ chỉ phần này vẽ lại (nhãn đọc màn hình), không phải cả mục Dự án. */
+function FilterBar({ filter, onChange }: { filter: Filter; onChange: (filter: Filter) => void }) {
+  const lang = useLang();
+  return (
+    <div role="group" aria-label={pick(ui.projects.filter, lang)} className="mb-14 flex flex-wrap gap-2">
+      {filters.map((item) => {
+        const active = item === filter;
+        return (
+          <button
+            key={item}
+            type="button"
+            onClick={() => onChange(item)}
+            aria-pressed={active}
+            className={`relative rounded-xl px-5 py-2 text-sm font-semibold transition-colors ${
+              active ? "text-white" : "border border-border text-muted hover:text-fg"
+            }`}
+          >
+            {active && (
+              <motion.span
+                layoutId="project-filter"
+                className="bg-brand-strong absolute inset-0 rounded-xl"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <span className="relative">{item === "All" ? <T v={ui.projects.all} /> : item}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 function FeaturedProject({ project, flip }: { project: Project; flip: boolean }) {
   const address = (project.liveUrl ?? project.githubUrl ?? "").replace(/^https?:\/\//, "");
 
@@ -223,7 +234,7 @@ function ProjectLinks({ project, compact = false }: { project: Project; compact?
     <div className={`flex flex-wrap gap-3 ${compact ? "pt-6" : "pt-7"}`}>
       <Link
         href={`/projects/${project.slug}`}
-        className={`bg-brand shine group/details inline-flex items-center gap-1.5 rounded-xl font-semibold text-white transition-transform hover:scale-105 ${size}`}
+        className={`bg-brand-strong shine group/details inline-flex items-center gap-1.5 rounded-xl font-semibold text-white transition-transform hover:scale-105 ${size}`}
       >
         <T v={ui.projects.details} />
         <LuArrowRight className="size-4 transition-transform group-hover/details:translate-x-0.5" aria-hidden="true" />

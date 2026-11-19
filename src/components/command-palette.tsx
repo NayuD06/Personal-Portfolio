@@ -11,6 +11,7 @@ import { navLinks, ui } from "@/data/ui";
 import { openAsk, openTerminal } from "@/lib/extras";
 import { pick, T, type Text } from "@/lib/i18n";
 import { normalize } from "@/lib/normalize";
+import { useOverlay } from "@/lib/overlay";
 import { setLang, useLang } from "@/lib/use-lang";
 import { TechIcon } from "./ui/tech-icon";
 import { switchTheme } from "./ui/theme-toggle";
@@ -41,12 +42,13 @@ export function CommandTrigger({ hint = true }: { hint?: boolean }) {
     <button
       type="button"
       onClick={openCommandPalette}
-      aria-label={label}
       title={label}
       aria-keyshortcuts="Control+K Meta+K"
       className="flex h-10 min-w-10 items-center justify-center gap-2 rounded-full border border-border bg-input px-2.5 text-muted transition-colors hover:border-brand-blue hover:text-fg"
     >
       <LuSearch className="size-[18px]" aria-hidden="true" />
+      {/* tên nút cho trình đọc màn hình; chữ "Ctrl K" hiện bên cạnh cũng là một phần của tên */}
+      <span className="sr-only">{pick(ui.palette.open, lang)}</span>
       {hint && <kbd className="hidden rounded-md border border-border px-1.5 py-0.5 font-mono text-[11px] leading-none xl:inline">{shortcut}</kbd>}
     </button>
   );
@@ -154,6 +156,8 @@ function Icon({ as: Component }: { as: IconType }) {
 }
 
 function PaletteDialog({ onClose }: { onClose: () => void }) {
+  // tạm dừng hiệu ứng phía sau lớp nền mờ khi bảng đang mở (lib/overlay.ts)
+  useOverlay();
   const lang = useLang();
   const router = useRouter();
   const pathname = usePathname();
@@ -436,11 +440,12 @@ function PaletteDialog({ onClose }: { onClose: () => void }) {
             placeholder={pick(ui.palette.placeholder, lang)}
             spellCheck={false}
             autoComplete="off"
-            className="command-input h-14 min-w-0 flex-1 bg-transparent text-base text-fg outline-none placeholder:text-muted/70"
+            className="command-input h-14 min-w-0 flex-1 bg-transparent text-base text-fg outline-none placeholder:text-muted/90"
           />
           <button
             type="button"
             onClick={onClose}
+            aria-label={`Esc: ${pick(ui.palette.close, lang)}`}
             className="shrink-0 rounded-md border border-border px-1.5 py-1 font-mono text-[11px] leading-none text-muted transition-colors hover:text-fg"
           >
             Esc

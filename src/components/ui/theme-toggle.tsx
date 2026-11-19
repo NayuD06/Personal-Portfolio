@@ -18,21 +18,28 @@ const subscribe = () => () => {};
 export function switchTheme(next: "light" | "dark", apply: (theme: string) => void, origin: { x: number; y: number }) {
   const root = document.documentElement;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Class "theme-transition" tắt mọi transition trong lúc đổi (globals.css) để màu đổi một lượt.
+  // Gắn cùng lúc với đổi giao diện để trình duyệt chỉ phải tính lại style toàn trang một lần.
+  const change = () => {
+    root.classList.add("theme-transition");
+    flushSync(() => apply(next));
+    // đổi class ngay, không chờ next-themes
+    root.classList.toggle("dark", next === "dark");
+    root.style.colorScheme = next;
+  };
+  const finish = () => root.classList.remove("theme-transition");
+
   if (!document.startViewTransition || reduce) {
-    apply(next);
+    change();
+    // gỡ khi màu mới đã vẽ xong, để hiệu ứng rê chuột (transition) chạy lại bình thường
+    requestAnimationFrame(() => requestAnimationFrame(finish));
     return;
   }
 
   const { x, y } = origin;
   const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
 
-  root.classList.add("theme-transition");
-  const transition = document.startViewTransition(() => {
-    flushSync(() => apply(next));
-    // đổi class ngay trong lúc chụp ảnh, không chờ next-themes
-    root.classList.toggle("dark", next === "dark");
-    root.style.colorScheme = next;
-  });
+  const transition = document.startViewTransition(change);
   transition.ready
     .then(() =>
       root.animate(
@@ -41,7 +48,7 @@ export function switchTheme(next: "light" | "dark", apply: (theme: string) => vo
       ),
     )
     .catch(() => {});
-  transition.finished.finally(() => root.classList.remove("theme-transition"));
+  transition.finished.finally(finish);
 }
 
 /** Tâm vòng tròn: chỗ bấm chuột, hoặc giữa nút khi bấm bằng bàn phím */
