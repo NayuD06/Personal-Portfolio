@@ -142,7 +142,7 @@ export const profile = {
   } as Text,
 
   /** Đang làm gì: hiện trên thẻ nhỏ cạnh ảnh đại diện */
-  currentlyBuilding: "EduForge AI",
+  currentlyBuilding: "TaskFlow",
 
   /**
    * Ảnh đại diện (vuông), đặt trong public. Để trống "" sẽ hiện chữ viết tắt.
@@ -383,7 +383,6 @@ export const profile = {
         { en: "IT business management", vi: "Quản trị doanh nghiệp CNTT" },
       ],
     },
-    { year: 2026, date: { en: "Mar 2026", vi: "03/2026" }, kind: "project", project: "auth-microservice" },
     {
       year: 2026,
       date: { en: "Summer term 2026", vi: "Học kỳ hè 2026" },
@@ -432,6 +431,7 @@ export const profile = {
     { year: 2026, date: { en: "Oct 2026", vi: "10/2026" }, kind: "project", project: "digital-map-pathfinding" },
     { year: 2026, date: { en: "Oct 2026", vi: "10/2026" }, kind: "project", project: "online-elearning" },
     { year: 2026, date: { en: "Nov 2026", vi: "11/2026" }, kind: "project", project: "eduforge-ai" },
+    { year: 2026, date: { en: "Nov 2026", vi: "11/2026" }, kind: "project", project: "taskflow" },
     {
       year: 2026,
       date: { en: "Nov 2026", vi: "11/2026" },
@@ -848,6 +848,85 @@ export const profile = {
       ],
     },
     {
+      title: "TaskFlow",
+      slug: "taskflow",
+      year: "2026",
+      description: {
+        en: "Project and task manager with Kanban, list and calendar views, drag and drop, tags and filters, reminders, a stats dashboard and Vietnamese/English.",
+        vi: "Ứng dụng quản lý dự án và công việc: Kanban, danh sách và lịch, kéo thả, nhãn và bộ lọc, nhắc hạn, trang thống kê và song ngữ Việt/Anh.",
+      },
+      tags: ["React", "Vite", "Express", "MongoDB", "TanStack Query", "dnd-kit"],
+      categories: ["Full-stack"],
+      coverIcon: "layout",
+      coverColors: ["#0c4a6e", "#0ea5e9"],
+      image: "/projects/taskflow.jpg",
+      githubUrl: "https://github.com/NayuD06/TaskFlow",
+      liveUrl: "https://task-flow-sigma-lilac.vercel.app",
+      context: { en: "Live, still adding features", vi: "Đã chạy thật, vẫn đang làm thêm" },
+      problem: {
+        en: "Simple to-do lists can't plan a real project, and big team tools are too heavy for one person. TaskFlow sits in between: each project gets a board, a list and a calendar, and the dashboard shows what is late and how much got done this week. Anyone can sign up and only sees their own data.",
+        vi: "Danh sách to-do đơn giản thì không đủ để lên kế hoạch cho một dự án thật, còn công cụ làm nhóm lớn lại quá nặng cho một người. TaskFlow nằm ở giữa: mỗi dự án có bảng Kanban, danh sách và lịch, trang tổng quan cho biết việc nào trễ hạn và tuần này đã xong bao nhiêu. Ai cũng tự đăng ký được và chỉ thấy dữ liệu của chính mình.",
+      },
+      approach: [
+        {
+          en: "A React 19 and Vite front end with Tailwind CSS v4 and Motion, talking to an Express 5 REST API on MongoDB with Mongoose. The web app runs on Vercel and the API on Render.",
+          vi: "Front-end React 19 và Vite với Tailwind CSS v4 và Motion, gọi REST API Express 5 trên MongoDB qua Mongoose. Web chạy trên Vercel, API chạy trên Render.",
+        },
+        {
+          en: "TanStack Query with optimistic updates makes moving a card or ticking a task feel instant, with Undo after deleting or completing. dnd-kit handles drag and drop on the board and the calendar by mouse, touch or keyboard, and the card order is saved.",
+          vi: "TanStack Query với cập nhật lạc quan giúp kéo thẻ hay tick việc phản hồi ngay, có nút Hoàn tác sau khi xoá hoặc đánh dấu xong. dnd-kit lo kéo thả trên bảng và trên lịch bằng chuột, cảm ứng hoặc bàn phím, thứ tự thẻ được lưu lại.",
+        },
+        {
+          en: "Security: bcrypt-hashed passwords, JWTs with a per-user token version so changing the password or logging out everywhere kills old tokens, every query scoped to the signed-in owner, rate limits, helmet and a CORS allowlist.",
+          vi: "Bảo mật: mật khẩu băm bằng bcrypt, JWT kèm phiên bản token cho từng người nên đổi mật khẩu hay đăng xuất mọi thiết bị là token cũ mất hiệu lực, mọi truy vấn chỉ lấy dữ liệu của chính chủ, có rate limit, helmet và CORS theo danh sách cho phép.",
+        },
+        {
+          en: "A water theme ties it together: each project is a tank that fills up as tasks get done. Checked with axe-core on 23 screens with 0 WCAG 2.1 AA errors, every page is lazy-loaded, and a service worker lets it install as a PWA.",
+          vi: "Chủ đề nước xuyên suốt: mỗi dự án là một bể nước, xong càng nhiều việc nước càng dâng. Kiểm tra bằng axe-core trên 23 màn hình với 0 lỗi WCAG 2.1 AA, trang nào cũng tải khi cần, có service worker để cài như ứng dụng (PWA).",
+        },
+      ],
+      features: [
+        {
+          en: "Kanban board (To do, Doing, Done) with drag and drop, a list view and a month calendar",
+          vi: "Bảng Kanban (Cần làm, Đang làm, Đã xong) kéo thả được, kiểu danh sách và lịch tháng",
+        },
+        {
+          en: "Tasks with 4 priorities, deadlines, checklists and up to 8 colored tags",
+          vi: "Công việc có 4 mức ưu tiên, hạn chót, checklist việc con và tối đa 8 nhãn màu",
+        },
+        {
+          en: "Advanced filters by priority, tag and due date, shown as chips you can remove",
+          vi: "Bộ lọc nâng cao theo ưu tiên, nhãn và hạn chót, hiện thành chip bấm để bỏ",
+        },
+        {
+          en: "Dashboard with weekly progress, overdue and due-today counts, a completion chart and an activity timeline",
+          vi: "Trang tổng quan có tiến độ tuần, số việc trễ hạn và đến hạn hôm nay, biểu đồ hoàn thành và dòng thời gian hoạt động",
+        },
+        {
+          en: "My Tasks across every project, plus reminders for overdue and soon-due work with browser notifications",
+          vi: "Việc của tôi gom từ mọi dự án, chuông nhắc việc trễ và sắp đến hạn kèm thông báo trình duyệt",
+        },
+        {
+          en: "Ctrl+K search, keyboard shortcuts, light/dark theme, 10 accent colors and Vietnamese/English",
+          vi: "Tìm nhanh Ctrl+K, phím tắt, giao diện sáng/tối, 10 màu nhấn và song ngữ Việt/Anh",
+        },
+      ],
+      gallery: [
+        {
+          src: "/projects/taskflow/dashboard-dark.jpg",
+          caption: { en: "Dashboard, dark theme", vi: "Trang Tổng quan, giao diện tối" },
+        },
+        {
+          src: "/projects/taskflow/board-dark.jpg",
+          caption: { en: "Kanban board with drag and drop", vi: "Bảng Kanban kéo thả" },
+        },
+        {
+          src: "/projects/taskflow/dashboard-light.jpg",
+          caption: { en: "Dashboard, light theme", vi: "Trang Tổng quan, giao diện sáng" },
+        },
+      ],
+    },
+    {
       title: "EduForge AI",
       slug: "eduforge-ai",
       year: "2026",
@@ -944,44 +1023,6 @@ export const profile = {
         },
         { en: "Distance, run time and visited node count", vi: "Độ dài, thời gian chạy và số nút đã duyệt" },
         { en: "Chart comparing Dijkstra and A*", vi: "Biểu đồ so sánh Dijkstra và A*" },
-      ],
-    },
-    {
-      title: "Auth Microservice",
-      slug: "auth-microservice",
-      year: "2026",
-      description: {
-        en: "Standalone authentication service for a microservice setup: sign-up, login and JWT issuing with bcrypt-hashed passwords and validated request DTOs.",
-        vi: "Dịch vụ xác thực độc lập cho kiến trúc microservice: đăng ký, đăng nhập, cấp JWT, mật khẩu băm bằng bcrypt và kiểm tra dữ liệu đầu vào.",
-      },
-      tags: ["NestJS", "MongoDB", "JWT", "Jest"],
-      categories: ["Backend"],
-      coverIcon: "lock",
-      coverColors: ["#172554", "#2563eb"],
-      githubUrl: "https://github.com/NayuD06/K24WD02-micro-service-auth-api",
-      problem: {
-        en: "In a microservice system every service needs to know who is calling it, but only one service should deal with passwords and tokens.",
-        vi: "Trong hệ thống microservice, dịch vụ nào cũng cần biết ai đang gọi mình, nhưng chỉ nên có một dịch vụ lo mật khẩu và token.",
-      },
-      approach: [
-        {
-          en: "A standalone NestJS service with its own MongoDB database for user accounts.",
-          vi: "Một dịch vụ NestJS độc lập với database MongoDB riêng cho tài khoản người dùng.",
-        },
-        {
-          en: "Passwords are hashed with bcrypt, and sign-up and login return a signed JWT that other services can verify.",
-          vi: "Mật khẩu băm bằng bcrypt, đăng ký và đăng nhập trả về JWT có chữ ký để các dịch vụ khác kiểm tra.",
-        },
-        {
-          en: "Request bodies are validated with DTOs before they reach the business logic, and the service is covered by Jest tests.",
-          vi: "Dữ liệu gửi lên được kiểm tra bằng DTO trước khi vào phần xử lý, dịch vụ có test bằng Jest.",
-        },
-      ],
-      features: [
-        { en: "Sign-up and login endpoints", vi: "API đăng ký và đăng nhập" },
-        { en: "JWT issuing for other services", vi: "Cấp JWT cho các dịch vụ khác" },
-        { en: "bcrypt password hashing", vi: "Băm mật khẩu bằng bcrypt" },
-        { en: "Validated request DTOs", vi: "Kiểm tra dữ liệu đầu vào bằng DTO" },
       ],
     },
   ] satisfies Project[],

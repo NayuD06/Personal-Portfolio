@@ -164,7 +164,7 @@ export default function CvPage() {
               </CvSection>
 
               <CvSection title={ui.cv.projects}>
-                <ul className="space-y-[3.6mm]">
+                <ul className="space-y-[3mm]">
                   {profile.projects.map((project) => (
                     <li key={project.slug} className="break-inside-avoid">
                       <div className="flex items-baseline justify-between gap-[4mm]">
