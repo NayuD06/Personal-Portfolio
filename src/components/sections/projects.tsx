@@ -229,7 +229,7 @@ function ProjectCard({ project }: { project: Project }) {
 }
 
 function ProjectLinks({ project, compact = false }: { project: Project; compact?: boolean }) {
-  const size = compact ? "px-4 py-2 text-sm" : "px-5 py-2.5 text-sm";
+  const size = compact ? "px-4 py-2 text-sm" : "px-4 py-2.5 text-sm";
   return (
     <div className={`flex flex-wrap gap-3 ${compact ? "pt-6" : "pt-7"}`}>
       <Link
